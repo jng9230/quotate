@@ -17,7 +17,7 @@ function App() {
 
   return (
     <div className="App">
-      <main className="App-main grid grid-cols-2 grid-rows-2">
+      <main className="App-main grid grid-cols-2 grid-rows-2 max-h-screen overflow-hidden w-screen h-screen">
         <Carousel></Carousel>
         <Textbox></Textbox>
         <Upload></Upload>

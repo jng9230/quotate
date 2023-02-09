@@ -40,16 +40,21 @@ function Upload() {
             })
     }
     return (
-        <div>
-            <h3>Extracted text</h3>
-            <div className="text-box mb-20">
-            <p> {text} </p>
+        <div className="flex flex-col justify-between text-center items-center p-3">
+            {/* <h3>Extracted text</h3> */}
+            <div className="text-box max-h-8 overflow-hidden">
+                <p> {text} </p>
             </div>
-            <label htmlFor="uploadFile"> Choose image(s) to upload.</label>
+            {/* <label htmlFor="uploadFile"> Choose image(s) to upload.</label> */}
             { loading !== 0 && LoadingBar(loading) }
-            <img src={imagePath} alt="" className="max-w-xs max-h-96"/>
-            <input type="file" name="uploadFile"  onChange={handleFileUpload} />
-            <button className="rounded-md bg-purple-500 p-1 text-white" onClick={handleClick}> convert to text</button>
+            <img src={imagePath} alt="" className="h-3/5 w-auto"/>
+            <div>
+                <label htmlFor="uploadFile" className="mx-3 inline-block cursor-pointer p-1 rounded-md bg-green-400 text-white"> 
+                    Upload file(s)
+                </label>
+                <input type="file" id="uploadFile" name="uploadFile"  onChange={handleFileUpload} className="hidden"/>
+                <button className=" rounded-md bg-purple-500 p-1 text-white" onClick={handleClick}> Convert </button>
+            </div>
         </div>
 
     )
