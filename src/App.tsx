@@ -38,18 +38,18 @@ function App() {
       })
   }
 
-  const [storedText, setStoredText] = useState<string[]>([])
-  useEffect(() => {
+  const [storedText, setStoredText] = useState<string[]>(() => {
     const text_get = localStorage.getItem("text");
     if (text_get != null){
       const text_json = JSON.parse(text_get);
       console.log(text_json);
-      setStoredText(text_json);
+      return text_json
+      // setStoredText(text_json);
     }
-  }, [])
+  })
 
   const handleTextSave = (new_text:string) => {
-    setStoredText([...storedText, new_text]);
+    setStoredText([new_text, ...storedText]);
   }
   useEffect(() => {
     console.log(storedText);
