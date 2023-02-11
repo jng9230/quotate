@@ -6,6 +6,7 @@ import { Textbox } from './Textbox';
 import { Upload } from './Upload';
 import { StorageBox } from './StorageBox';
 import { useEffect } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
 function App() {
   const [imagePath, setImagePath] = useState("");
@@ -38,7 +39,7 @@ function App() {
       })
   }
 
-  const [storedText, setStoredText] = useState<string[]>(() => {
+  const [storedText, setStoredText] = useState<{id: string, text: string}[]>(() => {
     const text_get = localStorage.getItem("text");
     if (text_get != null){
       const text_json = JSON.parse(text_get);
@@ -46,10 +47,11 @@ function App() {
       return text_json
       // setStoredText(text_json);
     }
+    return []
   })
 
   const handleTextSave = (new_text:string) => {
-    setStoredText([new_text, ...storedText]);
+    setStoredText([{id: uuidv4(), text: new_text}, ...storedText]);
   }
   useEffect(() => {
     console.log(storedText);
@@ -57,6 +59,11 @@ function App() {
     console.log(text_json)
     localStorage.setItem("text", text_json)
   }, [storedText])
+
+  function deleteText(i:string){
+    const filted_text = storedText.filter((d) => d.id !== i);
+    setStoredText(filted_text);
+  }
   
   return (
     <div className="App">
@@ -69,7 +76,7 @@ function App() {
           handleClick={handleClick}
           loading={loading}
         ></Upload>
-        <StorageBox storedText={storedText}></StorageBox>
+        <StorageBox storedText={storedText} deleteText={deleteText}></StorageBox>
       </main>
     </div>
   );

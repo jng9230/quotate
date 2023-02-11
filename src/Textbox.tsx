@@ -1,10 +1,11 @@
 // import { useState } from 'react';
 
 function Textbox({ 
-    text, setText, 
+    text, 
+    setText, 
     handleTextSave
 }: {
-    text:string, 
+    text: string, 
     setText: any, 
     handleTextSave: (i:string) => void
 }){
