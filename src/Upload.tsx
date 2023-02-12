@@ -27,7 +27,9 @@ function Upload({
                 <label htmlFor="uploadFile" className="mx-3 inline-block cursor-pointer p-1 rounded-md bg-green-400 text-white"> 
                     Upload file(s)
                 </label>
-                <input type="file" id="uploadFile" name="uploadFile" onChange={handleFileUpload} className="hidden"/>
+                <input type="file" id="uploadFile" name="uploadFile" onChange={handleFileUpload} 
+                    className="hidden" multiple accept="image/png, image/jpeg, image/jpg"
+                />
                 <button className=" rounded-md bg-purple-500 p-1 text-white" onClick={handleClick}> Convert </button>
             </div>
         </div>

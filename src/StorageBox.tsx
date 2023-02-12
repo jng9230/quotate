@@ -16,7 +16,7 @@ function StorageBox({
                     return(
                         <div key={d.id} className="bg-gray-300 rounded-lg px-5 flex justify-between items-center">
                             <p className="w-11/12"> {d.text} </p>
-                            <TiDeleteOutline onClick={() => deleteText(d.id)}></TiDeleteOutline>
+                            <TiDeleteOutline onClick={() => deleteText(d.id)} className="cursor-pointer"></TiDeleteOutline>
                         </div>
                     )
                 })}
