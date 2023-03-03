@@ -5,6 +5,9 @@
       "dom",
       "dom.iterable",
       "esnext",
+      "webworker",
+      "es5",
+      "scripthost"
     ],
     "sourceMap": true,
     "allowJs": true,

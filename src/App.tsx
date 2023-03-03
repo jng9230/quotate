@@ -1,14 +1,37 @@
 import * as Tesseract from 'tesseract.js';
-import { useState } from 'react';
 import './App.css';
 import { Carousel } from './Carousel';
 import { Textbox } from './Textbox';
 import { Upload } from './Upload';
 import { StorageBox } from './StorageBox';
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 function App() {
+    //web workers
+    const worker: Worker = useMemo(
+        () => new Worker(new URL("./tesseract.ts", import.meta.url)),
+        [] 
+    )
+    // const [workerMessage, setWorkerMessage] = useState("");
+    // useEffect(() => {
+    //     console.log("workerMessage variable:")
+    //     console.log(workerMessage)
+    // }, [workerMessage])
+    // useEffect(() => {
+    //     if (window.Worker) {
+    //         worker.postMessage("fuck you");
+    //     }
+    // }, [worker]);
+    // useEffect(() => {
+    //     worker.onmessage = ((e: MessageEvent) => {
+    //         console.log("message from worker:");
+    //         console.log(e);
+    //         setWorkerMessage(e.data);
+    //     })
+    // }, [worker])
+    
+    //regular stuff
     const [imagePath, setImagePath] = useState("");
     const [files, setFiles] = useState<string[]>([])
     const handleFileUpload = (event: any) => {
@@ -19,7 +42,7 @@ function App() {
             // setImagePath(image_url);
             return URL.createObjectURL(file)
         }); 
-        setFiles(file_URLs);
+        setFiles([...file_URLs, ...files]);
         setImagePath(file_URLs[0]);
     }
     function changeImagePath(url:string){
@@ -29,7 +52,12 @@ function App() {
     const [text, setText] = useState("");
     const [loading, setLoading] = useState(0)
     const handleClick = () => {
+        if (imagePath === ""){
+            console.log("NO IMAGE")
+            return; //TODO: set button to inactive instead
+        }
 
+        // worker.postMessage(imagePath);
         Tesseract.recognize(
             imagePath, 'eng',
             {
@@ -39,16 +67,31 @@ function App() {
                 }
             }
         )
-            .catch(err => {
-                console.error(err);
-            })
-            .then(result => {
-                console.log(result);
-                const thing = result as Tesseract.RecognizeResult;
+        .catch(err => {
+            console.error(err);
+        })
+        .then(result => {
+            console.log(result);
+            const thing = result as Tesseract.RecognizeResult;
 
-                setText(thing.data.text);
-            })
+            setText(thing.data.text);
+        })
     }
+    useEffect(() => {
+        worker.onmessage = ((e:MessageEvent) => {
+            switch(e.data.type){
+                case "UPDATE":
+                    setLoading(e.data.data);
+                    break;
+                case "RESULT":
+                    setText(e.data.data);
+                    break;
+                default:
+                    console.log("DEFAULT CASE ON SWITCH")
+                    console.log(e)
+            }
+        })
+    }, [worker])
 
     const [storedText, setStoredText] = useState<{id: string, text: string}[]>(() => {
         const text_get = localStorage.getItem("text");
@@ -60,6 +103,7 @@ function App() {
     })
 
     const handleTextSave = (new_text: string) => {
+        if (new_text === ""){return;}
         setStoredText([{ id: uuidv4(), text: new_text }, ...storedText]);
     }
     useEffect(() => {
