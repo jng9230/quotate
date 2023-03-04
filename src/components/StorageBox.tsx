@@ -1,4 +1,5 @@
-import { TiDeleteOutline } from 'react-icons/ti';
+// import { TiDeleteOutline } from 'react-icons/ti';
+import { CloseButton } from "./CloseButton"
 
 function StorageBox({ 
     storedText, 
@@ -16,7 +17,8 @@ function StorageBox({
                     return(
                         <div key={d.id} className="bg-gray-300 rounded-lg px-5 flex justify-between items-center">
                             <p className="w-11/12"> {d.text} </p>
-                            <TiDeleteOutline onClick={() => deleteText(d.id)} className="cursor-pointer"></TiDeleteOutline>
+                            {/* <TiDeleteOutline onClick={() => deleteText(d.id)} className="cursor-pointer"></TiDeleteOutline> */}
+                            <CloseButton onClick={() => deleteText(d.id)}></CloseButton>
                         </div>
                     )
                 })}

@@ -1,18 +1,18 @@
 import * as Tesseract from 'tesseract.js';
 import './App.css';
-import { Carousel } from './Carousel';
-import { Textbox } from './Textbox';
-import { Upload } from './Upload';
-import { StorageBox } from './StorageBox';
-import { useEffect, useMemo, useState } from 'react';
+import { Carousel } from './components/Carousel';
+import { Textbox } from './components/Textbox';
+import { Upload } from './components/Upload';
+import { StorageBox } from './components/StorageBox';
+import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 function App() {
     //web workers
-    const worker: Worker = useMemo(
-        () => new Worker(new URL("./tesseract.ts", import.meta.url)),
-        [] 
-    )
+    // const worker: Worker = useMemo(
+    //     () => new Worker(new URL("./workers/tesseract.ts", import.meta.url)),
+    //     [] 
+    // )
     // const [workerMessage, setWorkerMessage] = useState("");
     // useEffect(() => {
     //     console.log("workerMessage variable:")
@@ -77,21 +77,21 @@ function App() {
             setText(thing.data.text);
         })
     }
-    useEffect(() => {
-        worker.onmessage = ((e:MessageEvent) => {
-            switch(e.data.type){
-                case "UPDATE":
-                    setLoading(e.data.data);
-                    break;
-                case "RESULT":
-                    setText(e.data.data);
-                    break;
-                default:
-                    console.log("DEFAULT CASE ON SWITCH")
-                    console.log(e)
-            }
-        })
-    }, [worker])
+    // useEffect(() => {
+    //     worker.onmessage = ((e:MessageEvent) => {
+    //         switch(e.data.type){
+    //             case "UPDATE":
+    //                 setLoading(e.data.data);
+    //                 break;
+    //             case "RESULT":
+    //                 setText(e.data.data);
+    //                 break;
+    //             default:
+    //                 console.log("DEFAULT CASE ON SWITCH")
+    //                 console.log(e)
+    //         }
+    //     })
+    // }, [worker])
 
     const [storedText, setStoredText] = useState<{id: string, text: string}[]>(() => {
         const text_get = localStorage.getItem("text");

@@ -1,9 +1,11 @@
-// import * as Tesseract from 'tesseract.js';
 // import { useState } from 'react';
 import {LoadingBar} from './LoadingBar';
 import Cropper from 'react-easy-crop';
 import {useState, useCallback} from 'react'
 import { Point, Area } from "react-easy-crop/types";
+// import { TiDeleteOutline } from 'react-icons/ti';
+import { CloseButton } from './CloseButton';
+
 
 function Upload({
     imagePath,
@@ -27,17 +29,26 @@ function Upload({
         []
     );
     
-    const [showCrop, setShowCrop] = useState(false);
-    const updateShowCrop = () => {
-        setShowCrop(true);
+    const [cropModal, setCropModal] = useState(false);
+    const showCropModal = () => {
+        if (imagePath){
+            setCropModal(true);
+        }
     }
+    const closeCrop = () => {
+        setCropModal(false);
+    }
+    const modal = "bg-black/[.60] fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 md:h-full";
+    const closeButtonStyles = "absolute right-1 top-1"
     return (
         <div className="flex flex-col justify-between text-center items-center p-3">
             { loading !== 0 && LoadingBar(loading) }
             <img src={imagePath} alt="" className="h-3/5 w-auto"/>
-            {showCrop && 
-                <div className="bg-black/[.60] fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 md:h-full">
-                    <div className="rounded-lg w-full h-full max-w-2xl md:h-auto p-4 overflow-hidden m-auto bg-white">
+            {cropModal && 
+                <div className={modal}>
+                    <div className="rounded-lg w-full h-full max-w-2xl md:h-auto p-6 overflow-hidden m-auto bg-white relative">
+                        {/* <TiDeleteOutline onClick={closeCrop} className="cursor-pointer absolute right-1 top-1 hover:fill-red-600"></TiDeleteOutline> */}
+                        <CloseButton onClick={closeCrop} styles={closeButtonStyles}></CloseButton>
                         <div className="crop_container relative w-full h-96">
                             <Cropper
                                 image={imagePath}
@@ -61,7 +72,7 @@ function Upload({
                     className="hidden" multiple accept="image/png, image/jpeg, image/jpg"
                 />
                 <button className=" rounded-md bg-purple-500 p-1 text-white" onClick={handleClick}> Convert </button>
-                <button className=" rounded-md bg-purple-500 p-1 text-white mx-3" onClick={updateShowCrop}> Edit </button>
+                <button className=" rounded-md bg-purple-500 p-1 text-white mx-3" onClick={showCropModal}> Edit </button>
             </div>
         </div>
 
