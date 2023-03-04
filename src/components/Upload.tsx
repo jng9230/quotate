@@ -5,7 +5,8 @@ import {useState, useCallback} from 'react'
 import { Point, Area } from "react-easy-crop/types";
 // import { TiDeleteOutline } from 'react-icons/ti';
 import { CloseButton } from './CloseButton';
-
+import { Slider } from './Slider';
+import { Button } from './Button';
 
 function Upload({
     imagePath,
@@ -24,7 +25,7 @@ function Upload({
     const [zoom, setZoom] = useState(1);
     const onCropComplete = useCallback(
         (croppedArea: Area, croppedAreaPixels: Area) => {
-            console.log(croppedArea, croppedAreaPixels);
+            // console.log(croppedArea, croppedAreaPixels);
         },
         []
     );
@@ -40,6 +41,11 @@ function Upload({
     }
     const modal = "bg-black/[.60] fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 md:h-full";
     const closeButtonStyles = "absolute right-1 top-1"
+    const [rotation, setRotation] = useState(0);
+    const updateRotation = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const rotation = parseInt(e.target.value);
+        setRotation(rotation)
+    }
     return (
         <div className="flex flex-col justify-between text-center items-center p-3">
             { loading !== 0 && LoadingBar(loading) }
@@ -58,9 +64,14 @@ function Upload({
                                 onCropChange={setCrop}
                                 onCropComplete={onCropComplete}
                                 onZoomChange={setZoom}
+                                rotation={rotation}
+                                onRotationChange={setRotation}
                             />
                         </div>
-                        <p>penis penis penis</p>
+                        <div id="sliderContainer" className="space-y-4 pt-4">
+                            {/* <Slider label="Height"></Slider> */}
+                            <Slider label="Rotation" onChange={updateRotation}></Slider>
+                        </div>
                     </div>
                 </div>
             }
@@ -71,8 +82,8 @@ function Upload({
                 <input type="file" id="uploadFile" name="uploadFile" onChange={handleFileUpload} 
                     className="hidden" multiple accept="image/png, image/jpeg, image/jpg"
                 />
-                <button className=" rounded-md bg-purple-500 p-1 text-white" onClick={handleClick}> Convert </button>
-                <button className=" rounded-md bg-purple-500 p-1 text-white mx-3" onClick={showCropModal}> Edit </button>
+                <Button onClick={handleClick} label="Convert" styles="bg-purple-500 text-white"></Button>
+                <Button onClick={showCropModal} label="Edit" styles="bg-purple-500 mx-3 text-white"></Button>
             </div>
         </div>
 
