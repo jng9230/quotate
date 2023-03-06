@@ -21,7 +21,7 @@ function Textbox({
                 >
                 </textarea>
                 <button 
-                    className="text-white p-1 bg-purple-500 self-center rounded-lg mb-1"
+                    className="btn-std text-white bg-purple-500 self-center mb-1"
                     onClick={() => handleTextSave(text)}
                 > 
                     Save 

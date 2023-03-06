@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 /* .App {
   text-align: center;
 }
@@ -41,3 +40,11 @@
     transform: rotate(360deg);
   }
 } */
+
+@layer components {
+  .btn-std {
+    @apply p-1
+    cursor-pointer
+    rounded-md
+  }
+}
