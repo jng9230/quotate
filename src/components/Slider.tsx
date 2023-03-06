@@ -8,9 +8,9 @@ function Slider({
     label?:string,
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
 }){
-    const min = 0
-    const max = 360
-    const [value, setValue] = useState((max-min)/2);
+    const min = -180
+    const max = 180
+    const [value, setValue] = useState(0)
     const updateValue = (e: React.ChangeEvent<HTMLInputElement>) => {
         setValue(parseInt(e.target.value));
         if (onChange){

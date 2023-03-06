@@ -4,8 +4,14 @@ import { Carousel } from './components/Carousel';
 import { Textbox } from './components/Textbox';
 import { Upload } from './components/Upload';
 import { StorageBox } from './components/StorageBox';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { getCroppedImg } from './utils/canvasUtils';
+import { Point, Area } from "react-easy-crop/types";
+import { CloseButton } from './components/CloseButton';
+import Cropper from 'react-easy-crop';
+import { Slider } from './components/Slider';
+
 
 function App() {
     //web workers
@@ -57,26 +63,56 @@ function App() {
             return; //TODO: set button to inactive instead
         }
 
+        setRunOCR(true);
         // worker.postMessage(imagePath);
-        Tesseract.recognize(
-            imagePath, 'eng',
-            {
-                logger: m => {
-                    console.log(m);
-                    setLoading(m.progress)
-                }
-            }
-        )
-        .catch(err => {
-            console.error(err);
-        })
-        .then(result => {
-            console.log(result);
-            const thing = result as Tesseract.RecognizeResult;
+        // Tesseract.recognize(
+        //     imagePath, 'eng',
+        //     {
+        //         logger: m => {
+        //             console.log(m);
+        //             setLoading(m.progress)
+        //         }
+        //     }
+        // )
+        // .catch(err => {
+        //     console.error(err);
+        // })
+        // .then(result => {
+        //     console.log(result);
+        //     const thing = result as Tesseract.RecognizeResult;
 
-            setText(thing.data.text);
-        })
+        //     setText(thing.data.text);
+        // })
     }
+
+    const [runOCR, setRunOCR] = useState(false)
+    useEffect(() => {
+        if (runOCR && imagePath){
+            Tesseract.recognize(
+                imagePath, 'eng',
+                {
+                    logger: m => {
+                        console.log(m);
+                        setLoading(m.progress)
+                    }
+                }
+            )
+            .catch(err => {
+                console.error(err);
+                setRunOCR(false);
+            })
+            .then(result => {
+                console.log(result);
+                const thing = result as Tesseract.RecognizeResult;
+    
+                setText(thing.data.text);
+                setRunOCR(false);
+            })
+        }
+        },
+        [imagePath, runOCR]
+    )
+
     // useEffect(() => {
     //     worker.onmessage = ((e:MessageEvent) => {
     //         switch(e.data.type){
@@ -116,17 +152,117 @@ function App() {
         setStoredText(filted_text);
     }
 
+
+    //CROPPING/ROTATION MODAL
+    const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
+    const [zoom, setZoom] = useState(1);
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area>();
+    const onCropComplete = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
+        setCroppedAreaPixels(croppedAreaPixels)
+    }, [])
+
+    const [cropModal, setCropModal] = useState(false);
+    const showCropModal = () => {
+        if (imagePath) {
+            setCropModal(true);
+        }
+    }
+    const closeCrop = () => {
+        setCropModal(false);
+    }
+    const modal = "bg-black/[.60] fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 md:h-full";
+    const closeButtonStyles = "absolute right-1 top-1"
+    const [rotation, setRotation] = useState(0);
+    const updateRotation = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const rotation = parseInt(e.target.value);
+        setRotation(rotation)
+    }
+
+    const cropAndConvert = useCallback(async () => {
+        try {
+            if (croppedAreaPixels == null) {
+                throw new Error("croppedAreaPixels is undefined");
+            }
+
+            const croppedImage = await getCroppedImg(
+                imagePath,
+                croppedAreaPixels,
+                rotation
+            )
+            console.log('donee', { croppedImage })
+            if (croppedImage == null) {
+                throw new Error("croppedImage is undefined");
+            }
+            // setCroppedImage(croppedImage)
+            // RUN TESSERACT
+            // Tesseract.recognize(
+            //     croppedImage, 'eng',
+            //     {
+            //         logger: m => {
+            //             console.log(m);
+            //             setLoading(m.progress)
+            //         }
+            //     }
+            // )
+            //     .catch(err => {
+            //         console.error(err);
+            //     })
+            //     .then(result => {
+            //         console.log(result);
+            //         const thing = result as Tesseract.RecognizeResult;
+
+            //         setText(thing.data.text);
+            //     })
+            
+            //close modal; persist crop area and set displayed image to cropped image
+            closeCrop();
+            setImagePath(croppedImage);
+            setRunOCR(true);
+            
+            //start converting image 
+        } catch (e) {
+            console.error(e)
+        }
+    }, [imagePath, croppedAreaPixels, rotation])
     return (
         <div className="App">
             <main className="App-main grid grid-cols-2 grid-rows-2 max-h-screen overflow-hidden w-screen h-screen">
                 <Carousel files={files} changeImagePath={changeImagePath}></Carousel>
                 <Textbox text={text} setText={setText} handleTextSave={handleTextSave}></Textbox>
-                <Upload handleFileUpload={handleFileUpload}
+                <Upload 
+                    handleFileUpload={handleFileUpload}
                     imagePath={imagePath}
                     text={text}
                     handleClick={handleClick}
                     loading={loading}
-                ></Upload>
+                    showCropModal={showCropModal}
+                    cropModal={cropModal}
+                >
+                    <div className={modal}>
+                        <div className="rounded-lg w-full h-full max-w-2xl md:h-auto p-6 overflow-hidden m-auto bg-white relative">
+                            {/* <TiDeleteOutline onClick={closeCrop} className="cursor-pointer absolute right-1 top-1 hover:fill-red-600"></TiDeleteOutline> */}
+                            <CloseButton onClick={closeCrop} styles={closeButtonStyles}></CloseButton>
+                            <div className="crop_container relative w-full h-96">
+                                <Cropper
+                                    image={imagePath}
+                                    crop={crop}
+                                    zoom={zoom}
+                                    aspect={2 / 1}
+                                    onCropChange={setCrop}
+                                    onCropComplete={onCropComplete}
+                                    onZoomChange={setZoom}
+                                    rotation={rotation}
+                                    onRotationChange={setRotation}
+                                />
+                            </div>
+                            <div id="sliderContainer" className="space-y-4 pt-4">
+                                {/* <Slider label="Height"></Slider> */}
+                                <Slider label="Rotation" onChange={updateRotation}></Slider>
+                                <button onClick={cropAndConvert}> Confirm</button>
+                            </div>
+                        </div>
+                    </div>
+                </Upload>
                 <StorageBox storedText={storedText} deleteText={deleteText}></StorageBox>
             </main>
         </div>
