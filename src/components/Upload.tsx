@@ -17,7 +17,8 @@ function Upload({
     handleClick,
     children,
     showCropModal,
-    cropModal
+    cropModal,
+    runOCR
 }: {
     imagePath: string,
     handleFileUpload: (event: any) => void,
@@ -26,57 +27,12 @@ function Upload({
     handleClick: () => void,
     children: ReactElement,
     showCropModal: () => void,
-    cropModal: boolean
+    cropModal: boolean,
+    runOCR: boolean
 }) {
-    // const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
-    // const [zoom, setZoom] = useState(1);
-    // const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area>();
-    // const onCropComplete = useCallback((croppedArea:Area, croppedAreaPixels:Area) => {
-    //     setCroppedAreaPixels(croppedAreaPixels)
-    // }, [])
-    
-    // const [cropModal, setCropModal] = useState(false);
-    // const showCropModal = () => {
-    //     if (imagePath){
-    //         setCropModal(true);
-    //     }
-    // }
-    // const closeCrop = () => {
-    //     setCropModal(false);
-    // }
-    // const modal = "bg-black/[.60] fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 md:h-full";
-    // const closeButtonStyles = "absolute right-1 top-1"
-    // const [rotation, setRotation] = useState(0);
-    // const updateRotation = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     const rotation = parseInt(e.target.value);
-    //     setRotation(rotation)
-    // }
-
-    // const cropAndConvert = useCallback(async () => {
-    //     try {
-    //         if (croppedAreaPixels == null){
-    //             throw new Error("croppedAreaPixels is undefined");
-    //         }
-
-    //         const croppedImage = await getCroppedImg(
-    //             imagePath,
-    //             croppedAreaPixels,
-    //             rotation
-    //         )
-    //         console.log('donee', { croppedImage })
-    //         if (croppedImage == null) {
-    //             throw new Error("croppedImage is undefined");
-    //         }
-    //         // setCroppedImage(croppedImage)
-    //         // RUN TESSERACT
-    //     } catch (e) {
-    //         console.error(e)
-    //     }
-    // }, [imagePath, croppedAreaPixels, rotation])
-    
     return (
         <div className="flex flex-col justify-between text-center items-center p-3">
-            { loading !== 0 && LoadingBar(loading) }
+            { loading !== 0 && runOCR && LoadingBar(loading) }
             <img src={imagePath} alt="" className="h-3/5 w-auto"/>
             { cropModal && children }
             <div>

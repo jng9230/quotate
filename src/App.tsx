@@ -11,32 +11,9 @@ import { Point, Area } from "react-easy-crop/types";
 import { CloseButton } from './components/CloseButton';
 import Cropper from 'react-easy-crop';
 import { Slider } from './components/Slider';
-
+import { preprocessImageFromURL } from './utils/preprocess';
 
 function App() {
-    //web workers
-    // const worker: Worker = useMemo(
-    //     () => new Worker(new URL("./workers/tesseract.ts", import.meta.url)),
-    //     [] 
-    // )
-    // const [workerMessage, setWorkerMessage] = useState("");
-    // useEffect(() => {
-    //     console.log("workerMessage variable:")
-    //     console.log(workerMessage)
-    // }, [workerMessage])
-    // useEffect(() => {
-    //     if (window.Worker) {
-    //         worker.postMessage("fuck you");
-    //     }
-    // }, [worker]);
-    // useEffect(() => {
-    //     worker.onmessage = ((e: MessageEvent) => {
-    //         console.log("message from worker:");
-    //         console.log(e);
-    //         setWorkerMessage(e.data);
-    //     })
-    // }, [worker])
-    
     //regular stuff
     const [imagePath, setImagePath] = useState("");
     const [files, setFiles] = useState<string[]>([])
@@ -44,8 +21,6 @@ function App() {
         console.log(event.target.files)
         const files_arr:File[] = Array.from(event.target.files)
         const file_URLs = files_arr.map((file) => {
-            // const image_url = URL.createObjectURL(file)
-            // setImagePath(image_url);
             return URL.createObjectURL(file)
         }); 
         setFiles([...file_URLs, ...files]);
@@ -64,25 +39,6 @@ function App() {
         }
 
         setRunOCR(true);
-        // worker.postMessage(imagePath);
-        // Tesseract.recognize(
-        //     imagePath, 'eng',
-        //     {
-        //         logger: m => {
-        //             console.log(m);
-        //             setLoading(m.progress)
-        //         }
-        //     }
-        // )
-        // .catch(err => {
-        //     console.error(err);
-        // })
-        // .then(result => {
-        //     console.log(result);
-        //     const thing = result as Tesseract.RecognizeResult;
-
-        //     setText(thing.data.text);
-        // })
     }
 
     const [runOCR, setRunOCR] = useState(false)
@@ -112,22 +68,6 @@ function App() {
         },
         [imagePath, runOCR]
     )
-
-    // useEffect(() => {
-    //     worker.onmessage = ((e:MessageEvent) => {
-    //         switch(e.data.type){
-    //             case "UPDATE":
-    //                 setLoading(e.data.data);
-    //                 break;
-    //             case "RESULT":
-    //                 setText(e.data.data);
-    //                 break;
-    //             default:
-    //                 console.log("DEFAULT CASE ON SWITCH")
-    //                 console.log(e)
-    //         }
-    //     })
-    // }, [worker])
 
     const [storedText, setStoredText] = useState<{id: string, text: string}[]>(() => {
         const text_get = localStorage.getItem("text");
@@ -193,33 +133,16 @@ function App() {
             if (croppedImage == null) {
                 throw new Error("croppedImage is undefined");
             }
-            // setCroppedImage(croppedImage)
-            // RUN TESSERACT
-            // Tesseract.recognize(
-            //     croppedImage, 'eng',
-            //     {
-            //         logger: m => {
-            //             console.log(m);
-            //             setLoading(m.progress)
-            //         }
-            //     }
-            // )
-            //     .catch(err => {
-            //         console.error(err);
-            //     })
-            //     .then(result => {
-            //         console.log(result);
-            //         const thing = result as Tesseract.RecognizeResult;
 
-            //         setText(thing.data.text);
-            //     })
-            
             //close modal; persist crop area and set displayed image to cropped image
             closeCrop();
-            setImagePath(croppedImage);
+            const processed_img = await preprocessImageFromURL(croppedImage)
+            if (processed_img === undefined){
+                console.error("the fuck")
+                return
+            }
+            setImagePath(processed_img);
             setRunOCR(true);
-            
-            //start converting image 
         } catch (e) {
             console.error(e)
         }
@@ -237,6 +160,7 @@ function App() {
                     loading={loading}
                     showCropModal={showCropModal}
                     cropModal={cropModal}
+                    runOCR={runOCR}
                 >
                     <div className={modal}>
                         <div className="rounded-lg w-full h-full max-w-2xl md:h-auto p-6 overflow-hidden m-auto bg-white relative">
