@@ -149,7 +149,9 @@ function App() {
     }, [imagePath, croppedAreaPixels, rotation])
     return (
         <div className="App">
-            <main className="App-main grid grid-cols-2 grid-rows-2 max-h-screen overflow-hidden w-screen h-screen">
+            <main className="App-main grid grid-cols-3 grid-rows-6 gap-5
+                p-3 bg-off-white
+                max-h-screen overflow-hidden w-screen h-screen">
                 <Carousel files={files} changeImagePath={changeImagePath}></Carousel>
                 <Textbox text={text} setText={setText} handleTextSave={handleTextSave}></Textbox>
                 <Upload 

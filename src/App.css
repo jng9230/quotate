@@ -44,7 +44,14 @@
 @layer components {
   .btn-std {
     @apply p-1
+    px-3
     cursor-pointer
+    rounded-md
+  }
+
+  .border-std{
+    @apply border-main-green
+    border-2
     rounded-md
   }
 }

@@ -31,19 +31,21 @@ function Upload({
     runOCR: boolean
 }) {
     return (
-        <div className="flex flex-col justify-between text-center items-center p-3">
+        <div className="flex flex-col justify-around text-center items-center p-3 
+            row-start-2 row-span-full
+            border-std bg-white">
             { loading !== 0 && runOCR && LoadingBar(loading) }
-            <img src={imagePath} alt="" className="h-3/5 w-auto"/>
+            <img src={imagePath} alt="" className="h-4/5 w-auto rounded-md"/>
             { cropModal && children }
             <div>
-                <label htmlFor="uploadFile" className="mx-3 inline-block cursor-pointer p-1 rounded-md bg-green-400 text-white"> 
+                <label htmlFor="uploadFile" className="btn-std mx-3 inline-block bg-main-green text-white"> 
                     Upload file(s)
                 </label>
                 <input type="file" id="uploadFile" name="uploadFile" onChange={handleFileUpload} 
                     className="hidden" multiple accept="image/png, image/jpeg, image/jpg"
                 />
-                <button onClick={handleClick} className="btn-std bg-purple-500 text-white"> Convert </button>
-                <button onClick={showCropModal} className="btn-std bg-purple-500 mx-3 text-white"> Edit</button>
+                {/* <button onClick={handleClick} className="btn-std bg-purple-500 text-white"> Convert </button> */}
+                <button onClick={showCropModal} className="btn-std mx-3 bg-main-green text-white"> Edit</button>
             </div>
         </div>
 
