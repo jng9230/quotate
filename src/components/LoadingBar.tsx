@@ -4,7 +4,7 @@ function LoadingBar(percent:number) {
     }
     return (
         <div className="w-full bg-gray-200 rounded-full h-4 dark:bg-gray-700">
-            <div id="bar" className="bg-purple-500 h-4 rounded-full"
+            <div id="bar" className="bg-main-green h-4 rounded-full"
                 style={styles}>
             </div>
         </div>

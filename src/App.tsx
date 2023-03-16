@@ -12,6 +12,7 @@ import { CloseButton } from './components/CloseButton';
 import Cropper from 'react-easy-crop';
 import { Slider } from './components/Slider';
 import { preprocessImageFromURL } from './utils/preprocess';
+import { Modal } from './components/Modal';
 
 function App() {
     //regular stuff
@@ -164,10 +165,8 @@ function App() {
                     cropModal={cropModal}
                     runOCR={runOCR}
                 >
-                    <div className={modal}>
-                        <div className="rounded-lg w-full h-full max-w-2xl md:h-auto p-6 overflow-hidden m-auto bg-white relative">
-                            {/* <TiDeleteOutline onClick={closeCrop} className="cursor-pointer absolute right-1 top-1 hover:fill-red-600"></TiDeleteOutline> */}
-                            <CloseButton onClick={closeCrop} styles={closeButtonStyles}></CloseButton>
+                    <Modal onClick={closeCrop}>
+                        <div>
                             <div className="crop_container relative w-full h-96">
                                 <Cropper
                                     image={imagePath}
@@ -182,12 +181,11 @@ function App() {
                                 />
                             </div>
                             <div id="sliderContainer" className="space-y-4 pt-4">
-                                {/* <Slider label="Height"></Slider> */}
                                 <Slider label="Rotation" onChange={updateRotation}></Slider>
                                 <button onClick={cropAndConvert}> Confirm</button>
                             </div>
                         </div>
-                    </div>
+                    </Modal>
                 </Upload>
                 <StorageBox storedText={storedText} deleteText={deleteText}></StorageBox>
             </main>
