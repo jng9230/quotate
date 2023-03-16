@@ -28,6 +28,7 @@
     ]
   },
   "include": [
-    "src"
-, "webpack.config.js"  ]
+    "src",
+    "webpack.config.js"
+  ]
 }

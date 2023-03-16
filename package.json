@@ -20,6 +20,7 @@
     "react-dom": "^18.2.0",
     "react-easy-crop": "^4.7.3",
     "react-icons": "^4.7.1",
+    "react-router-dom": "^6.9.0",
     "react-scripts": "5.0.1",
     "stream": "^0.0.2",
     "style-loader": "^3.3.1",

@@ -24,3 +24,7 @@ yarn-debug.log*
 yarn-error.log*
 
 /dist
+
+#server stuff
+/server/node_modules
+/server/config.env
