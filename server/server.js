@@ -50,7 +50,6 @@ const Book = require("./models/book")
 
 //get a spec. book
 app.get('/book/id', async (req, res) => {
-    console.log("GETTING BOOK BY ID")
     const book = await Book.findById(req.body.id)
 
     res.json(book);
@@ -58,7 +57,6 @@ app.get('/book/id', async (req, res) => {
 
 //get all books
 app.get('/book/all', async (req, res) => {
-    console.log("GETTING ALL BOOKS")
     const book = await Book.find()
 
     res.json(book);
@@ -84,11 +82,19 @@ app.delete('/book', async (req, res) => {
 
 
 //get all quotes for a specific book
-app.get('/quote/:book_id', async (req, res) => {
-    const quote = Quote.find({book: book_id})
+app.get('/quote/id', async (req, res) => {
+    const quote = await Quote.find({book: req.body.id})
 
     res.json(quote);
 });
+
+//get all quotes
+app.get('/quote/all', async (req, res) => {
+    const quote = await Quote.find()
+
+    res.json(quote);
+});
+
 
 //add a quote
 app.post('/quote', (req, res) => {
@@ -103,8 +109,8 @@ app.post('/quote', (req, res) => {
 });
 
 //delete a quote by its ID
-app.delete('/quote/delete/:id', async (req, res) => {
-    const result = await Quote.findByIdAndDelete(req.params.id);
+app.delete('/quote', async (req, res) => {
+    const result = await Quote.findByIdAndDelete(req.body.id);
 
     res.json({ result });
 });
