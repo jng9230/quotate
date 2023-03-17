@@ -5,7 +5,7 @@ require("dotenv").config({ path: "./config.env" });
 
 const PORT = process.env.PORT || 5000;
 const URI = process.env.ATLAS_URI;
-const path = require("path");
+// const path = require("path");
 const debug = true;
 
 const app = express();
@@ -27,16 +27,16 @@ const Book = require("./models/book")
 //API endpoints
 
 //get a spec. book
-app.get('/book/id', async (req, res) => {
-    if (debug){ onsole.log("GETTING SPEC. BOOK"); console.log(req.body)}
-    const book = await Book.findById(req.body.id)
+app.get('/book/id/:id', async (req, res) => {
+    if (debug){ console.log("GETTING SPEC. BOOK");}
+    const book = await Book.findById(req.params.id)
 
     res.json(book);
 });
 
 //get all books
 app.get('/book/all', async (req, res) => {
-    if (debug) { console.log("GETTING ALL BOOKS"); console.log(req.body) }
+    if (debug) { console.log("GETTING ALL BOOKS");}
     const book = await Book.find()
 
     res.json(book);
@@ -66,17 +66,17 @@ app.delete('/book', async (req, res) => {
 
 
 //get all quotes for a specific book
-app.get('/quote/id', async (req, res) => {
-    if (debug) { console.log("GETTING QUTOES FOR SPEC. BOOK"); console.log(req.body) }
+app.get('/quote/id/:id', async (req, res) => {
+    if (debug) { console.log("GETTING QUTOES FOR SPEC. BOOK");}
 
-    const quote = await Quote.find({book: req.body.id})
+    const quote = await Quote.find({book: req.params.id})
 
     res.json(quote);
 });
 
 //get all quotes
 app.get('/quote/all', async (req, res) => {
-    if (debug) { console.log("GETTING ALL QUOTES"); console.log(req.body) }
+    if (debug) { console.log("GETTING ALL QUOTES");}
 
     const quote = await Quote.find()
 
