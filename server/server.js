@@ -1,25 +1,3 @@
-// //MONGODB QUICK START
-// const express = require("express");
-// const app = express();
-// const cors = require("cors");
-// require("dotenv").config({ path: "./config.env" });
-// const port = process.env.PORT || 5000;
-// app.use(cors());
-// app.use(express.json());
-// app.use(require("./routes/record"));
-// // get driver connection
-// const dbo = require("./db/conn");
-
-// app.listen(port, () => {
-//     // perform a database connection when server starts
-//     dbo.connectToServer(function (err) {
-//         if (err) console.error(err);
-
-//     });
-//     console.log(`Server is running on port: ${port}`);
-// });
-
-
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -28,7 +6,7 @@ require("dotenv").config({ path: "./config.env" });
 const PORT = process.env.PORT || 5000;
 const URI = process.env.ATLAS_URI;
 const path = require("path");
-
+const debug = true;
 
 const app = express();
 app.use(express.json());
@@ -50,6 +28,7 @@ const Book = require("./models/book")
 
 //get a spec. book
 app.get('/book/id', async (req, res) => {
+    if (debug){ onsole.log("GETTING SPEC. BOOK"); console.log(req.body)}
     const book = await Book.findById(req.body.id)
 
     res.json(book);
@@ -57,6 +36,7 @@ app.get('/book/id', async (req, res) => {
 
 //get all books
 app.get('/book/all', async (req, res) => {
+    if (debug) { console.log("GETTING ALL BOOKS"); console.log(req.body) }
     const book = await Book.find()
 
     res.json(book);
@@ -64,6 +44,8 @@ app.get('/book/all', async (req, res) => {
 
 //add a book
 app.post('/book', (req, res) => {
+    if (debug) { console.log("ADD A BOOK"); console.log(req.body) }
+
     const book = new Book({
         title: req.body.title
     })
@@ -75,6 +57,8 @@ app.post('/book', (req, res) => {
 
 //delete a book
 app.delete('/book', async (req, res) => {
+    if (debug) { console.log("DELETING A BOOK"); console.log(req.body) }
+
     const result = await Book.findByIdAndDelete(req.body.id);
 
     res.json({ result });
@@ -83,6 +67,8 @@ app.delete('/book', async (req, res) => {
 
 //get all quotes for a specific book
 app.get('/quote/id', async (req, res) => {
+    if (debug) { console.log("GETTING QUTOES FOR SPEC. BOOK"); console.log(req.body) }
+
     const quote = await Quote.find({book: req.body.id})
 
     res.json(quote);
@@ -90,6 +76,8 @@ app.get('/quote/id', async (req, res) => {
 
 //get all quotes
 app.get('/quote/all', async (req, res) => {
+    if (debug) { console.log("GETTING ALL QUOTES"); console.log(req.body) }
+
     const quote = await Quote.find()
 
     res.json(quote);
@@ -98,6 +86,8 @@ app.get('/quote/all', async (req, res) => {
 
 //add a quote
 app.post('/quote', (req, res) => {
+    if (debug) { console.log("ADDING A QUOTE"); console.log(req.body) }
+
     const quote = new Quote({
         text: req.body.text,
         book: req.body.book
@@ -110,6 +100,8 @@ app.post('/quote', (req, res) => {
 
 //delete a quote by its ID
 app.delete('/quote', async (req, res) => {
+    if (debug) { console.log("DELETING A QUOTE"); console.log(req.body) }
+
     const result = await Quote.findByIdAndDelete(req.body.id);
 
     res.json({ result });
