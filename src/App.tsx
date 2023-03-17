@@ -4,7 +4,7 @@ import { Carousel } from './components/Carousel';
 import { Textbox } from './components/Textbox';
 import { Upload } from './components/Upload';
 import { StorageBox } from './components/StorageBox';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { getCroppedImg } from './utils/canvasUtils';
 import { Point, Area } from "react-easy-crop/types";
@@ -13,6 +13,9 @@ import Cropper from 'react-easy-crop';
 import { Slider } from './components/Slider';
 import { preprocessImageFromURL } from './utils/preprocess';
 import { Modal } from './components/Modal';
+import { useParams } from 'react-router-dom';
+import { book, booksReturnType, quote, quotesReturnType } from "./components/APIReturnTypes"
+import { Link } from "react-router-dom"
 
 function App() {
     //regular stuff
@@ -56,37 +59,69 @@ function App() {
             )
             .catch(err => {
                 console.error(err);
-                setRunOCR(false);
             })
             .then(result => {
                 console.log(result);
                 const thing = result as Tesseract.RecognizeResult;
     
                 setText(thing.data.text);
-                setRunOCR(false);
             })
+            .finally(() => {setRunOCR(false)});
         }
         },
         [imagePath, runOCR]
     )
 
-    const [storedText, setStoredText] = useState<{id: string, text: string}[]>(() => {
-        const text_get = localStorage.getItem("text");
-        if (text_get != null) {
-            const text_json = JSON.parse(text_get);
-            return text_json
-        }
+    const API_BASE = "http://localhost:5000";
+    const bookID = useParams().id;
+    // const [storedText, setStoredText] = useState<{id: string, text: string}[]>(() => {
+    const [storedText, setStoredText] = useState<quote[]>(() => {
+        // const text_get = localStorage.getItem("text");
+        // if (text_get != null) {
+        //     const text_json = JSON.parse(text_get);
+        //     return text_json
+        // }
+        // return []
+        // console.log(`GETTING QUOTES FOR ${bookID}`)
         return []
     })
+    //get initial quotes for book
+    useEffect(() => {
+        const thing = async () => {
+            fetch(API_BASE + `/quote/id/${bookID}`)
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data);
+                    const data1 = data as quotesReturnType[];
+                    const thing1: quote[] = (data1.map(d => {
+                        return {
+                            text: d.text,
+                            id: d._id,
+                            book: d.book
+                        }
+                    }))
+                    setStoredText(thing1)
+                })
+                .catch(err => { console.error("Error: ", err)})
+        }
+        thing();
+    }, [])
 
     const handleTextSave = (new_text: string) => {
         if (new_text === ""){return;}
-        setStoredText([{ id: uuidv4(), text: new_text }, ...storedText]);
+        // setStoredText([{ id: uuidv4(), text: new_text }, ...storedText]);
+        const quoteID = ""
+        const new_quote: quote = {
+            text: new_text,
+            book: bookID ? bookID : "",
+            //TODO: default bookID or sth again
+            id: quoteID
+        } 
     }
-    useEffect(() => {
-        const text_json = JSON.stringify(storedText)
-        localStorage.setItem("text", text_json)
-    }, [storedText])
+    // useEffect(() => {
+    //     const text_json = JSON.stringify(storedText)
+    //     localStorage.setItem("text", text_json)
+    // }, [storedText])
 
     function deleteText(i: string) {
         const filted_text = storedText.filter((d) => d.id !== i);
@@ -148,6 +183,12 @@ function App() {
             console.error(e)
         }
     }, [imagePath, croppedAreaPixels, rotation])
+
+    //BACKEND CALLS
+    // const bookID = useParams().id;
+    //TODO: undefined -> set to some default folder
+
+
     return (
         <div className="App">
             <main className="App-main grid grid-cols-3 grid-rows-6 gap-5

@@ -8,7 +8,7 @@ function LandingPage(){
         <Router>
             <Routes>
                 <Route path='/' element={<Home />} />
-                <Route path='/app' element={<App />} />
+                <Route path='/app/:id' element={<App />} />
             </Routes>
         </Router>
     )

@@ -1,30 +1,8 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-const API_BASE = "http://localhost:5000"
-
-type book = {
-    title: string,
-    id: string
-}
-
-type booksReturnType = {
-    title: string, 
-    __v: number,
-    _id: string
-}
-
-type quotesReturnType = {
-    _id: string,
-    text: string,
-    book: string,
-    __v: number
-}
-
-type quote = {
-    text: string,
-    book: string,
-    id: string
-}
+import { TiPlus} from "react-icons/ti";
+import {book, booksReturnType, quote, quotesReturnType} from "./APIReturnTypes"
+const API_BASE = "http://localhost:5000";
 
 function Home(){
     const [books, setBooks] = useState<book[]>([])
@@ -51,14 +29,7 @@ function Home(){
     const getQuotes = () => {
         if (focusedBook === undefined){return;}
         console.log(`GETTING QUOTES FOR ${focusedBook.title}`)
-        fetch(API_BASE + "/quote/id", {
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                "id": focusedBook.id
-            })
-        })
+        fetch(API_BASE + `/quote/id/${focusedBook.id}`)
         .then(res => res.json())
         .then(data => {
             console.log(data);
@@ -82,6 +53,28 @@ function Home(){
     useEffect(() => {
         getQuotes()
     }, [focusedBook])
+
+    const addQuotesButton = () => {
+        if (focusedBook == undefined){return;}
+
+        return (
+            <Link to={`./app/${focusedBook.id}`}>
+                <button className={`
+                    flex 
+                    items-center 
+                    btn-std 
+                    border-2 
+                    border-main-green 
+                    mx-auto
+                    text-main-green
+                    ${quotes?.length ? "mt-3" : ""}
+                    `}>
+                    <TiPlus className="mr-2" /> Quote
+                </button>
+            </Link>
+        )
+    }
+
     return (
         <div className="w-screen h-screen grid grid-rows-8 grid-cols-3 gap-5 p-3">
             <div className="absolute right-0 top-0">
@@ -110,10 +103,29 @@ function Home(){
                 }
             </div>
             <div className="bg-gray-500 col-start-2 col-span-full">
-
             </div>
-            <div className="bg-red-200 col-start-2 row-start-2 col-span-full row-span-full">
-
+            <div className="
+                col-start-2 
+                row-start-2 
+                col-span-full 
+                row-span-full
+                space-y-3
+                p-3
+                border-std">
+                { focusedBook && 
+                    <>
+                        {quotes?.map((d, i) => {
+                            const key = d.id;
+                            return (
+                                <div key={key}
+                                    className="border-std border-black p-1">
+                                    {d.text}
+                                </div>
+                            )
+                        })}
+                        {addQuotesButton()}
+                    </>
+                }
             </div>
         </div>
         
