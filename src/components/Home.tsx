@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { TiPlus} from "react-icons/ti";
 import {book, booksReturnType, quote, quotesReturnType} from "./APIReturnTypes"
+import { BiPlus } from "react-icons/bi"
 const API_BASE = "http://localhost:5000";
 
 function Home(){
@@ -69,63 +70,77 @@ function Home(){
                     text-main-green
                     ${quotes?.length ? "mt-3" : ""}
                     `}>
-                    <TiPlus className="mr-2" /> Quote
+                    <BiPlus className="mr-2" /> QUOTE
                 </button>
             </Link>
         )
     }
 
     return (
-        <div className="w-screen h-screen grid grid-rows-8 grid-cols-3 gap-5 p-3">
-            <div className="absolute right-0 top-0">
-                HOME PENIS HOME PENIS HOME
-                <Link to="./app">
-                    <button className="btn-std text-white bg-main-green">
-                        bro
+        <div className="flex flex-col w-screen h-screen bg-off-white">
+            <header className="grid grid-cols-3 gap-3 p-3">
+                <div className="">
+                    <button className="btn-std 
+                            border-main-green 
+                            border-std 
+                            bg-white
+                            text-main-green
+                            flex
+                            items-center
+                            transition 
+                            ease-out
+                            hover:scale-105
+                        ">
+                        <BiPlus className="mr-2"/>
+                        BOOK
                     </button>
-                </Link>
-            </div>
-            <div className="bg-main-green">
-                
-            </div>
-            <div className="row-start-2 row-span-full border-std p-3 space-y-3">
-                {
-                    books.map((d, i) => {
-                        const key = d.id
-                        return (
-                            <div key={key} 
-                                className="border-std p-1 cursor-pointer"
-                                onClick={e => handleFocusedBookClick(e, key)}>
-                                {d.title}
-                            </div>
-                        )
-                    })
-                }
-            </div>
-            <div className="bg-gray-500 col-start-2 col-span-full">
-            </div>
-            <div className="
-                col-start-2 
-                row-start-2 
-                col-span-full 
-                row-span-full
-                space-y-3
-                p-3
-                border-std">
-                { focusedBook && 
-                    <>
-                        {quotes?.map((d, i) => {
-                            const key = d.id;
+                </div>
+                <div className="col-start-2 col-span-full border-std border-black bg-black">
+                </div>
+            </header>
+            <div className="w-full h-full grid grid-cols-3 gap-3 p-3 pt-0">
+                <div className="row-span-full border-std p-3 space-y-3 bg-white">
+                    {
+                        books.map((d, i) => {
+                            const key = d.id
+                            let styles = `border-std p-1 cursor-pointer hover:ease-in 
+                            hover:text-white transition ease-out hover:translate-x-1`
+                            if (focusedBook?.id){
+                                styles += key == focusedBook.id ? " bg-main-green text-white" : " hover:bg-secondary-green";
+                            }
                             return (
-                                <div key={key}
-                                    className="border-std border-black p-1">
-                                    {d.text}
+                                <div key={key} 
+                                    className={styles}
+                                    onClick={e => handleFocusedBookClick(e, key)}>
+                                    {d.title}
                                 </div>
                             )
-                        })}
-                        {addQuotesButton()}
-                    </>
-                }
+                        })
+                    }
+                </div>
+                <div className="
+                    col-start-2 
+                    col-span-full 
+                    row-span-full
+                    space-y-3
+                    p-3
+                    border-std
+                    bg-white">
+                    { focusedBook && 
+                        <>
+                            {quotes?.map((d, i) => {
+                                const key = d.id;
+                                return (
+                                    <div key={key}
+                                        className="border-std border-black p-1">
+                                        {d.text}
+                                    </div>
+                                )
+                            })}
+                            {addQuotesButton()}
+                        </>
+                    }
+                </div>
             </div>
         </div>
         

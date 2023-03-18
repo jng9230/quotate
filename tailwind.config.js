@@ -8,7 +8,8 @@ module.exports = {
       colors: {
         "main-green": "#357266",
         "off-white": "#EDF2F4",
-        "off-black": "#2B2D42"
+        "off-black": "#2B2D42",
+        "secondary-green": "#479A89",
       },
       gridTemplateRows: {
         // Simple 8 row grid

@@ -13,10 +13,10 @@ function StorageBox({
             <div className="overflow-scroll max-h-full space-y-4 pr-5">
                 {storedText.map((d, i) => {
                     return(
-                        <div key={d.id} className="border-std border-black px-5 flex justify-between items-center">
-                            <p className="w-11/12"> {d.text} </p>
+                        <div key={d.id} className="border-std border-black flex justify-between items-center">
+                            <div className="w-11/12 p-3 py-1"> {d.text} </div>
                             {/* <TiDeleteOutline onClick={() => deleteText(d.id)} className="cursor-pointer"></TiDeleteOutline> */}
-                            <CloseButton onClick={() => deleteText(d.id)}></CloseButton>
+                            <CloseButton styles="mr-2" onClick={() => deleteText(d.id)}></CloseButton>
                         </div>
                     )
                 })}

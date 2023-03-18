@@ -16,6 +16,7 @@ import { Modal } from './components/Modal';
 import { useParams } from 'react-router-dom';
 import { book, booksReturnType, quote, quotesReturnType } from "./components/APIReturnTypes"
 import { Link } from "react-router-dom"
+import { BiArrowBack } from "react-icons/bi"
 
 function App() {
     //regular stuff
@@ -190,10 +191,30 @@ function App() {
 
 
     return (
-        <div className="App">
-            <main className="App-main grid grid-cols-3 grid-rows-6 gap-5
-                p-3 bg-off-white
-                max-h-screen overflow-hidden w-screen h-screen">
+        <div className="App w-screen h-screen flex flex-col bg-off-white">
+            <header className="grid grid-cols-3 p-3">
+                <div className="col-start-1">
+                    <Link to="/">
+                        <button className="btn-std 
+                            border-main-green 
+                            border-std 
+                            bg-white
+                            text-main-green
+                            flex
+                            items-center
+                        ">
+                            <BiArrowBack className="mr-2"></BiArrowBack>
+                            Back
+                        </button>
+                    </Link>
+                </div>
+                <div className="col-start-2 self-center col-span-full">
+                    <h1 className="text-ellipsis overflow-hidden whitespace-nowrap"> THING THING THING THING THING THING </h1>
+                </div>
+            </header>
+            <main className="App-main grid grid-cols-3 grid-rows-6 gap-3
+                p-3 pt-0
+                overflow-hidden w-full h-full">
                 <Carousel files={files} changeImagePath={changeImagePath}></Carousel>
                 <Textbox text={text} setText={setText} handleTextSave={handleTextSave}></Textbox>
                 <Upload 

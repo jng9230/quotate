@@ -1,4 +1,5 @@
-import { TiDeleteOutline } from 'react-icons/ti';
+// import { TiDeleteOutline } from 'react-icons/ti';
+import { BiX } from 'react-icons/bi'
 
 function CloseButton({
     onClick,
@@ -9,9 +10,9 @@ function CloseButton({
 }){
     const allStyles = "cursor-pointer hover:fill-red-600 " + styles
     return (
-        <TiDeleteOutline className={allStyles}
+        <BiX className={allStyles}
             onClick={onClick}
-        ></TiDeleteOutline>
+        ></BiX>
     )
 }
 
