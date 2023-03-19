@@ -68,7 +68,7 @@ app.delete('/book', async (req, res) => {
 
 //get all quotes for a specific book
 app.get('/quote/id/:id', async (req, res) => {
-    if (debug) { console.log("GETTING QUTOES FOR SPEC. BOOK");}
+    if (debug) { console.log("GETTING QUOTES FOR SPEC. BOOK");}
 
     const quote = await Quote.find({book: req.params.id})
 

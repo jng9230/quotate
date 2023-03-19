@@ -36,3 +36,7 @@ export type newBookReturnType = {
 export type deleteBookReturnType = {
     result: booksReturnType
 }
+
+export type deleteQuoteReturnType = {
+    result: quotesReturnType
+}

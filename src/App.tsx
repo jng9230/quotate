@@ -14,7 +14,7 @@ import { Slider } from './components/Slider';
 import { preprocessImageFromURL } from './utils/preprocess';
 import { Modal } from './components/Modal';
 import { useParams } from 'react-router-dom';
-import { book, booksReturnType, quote, quotesReturnType } from "./components/APIReturnTypes"
+import { book, booksReturnType, quote, quotesReturnType, newQuoteReturnType, deleteQuoteReturnType } from "./components/APIReturnTypes"
 import { Link } from "react-router-dom"
 import { BiArrowBack } from "react-icons/bi"
 
@@ -87,8 +87,10 @@ function App() {
         return []
     })
     //get initial quotes for book
+    const [bookTitle, setBookTitle] = useState("")
     useEffect(() => {
         const thing = async () => {
+            //get quotes
             fetch(API_BASE + `/quote/id/${bookID}`)
                 .then(res => res.json())
                 .then(data => {
@@ -101,9 +103,19 @@ function App() {
                             book: d.book
                         }
                     }))
-                    setStoredText(thing1)
+                    setStoredText(thing1.reverse())
                 })
                 .catch(err => { console.error("Error: ", err)})
+            
+            //set book title
+            fetch(API_BASE + `/book/id/${bookID}`)
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data);
+                    const data1 = data as booksReturnType;
+                    setBookTitle(data1.title)
+                })
+                .catch(err => { console.error("Error: ", err) })
         }
         thing();
     }, [])
@@ -111,13 +123,28 @@ function App() {
     const handleTextSave = (new_text: string) => {
         if (new_text === ""){return;}
         // setStoredText([{ id: uuidv4(), text: new_text }, ...storedText]);
-        const quoteID = ""
-        const new_quote: quote = {
-            text: new_text,
-            book: bookID ? bookID : "",
-            //TODO: default bookID or sth again
-            id: quoteID
-        } 
+
+        fetch(API_BASE + "/quote", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ "text": new_text, "book": bookID})
+            //TODO: handle bookID undefined case
+        })
+            .then(res => res.json())
+            .then(data => {
+                let data1 = data as newQuoteReturnType;
+                console.log(data1);
+                const new_quote: quote = {
+                    text: new_text,
+                    book: data1.book,
+                    id: data1._id
+                } 
+                setStoredText([new_quote, ...storedText])
+            })
+            .catch(err => console.error("Error :", err))
+
     }
     // useEffect(() => {
     //     const text_json = JSON.stringify(storedText)
@@ -125,8 +152,21 @@ function App() {
     // }, [storedText])
 
     function deleteText(i: string) {
-        const filted_text = storedText.filter((d) => d.id !== i);
-        setStoredText(filted_text);
+        fetch(API_BASE + "/quote", {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({"id": i})
+        })
+            .then(res => res.json())
+            .then(data => {
+                let data1 = data as deleteQuoteReturnType;
+                console.log(data1);
+                const filted_text = storedText.filter((d) => d.id !== i);
+                setStoredText(filted_text);
+            })
+            .catch(err => console.error("Error: ", err))
     }
 
 
@@ -209,7 +249,7 @@ function App() {
                     </Link>
                 </div>
                 <div className="col-start-2 self-center col-span-full">
-                    <h1 className="text-ellipsis overflow-hidden whitespace-nowrap"> THING THING THING THING THING THING </h1>
+                    <h1 className="text-ellipsis overflow-hidden whitespace-nowrap"> {bookTitle} </h1>
                 </div>
             </header>
             <main className="App-main grid grid-cols-3 grid-rows-6 gap-3
