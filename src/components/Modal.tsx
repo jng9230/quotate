@@ -4,10 +4,10 @@ import { CloseButton } from "./CloseButton"
 
 function Modal({
     onClick,
-    children
+    children,
 }:{
     onClick: () => void,
-    children: ReactElement
+    children: ReactElement,
 }){
     const handleClick = () => {
         onClick()
@@ -24,13 +24,12 @@ function Modal({
             p-4 
             overflow-x-hidden 
             overflow-y-auto 
-            md:inset-0 
-            md:h-full">
+            h-full
+            ">
             <div className="rounded-lg 
                 w-full 
-                h-full 
                 max-w-2xl 
-                md:h-auto 
+                h-auto 
                 p-6 
                 overflow-hidden 
                 m-auto 

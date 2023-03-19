@@ -16,8 +16,23 @@ export type quotesReturnType = {
     __v: number
 }
 
+export type newQuoteReturnType = {
+    _id: string,
+    text: string,
+    book: string,
+}
+
 export type quote = {
     text: string,
     book: string,
     id: string
+}
+
+export type newBookReturnType = {
+    __v: number,
+    _id: string
+}
+
+export type deleteBookReturnType = {
+    result: booksReturnType
 }

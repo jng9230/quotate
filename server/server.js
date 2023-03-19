@@ -59,9 +59,10 @@ app.post('/book', (req, res) => {
 app.delete('/book', async (req, res) => {
     if (debug) { console.log("DELETING A BOOK"); console.log(req.body) }
 
-    const result = await Book.findByIdAndDelete(req.body.id);
+    const del_book = await Book.findByIdAndDelete(req.body.id);
+    const del_quote = await Quote.deleteMany({book: req.body.id});
 
-    res.json({ result });
+    res.json({book: del_book, quotes: del_quote });
 });
 
 
