@@ -11,7 +11,7 @@ import { Point, Area } from "react-easy-crop/types";
 import { CloseButton } from './components/CloseButton';
 import Cropper from 'react-easy-crop';
 import { Slider } from './components/Slider';
-import { preprocessImageFromURL } from './utils/preprocess';
+import { preprocessImageFromURL, preprocessImageFromURL2 } from './utils/preprocess';
 import { Modal } from './components/Modal';
 import { useParams } from 'react-router-dom';
 import { book, booksReturnType, quote, quotesReturnType, newQuoteReturnType, deleteQuoteReturnType } from "./components/APIReturnTypes"
@@ -187,13 +187,49 @@ function App() {
     const closeCrop = () => {
         setCropModal(false);
     }
-    const modal = "bg-black/[.60] fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 md:h-full";
-    const closeButtonStyles = "absolute right-1 top-1"
+    // const modal = "bg-black/[.60] fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 md:h-full";
+    // const closeButtonStyles = "absolute right-1 top-1"
     const [rotation, setRotation] = useState(0);
     const updateRotation = (e: React.ChangeEvent<HTMLInputElement>) => {
         const rotation = parseInt(e.target.value);
         setRotation(rotation)
     }
+
+    const [binThreshold, setBinThreshold] = useState(0);
+    const [newBinVal, setBinVal] = useState(binThreshold);
+    const updateBinThreshold = useCallback( async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = parseInt(e.target.value);
+        if (val != binThreshold){
+            console.log(val);
+            setBinVal(val);
+            try {
+                if (croppedAreaPixels == null) {
+                    throw new Error("croppedAreaPixels is undefined");
+                }
+    
+                const croppedImage = await getCroppedImg(
+                    imagePath,
+                    croppedAreaPixels,
+                    rotation
+                )
+                console.log('donee', { croppedImage })
+                if (croppedImage == null) {
+                    throw new Error("croppedImage is undefined");
+                }
+    
+                //close modal; persist crop area and set displayed image to cropped image
+                // const processed_img = await preprocessImageFromURL(croppedImage)
+                const processed_img = await preprocessImageFromURL2(croppedImage, val)
+                if (processed_img === undefined) {
+                    console.error("Undefined processed image.")
+                    return
+                }
+                setImagePath(processed_img);
+            } catch {
+                
+            }
+        }
+    }, [newBinVal])
 
     const cropAndConvert = useCallback(async () => {
         try {
@@ -215,7 +251,7 @@ function App() {
             closeCrop();
             const processed_img = await preprocessImageFromURL(croppedImage)
             if (processed_img === undefined){
-                console.error("the fuck")
+                console.error("Undefined processed image.")
                 return
             }
             setImagePath(processed_img);
@@ -291,6 +327,14 @@ function App() {
                             </div>
                             <div id="sliderContainer" className="space-y-4 pt-4">
                                 <Slider label="Rotation" onChange={updateRotation}></Slider>
+                                <Slider 
+                                    label="B/W Threshold" 
+                                    onChange={updateBinThreshold}
+                                    min={0}
+                                    max={10}
+                                    step={1}
+                                    list={"markers"}
+                                ></Slider>
                                 <button onClick={cropAndConvert}> Confirm</button>
                             </div>
                         </div>

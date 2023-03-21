@@ -290,9 +290,8 @@ function Home(){
                             >
                                 NO
                             </button>
-
                         </div>
-                </div>
+                    </div>
                 </Modal>
             }
         </div>

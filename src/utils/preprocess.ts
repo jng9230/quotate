@@ -12,6 +12,18 @@ export function preprocessImage(canvas: HTMLCanvasElement) {
     return image;
 }
 
+export function preprocessImage2(canvas: HTMLCanvasElement, thresh: number) {
+    const ctx = canvas.getContext('2d');
+    if (ctx == null) { console.error("Null context"); return }
+    const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    grayscaleFilter(image.data)
+    thresholdFilter(image.data, thresh/10);
+    // blurARGB(image.data, canvas, 0.5);
+    // dilate(image.data, canvas);
+    return image;
+}
+
+
 export async function preprocessImageFromURL(url:string){
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
@@ -29,6 +41,33 @@ export async function preprocessImageFromURL(url:string){
     // var canvas = document.createElement('canvas');
     // var ctx = canvas.getContext('2d');
     if (processed_img === undefined){
+        return
+    }
+
+    ctx.putImageData(processed_img, 0, 0);
+
+    const img2 = new Image();
+    img2.src = canvas.toDataURL();
+    return img2.src;
+}
+
+export async function preprocessImageFromURL2(url: string, thresh: number) {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (ctx == null) {
+        console.error("Null canvas")
+        return
+    }
+    const img = await createImage(url)
+    canvas.width = img.width;
+    canvas.height = img.height;
+    ctx.drawImage(img, 0, 0)
+
+    const processed_img = preprocessImage2(canvas, thresh)
+
+    // var canvas = document.createElement('canvas');
+    // var ctx = canvas.getContext('2d');
+    if (processed_img === undefined) {
         return
     }
 
