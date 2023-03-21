@@ -79,6 +79,7 @@ function Home(){
                 }
                 setBooks([newBook, ...books])
                 setAddBookModal(false)
+                setFocusedBook(newBook)
                 setNewBookName("")
             })
             .catch(err => console.error("Error: ", err))
@@ -102,7 +103,8 @@ function Home(){
             .then(res => res.json())
             .then(data => {
                 let data1 = data as deleteBookReturnType;
-                setBooks(books.filter(d => d.id != data1.result._id))
+                console.log(data1);
+                setBooks(books.filter(d => d.id != data1.book._id))
                 setFocusedBook(undefined)
                 setDeleteBookModal(false)
             })
@@ -110,7 +112,7 @@ function Home(){
 
     }
     return (
-        <div className="flex flex-col w-screen h-screen bg-off-white">
+        <div className="w-screen h-screen flex flex-col bg-off-white">
             <header className="grid grid-cols-3 gap-3 p-3">
                 <div className="">
                     <button className="btn-std 
@@ -133,7 +135,7 @@ function Home(){
                 <div className="col-start-2 col-span-full border-std border-black bg-black">
                 </div>
             </header>
-            <div className="w-full h-full grid grid-cols-3 gap-3 p-3 pt-0">
+            <div className="w-full h-full grid grid-cols-2 sm:grid-cols-3 gap-3 p-3 pt-0 overflow-hidden">
                 <div className="row-span-full border-std p-3 space-y-3 bg-white">
                     {
                         books.map((d, i) => {
@@ -149,6 +151,9 @@ function Home(){
                                         transition 
                                         ease-out 
                                         hover:translate-x-1
+                                        text-ellipsis 
+                                        overflow-hidden 
+                                        whitespace-nowrap
                                         ${
                                             focusedBook?.id == key ? "bg-main-green text-white" 
                                             : "hover:bg-secondary-green"
@@ -169,7 +174,8 @@ function Home(){
                     p-3
                     border-std
                     bg-white
-                    overflow-y-scroll">
+                    overflow-y-scroll
+                    ">
                     { focusedBook && 
                         <>
                             {quotes?.map((d, i) => {

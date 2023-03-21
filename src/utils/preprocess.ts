@@ -5,8 +5,8 @@ export function preprocessImage(canvas: HTMLCanvasElement) {
     const ctx = canvas.getContext('2d');
     if (ctx == null){console.error("Null context"); return}
     const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    // grayscaleFilter(image.data)
-    thresholdFilter(image.data, 0.35);
+    grayscaleFilter(image.data)
+    // thresholdFilter(image.data, 0.35);
     // blurARGB(image.data, canvas, 0.5);
     // dilate(image.data, canvas);
     return image;

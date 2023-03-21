@@ -252,9 +252,16 @@ function App() {
                     <h1 className="text-ellipsis overflow-hidden whitespace-nowrap"> {bookTitle} </h1>
                 </div>
             </header>
-            <main className="App-main grid grid-cols-3 grid-rows-6 gap-3
+            <main className="App-main grid 
+                grid-cols-2
+                sm:grid-cols-3 
+                grid-rows-6 
+                gap-3
                 p-3 pt-0
-                overflow-hidden w-full h-full">
+                overflow-hidden 
+                w-full 
+                h-full
+                ">
                 <Carousel files={files} changeImagePath={changeImagePath}></Carousel>
                 <Textbox text={text} setText={setText} handleTextSave={handleTextSave}></Textbox>
                 <Upload 
