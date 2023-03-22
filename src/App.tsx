@@ -22,6 +22,7 @@ function App() {
     //regular stuff
     const [imagePath, setImagePath] = useState("");
     const [processedImagePath, setProcessedImagePath] = useState<string>();
+    const [selectedImg, setSelectedImg] = useState("");
     const [files, setFiles] = useState<string[]>([])
     const handleFileUpload = (event: any) => {
         console.log(event.target.files)
@@ -31,10 +32,12 @@ function App() {
         }); 
         setFiles([...file_URLs, ...files]);
         setImagePath(file_URLs[0]);
+        setSelectedImg(file_URLs[0]);
         setProcessedImagePath(undefined);
     }
     function changeImagePath(url:string){
         setImagePath(url);
+        setSelectedImg(url);
     }
 
     const [text, setText] = useState("");
@@ -307,7 +310,7 @@ function App() {
                 w-full 
                 h-full
                 ">
-                <Carousel files={files} changeImagePath={changeImagePath}></Carousel>
+                <Carousel files={files} selectedImg={selectedImg} changeImagePath={changeImagePath}></Carousel>
                 <Textbox text={text} setText={setText} handleTextSave={handleTextSave}></Textbox>
                 <Upload 
                     handleFileUpload={handleFileUpload}
@@ -332,6 +335,7 @@ function App() {
                                     onZoomChange={setZoom}
                                     rotation={rotation}
                                     onRotationChange={setRotation}
+                                    restrictPosition={false}
                                 />
                             </div>
                             <div id="sliderContainer" className="space-y-4 pt-4">
