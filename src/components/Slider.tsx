@@ -9,7 +9,8 @@ function Slider({
     max=180,
     step="any",
     list,
-    children
+    children,
+    onBlur
 }:{
     label?:string,
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void,
@@ -17,7 +18,8 @@ function Slider({
     max?:number,
     step?:number | string,
     list?: string,
-    children?: ReactElement
+    children?: ReactElement,
+    onBlur?: () => void
 }){
     const [value, setValue] = useState(0)
     const updateValue = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,6 +41,7 @@ function Slider({
                 step={step}
                 id={label}
                 list={list}
+                onBlur={onBlur}
             />
             {children}
         </div>

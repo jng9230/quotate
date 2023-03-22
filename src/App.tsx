@@ -203,13 +203,25 @@ function App() {
 
     const [binThreshold, setBinThreshold] = useState(0);
     // const [newBinVal, setBinVal] = useState(binThreshold);
+    let timeout:any;
     const updateBinThreshold = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = parseInt(e.target.value) / 20;
-        if (val != binThreshold){
-            console.log(val);
-            setBinThreshold(val);
-            updateCropper(val)
-        }
+        // if (val != binThreshold){
+        window.clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            console.log("WOOOOOOOOO")
+            updateBinThresholdCallback(val);
+        }, 500)
+        // }
+    }
+    
+    const updateBinThresholdCallback = (val:number) => {
+        // console.log(val);
+        // console.log(binThreshold);
+        // if (val == binThreshold){
+        setBinThreshold(val);
+        updateCropper(val)
+        // }
     }
 
     const updateCropper = async (val: number) => {
@@ -230,7 +242,8 @@ function App() {
 
             //close modal; persist crop area and set displayed image to cropped image
             // const processed_img = await preprocessImageFromURL(croppedImage)
-            const processed_img = await preprocessImageFromURL2(croppedImage, val)
+            const threshold = val != 0 && val != 20 ? val : -1;
+            const processed_img = await preprocessImageFromURL2(croppedImage, threshold)
             if (processed_img === undefined) {
                 console.error("Undefined processed image.")
                 return
@@ -261,7 +274,8 @@ function App() {
             //close modal; persist crop area and set displayed image to cropped image
             setProcessedImagePath(undefined);
             closeCrop();
-            const processed_img = await preprocessImageFromURL2(croppedImage, binThreshold)
+            const threshold = binThreshold != 0 && binThreshold != 20 ? binThreshold : -1;
+            const processed_img = await preprocessImageFromURL2(croppedImage, threshold)
             if (processed_img === undefined){
                 console.error("Undefined processed image.")
                 return
@@ -277,7 +291,24 @@ function App() {
     // const bookID = useParams().id;
     //TODO: undefined -> set to some default folder
 
-
+    const [optionsThreshold, setOptionsThreshold] = useState<number>()
+    const updateBinThresholdOptions = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const val = parseInt(e.target.value);
+        setOptionsThreshold(val);
+        if (val ===  -1){
+            updateCropper(val)
+        } else {
+            updateCropper(val/20)
+        }
+    }
+    // const allOptions = () => {
+    // }
+    let thing: any[] = []
+    thing.push(<option value={-1} key={-1}> {"None"} </option>)
+    for (let i = 1; i <= 20; i++){
+        thing.push(<option value={i} key={i}> {i} </option>)
+    }
+    const [size, setSize] = useState(0)
     return (
         <div className="App w-screen h-screen flex flex-col bg-off-white">
             <header className="grid grid-cols-3 p-3">
@@ -335,10 +366,10 @@ function App() {
                                     onZoomChange={setZoom}
                                     rotation={rotation}
                                     onRotationChange={setRotation}
-                                    restrictPosition={false}
+                                    // restrictPosition={false}
                                 />
                             </div>
-                            <div id="sliderContainer" className="space-y-4 pt-4">
+                            <div id="optionsContainer" className="space-y-4 pt-4">
                                 <Slider label="Rotation" onChange={updateRotation}></Slider>
                                 <Slider 
                                     label="B/W Threshold" 
@@ -347,8 +378,28 @@ function App() {
                                     max={20}
                                     step={1}
                                     // list={"markers"}
-                                ></Slider>
-                                <button onClick={cropAndConvert}> Confirm</button>
+                                >
+                                    <div className="flex justify-between absolute -bottom-2 w-4/5 right-0 text-[8px]">
+                                        <span>
+                                            None
+                                        </span>
+                                        <span className="mr-3">
+                                            10
+                                        </span>
+                                        <span>
+                                            20
+                                        </span>
+                                    </div>
+                                </Slider>
+                                {/* <input type="range" min="0" max="100" step="25" list="steplist" className="slider"/>
+                                    <datalist id="steplist">
+                                        <option value={0}>0</option>
+                                        <option>25</option>
+                                        <option>50</option>
+                                        <option>75</option>
+                                        <option>100</option>
+                                    </datalist> */}
+                                <button className="btn-std border-std border-main-green text-main-green" onClick={cropAndConvert}> Confirm</button>
                             </div>
                         </div>
                     </Modal>

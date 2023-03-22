@@ -68,7 +68,7 @@ export async function getCroppedImg(
 
     // croppedAreaPixels values are bounding box relative
     // extract the cropped image using these values
-    if (pixelCrop == undefined){
+    if (pixelCrop === undefined){
         pixelCrop = {
             x: 0,
             y: 0,
