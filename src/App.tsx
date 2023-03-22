@@ -21,6 +21,7 @@ import { BiArrowBack } from "react-icons/bi"
 function App() {
     //regular stuff
     const [imagePath, setImagePath] = useState("");
+    const [processedImagePath, setProcessedImagePath] = useState<string>();
     const [files, setFiles] = useState<string[]>([])
     const handleFileUpload = (event: any) => {
         console.log(event.target.files)
@@ -30,6 +31,7 @@ function App() {
         }); 
         setFiles([...file_URLs, ...files]);
         setImagePath(file_URLs[0]);
+        setProcessedImagePath(undefined);
     }
     function changeImagePath(url:string){
         setImagePath(url);
@@ -180,6 +182,7 @@ function App() {
 
     const [cropModal, setCropModal] = useState(false);
     const showCropModal = () => {
+        setProcessedImagePath(undefined);
         if (imagePath) {
             setCropModal(true);
         }
@@ -196,40 +199,45 @@ function App() {
     }
 
     const [binThreshold, setBinThreshold] = useState(0);
-    const [newBinVal, setBinVal] = useState(binThreshold);
-    const updateBinThreshold = useCallback( async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = parseInt(e.target.value);
+    // const [newBinVal, setBinVal] = useState(binThreshold);
+    const updateBinThreshold = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = parseInt(e.target.value) / 20;
         if (val != binThreshold){
             console.log(val);
-            setBinVal(val);
-            try {
-                if (croppedAreaPixels == null) {
-                    throw new Error("croppedAreaPixels is undefined");
-                }
-    
-                const croppedImage = await getCroppedImg(
-                    imagePath,
-                    croppedAreaPixels,
-                    rotation
-                )
-                console.log('donee', { croppedImage })
-                if (croppedImage == null) {
-                    throw new Error("croppedImage is undefined");
-                }
-    
-                //close modal; persist crop area and set displayed image to cropped image
-                // const processed_img = await preprocessImageFromURL(croppedImage)
-                const processed_img = await preprocessImageFromURL2(croppedImage, val)
-                if (processed_img === undefined) {
-                    console.error("Undefined processed image.")
-                    return
-                }
-                setImagePath(processed_img);
-            } catch {
-                
-            }
+            setBinThreshold(val);
+            updateCropper(val)
         }
-    }, [newBinVal])
+    }
+
+    const updateCropper = async (val: number) => {
+        try {
+            if (croppedAreaPixels == null) {
+                throw new Error("croppedAreaPixels is undefined");
+            }
+
+            const croppedImage = await getCroppedImg(
+                imagePath,
+                undefined,
+                rotation
+            )
+            console.log('donee', { croppedImage })
+            if (croppedImage == null) {
+                throw new Error("croppedImage is undefined");
+            }
+
+            //close modal; persist crop area and set displayed image to cropped image
+            // const processed_img = await preprocessImageFromURL(croppedImage)
+            const processed_img = await preprocessImageFromURL2(croppedImage, val)
+            if (processed_img === undefined) {
+                console.error("Undefined processed image.")
+                return
+            }
+            // setImagePath(processed_img);
+            setProcessedImagePath(processed_img);
+        } catch {
+
+        }
+    }
 
     const cropAndConvert = useCallback(async () => {
         try {
@@ -248,8 +256,9 @@ function App() {
             }
 
             //close modal; persist crop area and set displayed image to cropped image
+            setProcessedImagePath(undefined);
             closeCrop();
-            const processed_img = await preprocessImageFromURL(croppedImage)
+            const processed_img = await preprocessImageFromURL2(croppedImage, binThreshold)
             if (processed_img === undefined){
                 console.error("Undefined processed image.")
                 return
@@ -314,7 +323,7 @@ function App() {
                         <div>
                             <div className="crop_container relative w-full h-96">
                                 <Cropper
-                                    image={imagePath}
+                                    image={processedImagePath !== "" && processedImagePath !== undefined ? processedImagePath : imagePath}
                                     crop={crop}
                                     zoom={zoom}
                                     aspect={2 / 1}
@@ -331,9 +340,9 @@ function App() {
                                     label="B/W Threshold" 
                                     onChange={updateBinThreshold}
                                     min={0}
-                                    max={10}
+                                    max={20}
                                     step={1}
-                                    list={"markers"}
+                                    // list={"markers"}
                                 ></Slider>
                                 <button onClick={cropAndConvert}> Confirm</button>
                             </div>

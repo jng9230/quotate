@@ -32,7 +32,7 @@ export function rotateSize(width:number, height:number, rotation:number) {
  */
 export async function getCroppedImg(
     imageSrc:string,
-    pixelCrop:{x: number, y: number, width: number, height: number},
+    pixelCrop?:{x: number, y: number, width: number, height: number},
     rotation = 0,
     flip = { horizontal: false, vertical: false }
 ) {
@@ -68,6 +68,14 @@ export async function getCroppedImg(
 
     // croppedAreaPixels values are bounding box relative
     // extract the cropped image using these values
+    if (pixelCrop == undefined){
+        pixelCrop = {
+            x: 0,
+            y: 0,
+            width: image.width,
+            height: image.height
+        }
+    }
     const data = ctx.getImageData(
         pixelCrop.x,
         pixelCrop.y,
