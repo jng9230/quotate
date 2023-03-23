@@ -391,14 +391,6 @@ function App() {
                                         </span>
                                     </div>
                                 </Slider>
-                                {/* <input type="range" min="0" max="100" step="25" list="steplist" className="slider"/>
-                                    <datalist id="steplist">
-                                        <option value={0}>0</option>
-                                        <option>25</option>
-                                        <option>50</option>
-                                        <option>75</option>
-                                        <option>100</option>
-                                    </datalist> */}
                                 <button className="btn-std border-std border-main-green text-main-green" onClick={cropAndConvert}> Confirm</button>
                             </div>
                         </div>

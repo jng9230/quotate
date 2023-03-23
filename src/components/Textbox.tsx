@@ -17,7 +17,16 @@ function Textbox({
             <div className="h-full w-full flex flex-col justify-between text-center p-3">
                 <label htmlFor="current_text" className=""> Edit converted text:</label>
                 <textarea name="" id="current_text" value={text} 
-                    className="box-border w-full h-4/6 bg-transparent border-std border-black px-3"
+                    className="
+                        box-border 
+                        w-full 
+                        h-4/6 
+                        bg-transparent 
+                        border-std 
+                        border-black 
+                        px-3 
+                        resize-none
+                    "
                     onChange={e => setText(e.target.value)}
                 >
                 </textarea>

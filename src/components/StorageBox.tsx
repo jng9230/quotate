@@ -9,8 +9,8 @@ function StorageBox({
     deleteText: (i: string) => void
 }){
     return (
-        <div className="p-3 row-start-4 row-span-full col-start-2 col-span-full border-std bg-white">
-            <div className="overflow-scroll max-h-full space-y-4 pr-5">
+        <div className="row-start-4 row-span-full col-start-2 col-span-full border-std bg-white">
+            <div className="overflow-scroll max-h-full space-y-4 p-3">
                 {storedText.map((d, i) => {
                     return(
                         <div key={d.id} className="border-std border-black flex justify-between items-center">

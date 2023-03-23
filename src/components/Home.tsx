@@ -52,8 +52,13 @@ function Home(){
     const [focusedBook, setFocusedBook] = useState<book>();
     const handleFocusedBookClick = (e: React.MouseEvent<HTMLDivElement>, key: string) => {
         const spec_book = books.filter(d => d.id === key)[0];
-        setFocusedBook(spec_book)
+        if (focusedBook === spec_book){
+            setFocusedBook(undefined)
+        } else {
+            setFocusedBook(spec_book)
+        }
     }
+
     useEffect(() => {
         getQuotes()
     }, [focusedBook])
