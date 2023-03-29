@@ -7,6 +7,7 @@ import { Modal } from "./Modal";
 const API_BASE = "http://localhost:5000";
 
 function Home(){
+    
     const [books, setBooks] = useState<book[]>([])
     const [quotes, setQuotes] = useState<quote[]>()
     useEffect(() => {
@@ -48,7 +49,6 @@ function Home(){
             })
             .catch(err => console.error("Error: ", err))
     }
-    
     const [focusedBook, setFocusedBook] = useState<book>();
     const handleFocusedBookClick = (e: React.MouseEvent<HTMLDivElement>, key: string) => {
         const spec_book = books.filter(d => d.id === key)[0];
@@ -116,6 +116,26 @@ function Home(){
             .catch(err => console.error("Error: ", err))
 
     }
+    
+    const [authed, setAuthed] = useState(false);
+    useEffect(() => {
+        fetch(API_BASE + "/auth/login/success")
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+                setAuthed(true);
+            })
+            .catch(err => {
+                console.error("Failed to authenticate user.", err)
+                setAuthed(false)
+            })
+    }, [])
+    const handleLogin = () => {
+        window.open(API_BASE + "/auth/google", "_self");
+    }
+    const handleLogout = () => {
+        setAuthed(false);
+    }
     return (
         <div className="w-screen h-screen flex flex-col bg-off-white">
             <header className="grid grid-cols-3 gap-3 p-3">
@@ -136,6 +156,10 @@ function Home(){
                         <BiPlus className="mr-2"/>
                         BOOK
                     </button>
+                    {
+                        !authed ? <button onClick={handleLogin} className="btn-std bg-white text-main-green"> Login</button>
+                        : <button onClick={handleLogout}> Logout </button>
+                    }
                 </div>
                 <div className="col-start-2 col-span-full border-std border-black bg-black">
                 </div>

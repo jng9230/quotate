@@ -19,6 +19,8 @@ import { Link } from "react-router-dom"
 import { BiArrowBack } from "react-icons/bi"
 
 function App() {
+    //TODO: OAuth
+
     //regular stuff
     const [imagePath, setImagePath] = useState("");
     const [processedImagePath, setProcessedImagePath] = useState<string>();
