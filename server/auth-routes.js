@@ -4,6 +4,8 @@ const CLIENT_HOME_PAGE_URL = "http://localhost:3000";
 
 // when login is successful, retrieve user info
 router.get("/login/success", (req, res) => {
+    console.log("LOGIN SUCCESS")
+    console.log(req.user)
     if (req.user) {
         res.json({
             success: true,
@@ -11,6 +13,8 @@ router.get("/login/success", (req, res) => {
             user: req.user,
             cookies: req.cookies
         });
+    } else {
+        console.log("/login/sucess. NO USER PROVIDED IN REQ")
     }
 });
 
@@ -36,10 +40,9 @@ router.get("/google", passport.authenticate("google", {
 
 }));
 
-// redirect to home page after successfully login via twitter
-router.get(
-    "/google/redirect",
-    passport.authenticate("google", {
+// redirect to home page after successfully login via google
+router.get("/google/redirect", passport.authenticate("google", {
+        // successRedirect: "/auth/login/success",
         successRedirect: CLIENT_HOME_PAGE_URL,
         failureRedirect: "/auth/login/failed"
     })

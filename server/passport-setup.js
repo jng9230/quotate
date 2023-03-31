@@ -8,7 +8,7 @@ const User = require("./models/user");
 const GoogleStrategy = require('passport-google-oauth2').Strategy;
 
 passport.serializeUser((user, done) => {
-    done(null, user.google_id);
+    done(null, user.id);
 });
 
 passport.deserializeUser((id, done) => {
@@ -28,11 +28,6 @@ passport.use(new GoogleStrategy({
     passReqToCallback: true
 },
     async function (request, accessToken, refreshToken, profile, done) {
-        // console.log(request)
-        // console.log(accessToken);
-        // console.log(refreshToken);
-        // console.log(profile);
-
         //try to find current user
         const current_user = await User.findOne({
             google_id: profile.id
@@ -47,7 +42,6 @@ passport.use(new GoogleStrategy({
             if (new_user){
                 done(null, new_user)
             }
-
         }
         done(null, current_user);
     }

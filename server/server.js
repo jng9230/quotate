@@ -17,7 +17,14 @@ const debug = true;
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+// app.use(cors());
+app.use(
+    cors({
+        origin: "http://localhost:3000", // allow to server to accept request from different origin
+        methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+        credentials: true // allow session cookie from browser to pass through
+    })
+);
 
 //connect DB
 mongoose.connect(URI, {
@@ -71,7 +78,6 @@ app.delete('/book', async (req, res) => {
     res.json({book: del_book, quotes: del_quote });
 });
 
-
 //get all quotes for a specific book
 app.get('/quote/id/:id', async (req, res) => {
     if (debug) { console.log("GETTING QUOTES FOR SPEC. BOOK");}
@@ -89,7 +95,6 @@ app.get('/quote/all', async (req, res) => {
 
     res.json(quote);
 });
-
 
 //add a quote
 app.post('/quote', (req, res) => {

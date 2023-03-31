@@ -119,10 +119,20 @@ function Home(){
     
     const [authed, setAuthed] = useState(false);
     useEffect(() => {
-        fetch(API_BASE + "/auth/login/success")
-            .then(res => res.json())
+        console.log("getting auth stuff")
+        fetch(API_BASE + "/auth/login/success", {
+            method: "GET",
+            credentials: "include",
+            headers: {
+            }
+        })
+            .then(res => {
+                if (res.status === 200) return res.json();
+                throw new Error("failed to authenticate user");
+            })
             .then(data => {
                 console.log(data);
+                console.log(data.user.google_name);
                 setAuthed(true);
             })
             .catch(err => {
@@ -134,6 +144,7 @@ function Home(){
         window.open(API_BASE + "/auth/google", "_self");
     }
     const handleLogout = () => {
+        window.open(API_BASE + "/auth/logout", "_self");
         setAuthed(false);
     }
     return (
