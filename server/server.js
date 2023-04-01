@@ -4,7 +4,9 @@ const cors = require('cors');
 const passport = require('passport');
 const cookie_session = require('cookie-session');
 require("dotenv").config({ path: "./config.env" });
-const auth_routes = require("./auth-routes")
+const auth_routes = require("./routes/auth-routes")
+const quote_routes = require("./routes/quote-routes")
+const book_routes = require("./routes/book-routes")
 const passport_setup = require('./passport-setup');
 const session = require("express-session");
 const cookie_parser = require("cookie-parser"); 
@@ -35,89 +37,89 @@ mongoose.connect(URI, {
     .catch(console.error);
 
 //models
-const Quote = require("./models/quote");
-const Book = require("./models/book")
+// const Quote = require("./models/quote");
+// const Book = require("./models/book")
 //API endpoints
 
-//get a spec. book
-app.get('/book/id/:id', async (req, res) => {
-    if (debug){ console.log("GETTING SPEC. BOOK");}
-    const book = await Book.findById(req.params.id)
+// //get a spec. book
+// app.get('/book/id/:id', async (req, res) => {
+//     if (debug){ console.log("GETTING SPEC. BOOK");}
+//     const book = await Book.findById(req.params.id)
 
-    res.json(book);
-});
+//     res.json(book);
+// });
 
-//get all books
-app.get('/book/all', async (req, res) => {
-    if (debug) { console.log("GETTING ALL BOOKS");}
-    const book = await Book.find()
+// //get all books
+// app.get('/book/all', async (req, res) => {
+//     if (debug) { console.log("GETTING ALL BOOKS");}
+//     const book = await Book.find()
 
-    res.json(book);
-});
+//     res.json(book);
+// });
 
-//add a book
-app.post('/book', (req, res) => {
-    if (debug) { console.log("ADD A BOOK"); console.log(req.body) }
+// //add a book
+// app.post('/book', (req, res) => {
+//     if (debug) { console.log("ADD A BOOK"); console.log(req.body) }
 
-    const book = new Book({
-        title: req.body.title
-    })
+//     const book = new Book({
+//         title: req.body.title
+//     })
 
-    book.save();
+//     book.save();
 
-    res.json(book);
-});
+//     res.json(book);
+// });
 
-//delete a book
-app.delete('/book', async (req, res) => {
-    if (debug) { console.log("DELETING A BOOK"); console.log(req.body) }
+// //delete a book
+// app.delete('/book', async (req, res) => {
+//     if (debug) { console.log("DELETING A BOOK"); console.log(req.body) }
 
-    const del_book = await Book.findByIdAndDelete(req.body.id);
-    const del_quote = await Quote.deleteMany({book: req.body.id});
+//     const del_book = await Book.findByIdAndDelete(req.body.id);
+//     const del_quote = await Quote.deleteMany({book: req.body.id});
 
-    res.json({book: del_book, quotes: del_quote });
-});
+//     res.json({book: del_book, quotes: del_quote });
+// });
 
-//get all quotes for a specific book
-app.get('/quote/id/:id', async (req, res) => {
-    if (debug) { console.log("GETTING QUOTES FOR SPEC. BOOK");}
+// //get all quotes for a specific book
+// app.get('/quote/id/:id', async (req, res) => {
+//     if (debug) { console.log("GETTING QUOTES FOR SPEC. BOOK");}
 
-    const quote = await Quote.find({book: req.params.id})
+//     const quote = await Quote.find({book: req.params.id})
 
-    res.json(quote);
-});
+//     res.json(quote);
+// });
 
-//get all quotes
-app.get('/quote/all', async (req, res) => {
-    if (debug) { console.log("GETTING ALL QUOTES");}
+// //get all quotes
+// app.get('/quote/all', async (req, res) => {
+//     if (debug) { console.log("GETTING ALL QUOTES");}
 
-    const quote = await Quote.find()
+//     const quote = await Quote.find()
 
-    res.json(quote);
-});
+//     res.json(quote);
+// });
 
-//add a quote
-app.post('/quote', (req, res) => {
-    if (debug) { console.log("ADDING A QUOTE"); console.log(req.body) }
+// //add a quote
+// app.post('/quote', (req, res) => {
+//     if (debug) { console.log("ADDING A QUOTE"); console.log(req.body) }
 
-    const quote = new Quote({
-        text: req.body.text,
-        book: req.body.book
-    })
+//     const quote = new Quote({
+//         text: req.body.text,
+//         book: req.body.book
+//     })
 
-    quote.save();
+//     quote.save();
 
-    res.json(quote);
-});
+//     res.json(quote);
+// });
 
-//delete a quote by its ID
-app.delete('/quote', async (req, res) => {
-    if (debug) { console.log("DELETING A QUOTE"); console.log(req.body) }
+// //delete a quote by its ID
+// app.delete('/quote', async (req, res) => {
+//     if (debug) { console.log("DELETING A QUOTE"); console.log(req.body) }
 
-    const result = await Quote.findByIdAndDelete(req.body.id);
+//     const result = await Quote.findByIdAndDelete(req.body.id);
 
-    res.json({ result });
-});
+//     res.json({ result });
+// });
 
 //testing
 app.get('/test', async (req, res) => {
@@ -148,6 +150,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use("/auth", auth_routes);
+app.use("/quote", quote_routes)
+app.use("/book", book_routes)
 
 //check for auth on home page load
 const auth_check = (req, res, next) => {

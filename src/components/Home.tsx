@@ -22,7 +22,7 @@ function Home(){
     }, [])
 
     const getBooks = () => {
-        fetch(API_BASE + "/book/all")
+        fetch(API_BASE + "/book/book/all")
             .then(res => res.json())
             .then(data => {
                 const data1 = data as booksReturnType[];
@@ -40,7 +40,7 @@ function Home(){
     const getQuotes = () => {
         if (focusedBook === undefined){return;}
         console.log(`GETTING QUOTES FOR ${focusedBook.title}`)
-        fetch(API_BASE + `/quote/id/${focusedBook.id}`)
+        fetch(API_BASE + `/quote/quote/id/${focusedBook.id}`)
             .then(res => res.json())
             .then(data => {
                 console.log(data);
@@ -74,7 +74,7 @@ function Home(){
     const [newBookName, setNewBookName] = useState("")
     const handleAddNewBook = () => {
         //send RQ to server 
-        fetch(API_BASE + "/book", {
+        fetch(API_BASE + "/book/book", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -105,7 +105,7 @@ function Home(){
     const confirmDelete = () => {
         if (!focusedBook){return}
     
-        fetch(API_BASE + "/book", {
+        fetch(API_BASE + "/book/book", {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",

@@ -98,7 +98,7 @@ function App() {
     useEffect(() => {
         const thing = async () => {
             //get quotes
-            fetch(API_BASE + `/quote/id/${bookID}`)
+            fetch(API_BASE + `/quote/quote/id/${bookID}`)
                 .then(res => res.json())
                 .then(data => {
                     console.log(data);
@@ -115,7 +115,7 @@ function App() {
                 .catch(err => { console.error("Error: ", err)})
             
             //set book title
-            fetch(API_BASE + `/book/id/${bookID}`)
+            fetch(API_BASE + `/book/book/id/${bookID}`)
                 .then(res => res.json())
                 .then(data => {
                     console.log(data);
@@ -131,7 +131,7 @@ function App() {
         if (new_text === ""){return;}
         // setStoredText([{ id: uuidv4(), text: new_text }, ...storedText]);
 
-        fetch(API_BASE + "/quote", {
+        fetch(API_BASE + "/quote/quote", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -159,7 +159,7 @@ function App() {
     // }, [storedText])
 
     function deleteText(i: string) {
-        fetch(API_BASE + "/quote", {
+        fetch(API_BASE + "/quote/quote", {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
