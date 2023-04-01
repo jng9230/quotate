@@ -14,7 +14,7 @@ router.get("/login/success", (req, res) => {
             cookies: req.cookies
         });
     } else {
-        console.log("/login/sucess. NO USER PROVIDED IN REQ")
+        console.log("/login/success. NO USER PROVIDED IN REQ")
     }
 });
 

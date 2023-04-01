@@ -5,6 +5,13 @@ import { book, booksReturnType, quote, quotesReturnType, newBookReturnType, dele
 import { BiPlus, BiMinus } from "react-icons/bi"
 import { Modal } from "./Modal";
 const API_BASE = "http://localhost:5000";
+const basic_button_classes = `
+    btn-std 
+    border-std 
+    border-main-green 
+    text-main-green 
+    bg-white 
+`
 
 function Home(){
     
@@ -167,12 +174,13 @@ function Home(){
                         <BiPlus className="mr-2"/>
                         BOOK
                     </button>
-                    {
-                        !authed ? <button onClick={handleLogin} className="btn-std bg-white text-main-green"> Login</button>
-                        : <button onClick={handleLogout}> Logout </button>
-                    }
                 </div>
-                <div className="col-start-2 col-span-full border-std border-black bg-black">
+                <div className="col-start-2 col-span-full flex w-full justify-between">
+                    <div className="bg-black border-black border-std w-4/5"></div>
+                    {
+                        !authed ? <button onClick={handleLogin} className={basic_button_classes}> Login</button>
+                        : <button onClick={handleLogout} className={basic_button_classes}> Logout </button>
+                    }
                 </div>
             </header>
             <div className="w-full h-full grid grid-cols-2 sm:grid-cols-3 gap-3 p-3 pt-0 overflow-hidden">
