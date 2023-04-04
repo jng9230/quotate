@@ -41,3 +41,10 @@ export type deleteBookReturnType = {
 export type deleteQuoteReturnType = {
     result: quotesReturnType
 }
+
+export type userReturnType = {
+    google_id: string
+    google_name: string
+    __v: string
+    _id: string
+}

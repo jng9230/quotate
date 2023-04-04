@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { TiPlus} from "react-icons/ti";
-import { book, booksReturnType, quote, quotesReturnType, newBookReturnType, deleteBookReturnType} from "./APIReturnTypes"
+import { book, booksReturnType, quote, quotesReturnType, newBookReturnType, deleteBookReturnType, userReturnType} from "./APIReturnTypes"
 import { BiPlus, BiMinus } from "react-icons/bi"
 import { Modal } from "./Modal";
 const API_BASE = "http://localhost:5000";
@@ -17,12 +17,12 @@ function Home(){
     
     const [books, setBooks] = useState<book[]>([])
     const [quotes, setQuotes] = useState<quote[]>()
-    useEffect(() => {
-        getBooks()
-    }, [])
+    // useEffect(() => {
+    //     getBooks()
+    // }, [user])
 
-    const getBooks = () => {
-        fetch(API_BASE + "/book/book/all")
+    const getBooks = (user_id:string) => {
+        fetch(API_BASE + "/book/book/all_for_user/" + user_id)
             .then(res => res.json())
             .then(data => {
                 const data1 = data as booksReturnType[];
@@ -79,7 +79,10 @@ function Home(){
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ "title": newBookName})
+            body: JSON.stringify({ 
+                "title": newBookName, 
+                "user_id": user?._id
+            })
         })
             .then(res => res.json())
             .then(data => {
@@ -125,6 +128,7 @@ function Home(){
     }
     
     const [authed, setAuthed] = useState(false);
+    const [user, setUser] = useState<userReturnType>();
     useEffect(() => {
         console.log("getting auth stuff")
         fetch(API_BASE + "/auth/login/success", {
@@ -140,6 +144,8 @@ function Home(){
             .then(data => {
                 console.log(data);
                 console.log(data.user.google_name);
+                setUser(data.user)
+                // getBooks(data.user_id)
                 setAuthed(true);
             })
             .catch(err => {
@@ -154,6 +160,20 @@ function Home(){
         window.open(API_BASE + "/auth/logout", "_self");
         setAuthed(false);
     }
+
+    useEffect(() => {
+        if (user){
+            getBooks(user._id)
+        }
+    }, [user])
+
+
+
+    // useEffect(() => {
+    //     fetch(API_BASE + "/test")
+    //     .then(res => res.json())
+    //     .then(data => console.log(data))
+    // }, [])
     return (
         <div className="w-screen h-screen flex flex-col bg-off-white">
             <header className="grid grid-cols-3 gap-3 p-3">
