@@ -88,7 +88,7 @@ app.use(
     cookie_session({
         name: "google-auth-session",
         keys: [COOKIE_KEY],
-        maxAge: 24 * 60 * 60 * 100
+        maxAge: 24 * 60 * 60 * 1000 //time is in ms
     })
 );
 app.use(cookie_parser());

@@ -14,12 +14,37 @@ import { Slider } from './components/Slider';
 import { preprocessImageFromURL, preprocessImageFromURL2 } from './utils/preprocess';
 import { Modal } from './components/Modal';
 import { useParams } from 'react-router-dom';
-import { book, booksReturnType, quote, quotesReturnType, newQuoteReturnType, deleteQuoteReturnType } from "./components/APIReturnTypes"
+import { book, booksReturnType, quote, quotesReturnType, newQuoteReturnType, deleteQuoteReturnType, userReturnType } from "./components/APIReturnTypes"
 import { Link } from "react-router-dom"
 import { BiArrowBack } from "react-icons/bi"
 
 function App() {
     //TODO: OAuth
+    const [authed, setAuthed] = useState(false);
+    const [user, setUser] = useState<userReturnType>();
+    useEffect(() => {
+        // console.log("getting auth stuff")
+        fetch(API_BASE + "/auth/login/success", {
+            method: "GET",
+            credentials: "include",
+            headers: {
+            }
+        })
+            .then(res => {
+                if (res.status === 200) return res.json();
+                throw new Error("failed to authenticate user");
+            })
+            .then(data => {
+                console.log(data);
+                console.log(data.user.google_name);
+                setUser(data.user)
+                setAuthed(true);
+            })
+            .catch(err => {
+                console.error("Failed to authenticate user.", err)
+                setAuthed(false)
+            })
+    }, [])
 
     //regular stuff
     const [imagePath, setImagePath] = useState("");
@@ -98,7 +123,7 @@ function App() {
     useEffect(() => {
         const thing = async () => {
             //get quotes
-            fetch(API_BASE + `/quote/quote/id/${bookID}`)
+            fetch(API_BASE + `/quote/quote/all_for_book/${bookID}`)
                 .then(res => res.json())
                 .then(data => {
                     console.log(data);
@@ -124,11 +149,13 @@ function App() {
                 })
                 .catch(err => { console.error("Error: ", err) })
         }
-        thing();
-    }, [])
+        if (user){
+            thing();
+        } 
+    }, [user])
 
     const handleTextSave = (new_text: string) => {
-        if (new_text === ""){return;}
+        if (new_text === "" || user === undefined){return;}
         // setStoredText([{ id: uuidv4(), text: new_text }, ...storedText]);
 
         fetch(API_BASE + "/quote/quote", {
@@ -136,7 +163,7 @@ function App() {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ "text": new_text, "book": bookID})
+            body: JSON.stringify({ "text": new_text, "book": bookID, "user_id": user._id})
             //TODO: handle bookID undefined case
         })
             .then(res => res.json())
@@ -153,10 +180,6 @@ function App() {
             .catch(err => console.error("Error :", err))
 
     }
-    // useEffect(() => {
-    //     const text_json = JSON.stringify(storedText)
-    //     localStorage.setItem("text", text_json)
-    // }, [storedText])
 
     function deleteText(i: string) {
         fetch(API_BASE + "/quote/quote", {

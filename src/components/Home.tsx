@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { TiPlus} from "react-icons/ti";
+import { useState, useEffect, useRef } from "react";
 import { book, booksReturnType, quote, quotesReturnType, newBookReturnType, deleteBookReturnType, userReturnType} from "./APIReturnTypes"
 import { BiPlus, BiMinus } from "react-icons/bi"
 import { Modal } from "./Modal";
@@ -14,15 +13,12 @@ const basic_button_classes = `
 `
 
 function Home(){
-    
     const [books, setBooks] = useState<book[]>([])
     const [quotes, setQuotes] = useState<quote[]>()
-    // useEffect(() => {
-    //     getBooks()
-    // }, [user])
-
-    const getBooks = (user_id:string) => {
-        fetch(API_BASE + "/book/book/all_for_user/" + user_id)
+    const getBooks = () => {
+        if (user === undefined){ return;}
+        fetch(API_BASE + "/book/book/all_for_user/" + user._id, {
+        })
             .then(res => res.json())
             .then(data => {
                 const data1 = data as booksReturnType[];
@@ -39,11 +35,11 @@ function Home(){
 
     const getQuotes = () => {
         if (focusedBook === undefined){return;}
-        console.log(`GETTING QUOTES FOR ${focusedBook.title}`)
-        fetch(API_BASE + `/quote/quote/id/${focusedBook.id}`)
+        // console.log(`GETTING QUOTES FOR ${focusedBook.title}`)
+        fetch(API_BASE + `/quote/quote/all_for_book/${focusedBook.id}`)
             .then(res => res.json())
             .then(data => {
-                console.log(data);
+                // console.log(data);
                 const data1 = data as quotesReturnType[];
                 let mapping = data1.map(d => {
                     return {
@@ -73,6 +69,7 @@ function Home(){
     const [addBookModal, setAddBookModal] = useState(false);
     const [newBookName, setNewBookName] = useState("")
     const handleAddNewBook = () => {
+        if (user === undefined){return;}
         //send RQ to server 
         fetch(API_BASE + "/book/book", {
             method: "POST",
@@ -81,7 +78,7 @@ function Home(){
             },
             body: JSON.stringify({ 
                 "title": newBookName, 
-                "user_id": user?._id
+                "user_id": user._id
             })
         })
             .then(res => res.json())
@@ -130,7 +127,7 @@ function Home(){
     const [authed, setAuthed] = useState(false);
     const [user, setUser] = useState<userReturnType>();
     useEffect(() => {
-        console.log("getting auth stuff")
+        // console.log("getting auth stuff")
         fetch(API_BASE + "/auth/login/success", {
             method: "GET",
             credentials: "include",
@@ -142,10 +139,9 @@ function Home(){
                 throw new Error("failed to authenticate user");
             })
             .then(data => {
-                console.log(data);
-                console.log(data.user.google_name);
+                // console.log(data);
+                // console.log(data.user.google_name);
                 setUser(data.user)
-                // getBooks(data.user_id)
                 setAuthed(true);
             })
             .catch(err => {
@@ -163,17 +159,10 @@ function Home(){
 
     useEffect(() => {
         if (user){
-            getBooks(user._id)
+            getBooks()
         }
     }, [user])
-
-
-
-    // useEffect(() => {
-    //     fetch(API_BASE + "/test")
-    //     .then(res => res.json())
-    //     .then(data => console.log(data))
-    // }, [])
+    
     return (
         <div className="w-screen h-screen flex flex-col bg-off-white">
             <header className="grid grid-cols-3 gap-3 p-3">

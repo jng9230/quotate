@@ -3,7 +3,7 @@ const Quote = require("../models/quote");
 const debug = false; 
 
 //get all quotes for a specific book
-router.get('/quote/id/:id', async (req, res) => {
+router.get('/quote/all_for_book/:id', async (req, res) => {
     if (debug) { console.log("GETTING QUOTES FOR SPEC. BOOK"); }
 
     const quote = await Quote.find({ book: req.params.id })
@@ -20,13 +20,23 @@ router.get('/quote/all', async (req, res) => {
     res.json(quote);
 });
 
+router.get('/quote/all_for_user/:id', async (req, res) => {
+    if (debug) { console.log("GETTING ALL QUOTES FOR USER"); console.log(req.params.id) }
+
+    const quote = await Quote.find({user: req.params.id})
+
+    res.json(quote);
+});
+
 //add a quote
 router.post('/quote', (req, res) => {
     if (debug) { console.log("ADDING A QUOTE"); console.log(req.body) }
 
+    // const user = req.body.id
     const quote = new Quote({
         text: req.body.text,
-        book: req.body.book
+        book: req.body.book,
+        user: req.body.user_id
     })
 
     quote.save();

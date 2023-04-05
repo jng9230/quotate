@@ -7,13 +7,14 @@ const debug = true;
 router.get('/book/id/:id', async (req, res) => {
     if (debug) { console.log("GETTING SPEC. BOOK"); }
     const book = await Book.findById(req.params.id)
+    const quotes = await Quote.find({book: req.params.id})
 
-    res.json(book);
+    res.json({book: book, quotes: quotes});
 });
 
 //get all books
 router.get('/book/all', async (req, res) => {
-    if (debug) { console.log("GETTING ALL BOOKS"); console.log(req.user)}
+    if (debug) { console.log("GETTING ALL BOOKS");}
     const book = await Book.find()
 
     res.json(book);
@@ -22,9 +23,8 @@ router.get('/book/all', async (req, res) => {
 //get all books for a spec. user
 router.get('/book/all_for_user/:id', async (req, res) => {
     if (debug) { console.log("GETTING ALL BOOKS FOR USER"); console.log(req.params.id) }
-    const user = req.params.id; 
+    const user = req.params.id;
     const book = await Book.find({user: user})
-
     res.json(book);
 });
 
