@@ -1,12 +1,15 @@
 const router = require("express").Router();
 const passport = require("passport");
 const CLIENT_HOME_PAGE_URL = "http://localhost:3000";
+const jwt = require("jsonwebtoken")
+require("dotenv").config({ path: "../config.env" })
+require('../passport-google-setup');
 
 // when login is successful, retrieve user info
 router.get("/login/success", (req, res) => {
-    console.log("LOGIN SUCCESS")
-    console.log(req.user)
+    console.log("/login/sucess")
     if (req.user) {
+        console.log(req.user)
         res.json({
             success: true,
             message: "user has successfully authenticated",
@@ -14,7 +17,7 @@ router.get("/login/success", (req, res) => {
             cookies: req.cookies
         });
     } else {
-        console.log("/login/success. NO USER PROVIDED IN REQ")
+        console.log("Error from /login/success: NO USER PROVIDED IN REQ")
     }
 });
 
@@ -41,11 +44,24 @@ router.get("/google", passport.authenticate("google", {
 }));
 
 // redirect to home page after successfully login via google
-router.get("/google/redirect", passport.authenticate("google", {
-        // successRedirect: "/auth/login/success",
-        successRedirect: CLIENT_HOME_PAGE_URL,
-        failureRedirect: "/auth/login/failed"
-    })
+// router.get("/google/redirect", passport.authenticate("google", {
+//         successRedirect: "/auth/login/success",
+//         // successRedirect: CLIENT_HOME_PAGE_URL,
+//         failureRedirect: "/auth/login/failed"
+//     })
+// );
+router.get('/google/redirect', passport.authenticate("google", {
+        failureRedirect: "/auth/login/failed",
+        // session: false
+    }),
+    function (req, res) {
+        const token = jwt.sign({ 
+            user: { "email": req.user.email }, 
+            id: req.user._id 
+        }, process.env.JWT_KEY);
+        res.redirect(`${CLIENT_HOME_PAGE_URL}/?token=${token}`);
+        // res.redirect(CLIENT_HOME_PAGE_URL)
+    }
 );
 
 module.exports = router;

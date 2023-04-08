@@ -6,6 +6,7 @@ const PORT = process.env.PORT || 5000;
 const passport = require("passport");
 const User = require("./models/user");
 const GoogleStrategy = require('passport-google-oauth2').Strategy;
+require('./passport-jwt-setup')
 
 passport.serializeUser((user, done) => {
     done(null, user.id);

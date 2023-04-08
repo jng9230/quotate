@@ -7,9 +7,12 @@ require("dotenv").config({ path: "./config.env" });
 const auth_routes = require("./routes/auth-routes")
 const quote_routes = require("./routes/quote-routes")
 const book_routes = require("./routes/book-routes")
-const passport_setup = require('./passport-setup');
-const session = require("express-session");
+// require('./passport-google-setup');
+// const session = require("express-session");
 const cookie_parser = require("cookie-parser"); 
+const body_parser = require("body-parser");
+const jwt = require("jsonwebtoken");
+require('./passport-jwt-setup')
 
 const PORT = process.env.PORT || 5000;
 const URI = process.env.ATLAS_URI;
@@ -74,13 +77,23 @@ app.get('/test', async (req, res) => {
     //     { title: "test"},
     //     { title: "a whole new penis" }
     // )
-    // res.json({result: "nice"});
+    res.json({result: "nice"});
     // res.json({ result: "hey" });
 });
 
 app.listen(PORT, () => {
     console.log(`Server is running on port: ${PORT}`);
 });
+
+// app.post("/get_details", passport.authenticate("jwt_strategy", { session: false }), (req, res) => {
+//     console.log(req.user);
+// });
+
+app.get('/get_details', passport.authenticate('jwt_strategy', { session: false }),
+    function (req, res) {
+        res.send(req.user.profile);
+    }
+);
 
 
 //GOOGLE AUTH
@@ -119,3 +132,14 @@ app.get("/", auth_check, (req, res) => {
         cookies: req.cookies
     });
 });
+
+app.use(body_parser.json());
+app.use(body_parser.urlencoded({ extended: true }));
+const jwt_check = (req, res, next) => {
+    // passport.authenticate("jwt_strategy", { session: false })
+    // TODO: idk fix this thing so we can call jwt_check like auth_check
+}
+
+// app.route("/get_details", passport.authenticate("jwt_strategy", { session: false }), (req, res) => {
+//     console.log(req.user);
+// });

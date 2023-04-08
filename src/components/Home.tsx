@@ -134,12 +134,24 @@ function Home(){
             headers: {
             }
         })
+        // const params = new Proxy(new URLSearchParams(window.location.search), {
+        //     get: (searchParams, prop:string) => searchParams.get(prop),
+        // });
+        // let value = params.token;
+        // fetch(API_BASE + "/get_details", {
+        //     method: "GET",
+        //     credentials: "include",
+        //     headers: {
+        //         // Authorization: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7fSwiaWQiOiI2NDIzOTg0Y2Q5OWUxYTRhN2NiNThlYTYiLCJpYXQiOjE2ODA5OTA4NDl9.N2fjcmSDXpyFk5aUcxrXOYwTGWOST6Q4oIcZxLS9Ieg"
+        //         authorization: "JWT"
+        //     }
+        // })
             .then(res => {
                 if (res.status === 200) return res.json();
                 throw new Error("failed to authenticate user");
             })
             .then(data => {
-                // console.log(data);
+                console.log(data);
                 // console.log(data.user.google_name);
                 setUser(data.user)
                 setAuthed(true);
@@ -162,7 +174,7 @@ function Home(){
             getBooks()
         }
     }, [user])
-    
+
     return (
         <div className="w-screen h-screen flex flex-col bg-off-white">
             <header className="grid grid-cols-3 gap-3 p-3">
