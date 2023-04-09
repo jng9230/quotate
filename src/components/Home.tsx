@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { book, booksReturnType, quote, quotesReturnType, newBookReturnType, deleteBookReturnType, userReturnType} from "./APIReturnTypes"
 import { BiPlus, BiMinus } from "react-icons/bi"
 import { Modal } from "./Modal";
@@ -15,43 +15,7 @@ const basic_button_classes = `
 function Home(){
     const [books, setBooks] = useState<book[]>([])
     const [quotes, setQuotes] = useState<quote[]>()
-    const getBooks = () => {
-        if (user === undefined){ return;}
-        fetch(API_BASE + "/book/book/all_for_user/" + user._id, {
-        })
-            .then(res => res.json())
-            .then(data => {
-                const data1 = data as booksReturnType[];
-                let mapped_books = data1.map(d => {
-                    return {
-                        title: d.title,
-                        id: d._id
-                    }
-                })
-                setBooks(mapped_books.reverse());
-            })
-            .catch(err => console.error("Error: ", err))
-    }
 
-    const getQuotes = () => {
-        if (focusedBook === undefined){return;}
-        // console.log(`GETTING QUOTES FOR ${focusedBook.title}`)
-        fetch(API_BASE + `/quote/quote/all_for_book/${focusedBook.id}`)
-            .then(res => res.json())
-            .then(data => {
-                // console.log(data);
-                const data1 = data as quotesReturnType[];
-                let mapping = data1.map(d => {
-                    return {
-                        text: d.text,
-                        id: d._id,
-                        book: d.book
-                    }
-                })
-                setQuotes(mapping.reverse())
-            })
-            .catch(err => console.error("Error: ", err))
-    }
     const [focusedBook, setFocusedBook] = useState<book>();
     const handleFocusedBookClick = (e: React.MouseEvent<HTMLDivElement>, key: string) => {
         const spec_book = books.filter(d => d.id === key)[0];
@@ -61,8 +25,27 @@ function Home(){
             setFocusedBook(spec_book)
         }
     }
-
+    
     useEffect(() => {
+        const getQuotes = () => {
+            if (focusedBook === undefined){return;}
+            // console.log(`GETTING QUOTES FOR ${focusedBook.title}`)
+            fetch(API_BASE + `/quote/quote/all_for_book/${focusedBook.id}`)
+                .then(res => res.json())
+                .then(data => {
+                    // console.log(data);
+                    const data1 = data as quotesReturnType[];
+                    let mapping = data1.map(d => {
+                        return {
+                            text: d.text,
+                            id: d._id,
+                            book: d.book
+                        }
+                    })
+                    setQuotes(mapping.reverse())
+                })
+                .catch(err => console.error("Error: ", err))
+        }
         getQuotes()
     }, [focusedBook])
 
@@ -116,7 +99,7 @@ function Home(){
             .then(data => {
                 let data1 = data as deleteBookReturnType;
                 console.log(data1);
-                setBooks(books.filter(d => d.id != data1.book._id))
+                setBooks(books.filter(d => d.id !== data1.book._id))
                 setFocusedBook(undefined)
                 setDeleteBookModal(false)
             })
@@ -160,7 +143,7 @@ function Home(){
                 console.error("Failed to authenticate user.", err)
                 setAuthed(false)
             })
-    }, [])
+    }, [authed])
     const handleLogin = () => {
         window.open(API_BASE + "/auth/google", "_self");
     }
@@ -170,6 +153,23 @@ function Home(){
     }
 
     useEffect(() => {
+        const getBooks = () => {
+            if (user === undefined) { return; }
+            fetch(API_BASE + "/book/book/all_for_user/" + user._id, {
+            })
+                .then(res => res.json())
+                .then(data => {
+                    const data1 = data as booksReturnType[];
+                    let mapped_books = data1.map(d => {
+                        return {
+                            title: d.title,
+                            id: d._id
+                        }
+                    })
+                    setBooks(mapped_books.reverse());
+                })
+                .catch(err => console.error("Error: ", err))
+        }
         if (user){
             getBooks()
         }
@@ -224,7 +224,7 @@ function Home(){
                                         overflow-hidden 
                                         whitespace-nowrap
                                         ${
-                                            focusedBook?.id == key ? "bg-main-green text-white" 
+                                            focusedBook?.id === key ? "bg-main-green text-white" 
                                             : "hover:bg-secondary-green"
                                         }
                                     `}

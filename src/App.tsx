@@ -4,24 +4,25 @@ import { Carousel } from './components/Carousel';
 import { Textbox } from './components/Textbox';
 import { Upload } from './components/Upload';
 import { StorageBox } from './components/StorageBox';
-import { useEffect, useState, useCallback, useMemo } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import { useEffect, useState, useCallback, } from 'react';
 import { getCroppedImg } from './utils/canvasUtils';
 import { Point, Area } from "react-easy-crop/types";
-import { CloseButton } from './components/CloseButton';
 import Cropper from 'react-easy-crop';
 import { Slider } from './components/Slider';
-import { preprocessImageFromURL, preprocessImageFromURL2 } from './utils/preprocess';
+import { preprocessImageFromURL2 } from './utils/preprocess';
 import { Modal } from './components/Modal';
 import { useParams } from 'react-router-dom';
-import { book, booksReturnType, quote, quotesReturnType, newQuoteReturnType, deleteQuoteReturnType, userReturnType } from "./components/APIReturnTypes"
+import { booksReturnType, quote, quotesReturnType, newQuoteReturnType, deleteQuoteReturnType, userReturnType } from "./components/APIReturnTypes"
 import { Link } from "react-router-dom"
 import { BiArrowBack } from "react-icons/bi"
 
 function App() {
     //TODO: OAuth
-    const [authed, setAuthed] = useState(false);
+    // const [authed, setAuthed] = useState(false);
     const [user, setUser] = useState<userReturnType>();
+    const authed = user !== undefined;
+    console.log(user);
+    console.log(authed);
     useEffect(() => {
         // console.log("getting auth stuff")
         fetch(API_BASE + "/auth/login/success", {
@@ -38,11 +39,11 @@ function App() {
                 console.log(data);
                 console.log(data.user.google_name);
                 setUser(data.user)
-                setAuthed(true);
+                // setAuthed(true);
             })
             .catch(err => {
                 console.error("Failed to authenticate user.", err)
-                setAuthed(false)
+                // setAuthed(false)
             })
     }, [])
 
@@ -152,7 +153,7 @@ function App() {
         if (user){
             thing();
         } 
-    }, [user])
+    }, [user, bookID])
 
     const handleTextSave = (new_text: string) => {
         if (new_text === "" || user === undefined){return;}
@@ -267,7 +268,7 @@ function App() {
 
             //close modal; persist crop area and set displayed image to cropped image
             // const processed_img = await preprocessImageFromURL(croppedImage)
-            const threshold = val != 0 && val != 20 ? val : -1;
+            const threshold = val !== 0 && val !== 20 ? val : -1;
             const processed_img = await preprocessImageFromURL2(croppedImage, threshold)
             if (processed_img === undefined) {
                 console.error("Undefined processed image.")
@@ -299,7 +300,7 @@ function App() {
             //close modal; persist crop area and set displayed image to cropped image
             setProcessedImagePath(undefined);
             closeCrop();
-            const threshold = binThreshold != 0 && binThreshold != 20 ? binThreshold : -1;
+            const threshold = binThreshold !== 0 && binThreshold !== 20 ? binThreshold : -1;
             const processed_img = await preprocessImageFromURL2(croppedImage, threshold)
             if (processed_img === undefined){
                 console.error("Undefined processed image.")
@@ -310,22 +311,22 @@ function App() {
         } catch (e) {
             console.error(e)
         }
-    }, [imagePath, croppedAreaPixels, rotation])
+    }, [imagePath, croppedAreaPixels, rotation, binThreshold])
 
     //BACKEND CALLS
     // const bookID = useParams().id;
     //TODO: undefined -> set to some default folder
 
-    const [optionsThreshold, setOptionsThreshold] = useState<number>()
-    const updateBinThresholdOptions = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const val = parseInt(e.target.value);
-        setOptionsThreshold(val);
-        if (val ===  -1){
-            updateCropper(val)
-        } else {
-            updateCropper(val/20)
-        }
-    }
+    // const [optionsThreshold, setOptionsThreshold] = useState<number>()
+    // const updateBinThresholdOptions = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    //     const val = parseInt(e.target.value);
+    //     // setOptionsThreshold(val);
+    //     if (val ===  -1){
+    //         updateCropper(val)
+    //     } else {
+    //         updateCropper(val/20)
+    //     }
+    // }
     // const allOptions = () => {
     // }
     let thing: any[] = []
@@ -333,7 +334,7 @@ function App() {
     for (let i = 1; i <= 20; i++){
         thing.push(<option value={i} key={i}> {i} </option>)
     }
-    const [size, setSize] = useState(0)
+    // const [size, setSize] = useState(0)
     return (
         <div className="App w-screen h-screen flex flex-col bg-off-white">
             <header className="grid grid-cols-3 p-3">
@@ -379,7 +380,7 @@ function App() {
                     runOCR={runOCR}
                 >
                     <Modal onClick={closeCrop}>
-                        <div>
+                        <>
                             <div className="crop_container relative w-full h-96">
                                 <Cropper
                                     image={processedImagePath !== "" && processedImagePath !== undefined ? processedImagePath : imagePath}
@@ -418,7 +419,7 @@ function App() {
                                 </Slider>
                                 <button className="btn-std border-std border-main-green text-main-green" onClick={cropAndConvert}> Confirm</button>
                             </div>
-                        </div>
+                        </>
                     </Modal>
                 </Upload>
                 <StorageBox storedText={storedText} deleteText={deleteText}></StorageBox>
