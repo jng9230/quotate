@@ -1,18 +1,15 @@
 import { BiPlus } from "react-icons/bi"
+import { config } from "../config"
+const API_BASE = config.API_BASE;
+
 function HomeHeader({
     setAddBookModal,
     authed,
-    // handleLogin,
-    // handleLogout,
     basic_button_classes,
-    API_BASE
 }: {
     setAddBookModal: (val:boolean) => void, 
     authed: boolean,
-    // handleLogin: () => void,
-    // handleLogout: () => void,
     basic_button_classes: string,
-    API_BASE: string
 }){
     const handleLogin = () => {
         window.open(API_BASE + "/auth/google", "_self");

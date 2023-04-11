@@ -12,38 +12,26 @@ import { Slider } from './components/Slider';
 import { preprocessImageFromURL2 } from './utils/preprocess';
 import { Modal } from './components/Modal';
 import { useParams } from 'react-router-dom';
-import { booksReturnType, quote, quotesReturnType, newQuoteReturnType, deleteQuoteReturnType, userReturnType } from "./utils/APIReturnTypes"
+import { quote, userReturnType } from "./utils/APIReturnTypes"
 import { Link } from "react-router-dom"
 import { BiArrowBack } from "react-icons/bi"
 import {config} from "./config"
+import { addNewQuote, deleteQuote, getAuthedUser, getBookTitle, getQuotesForBook } from './utils/apiCalls';
 
 const THRESHOLD_MIN = config.preprocess.THRESHOLD_MIN;
 const THRESHOLD_MAX = config.preprocess.THRESHOLD_MAX;
-const API_BASE = config.API_BASE;
 function App() {
     //TODO: OAuth
     const [user, setUser] = useState<userReturnType>();
+    const authed = user !== undefined;
+    //auth status changes -> reset user based on auth token
     useEffect(() => {
-        // console.log("getting auth stuff")
-        fetch(API_BASE + "/auth/login/success", {
-            method: "GET",
-            credentials: "include",
-            headers: {
-            }
-        })
+        getAuthedUser()
             .then(res => {
-                if (res.status === 200) return res.json();
-                throw new Error("failed to authenticate user");
+                setUser(res)
             })
-            .then(data => {
-                console.log(data);
-                console.log(data.user.google_name);
-                setUser(data.user)
-            })
-            .catch(err => {
-                console.error("Failed to authenticate user.", err)
-            })
-    }, [])
+            .catch(err => console.error(err))
+    }, [authed])
 
     //regular stuff
     const [imagePath, setImagePath] = useState("");
@@ -105,96 +93,53 @@ function App() {
     )
 
     const bookID = useParams().id;
-    // const [storedText, setStoredText] = useState<{id: string, text: string}[]>(() => {
-    const [storedText, setStoredText] = useState<quote[]>(() => {
-        // const text_get = localStorage.getItem("text");
-        // if (text_get != null) {
-        //     const text_json = JSON.parse(text_get);
-        //     return text_json
-        // }
-        // return []
-        // console.log(`GETTING QUOTES FOR ${bookID}`)
-        return []
-    })
+    const [storedText, setStoredText] = useState<quote[]>([]);
     //get initial quotes for book
     const [bookTitle, setBookTitle] = useState("")
     useEffect(() => {
-        const get_quotes = async () => {
-            //get quotes
-            fetch(API_BASE + `/quote/quote/all_for_book/${bookID}`)
-                .then(res => res.json())
-                .then(data => {
-                    console.log(data);
-                    const data1 = data as quotesReturnType[];
-                    const data2: quote[] = (data1.map(d => {
-                        return {
-                            text: d.text,
-                            id: d._id,
-                            book: d.book
-                        }
-                    }))
-                    setStoredText(data2.reverse())
-                })
-                .catch(err => { console.error("Error: ", err)})
-            
-            //set book title
-            fetch(API_BASE + `/book/book/id/${bookID}`)
-                .then(res => res.json())
-                .then(data => {
-                    console.log(data);
-                    const data1 = data as booksReturnType;
-                    setBookTitle(data1.title)
-                })
-                .catch(err => { console.error("Error: ", err) })
-        }
-        if (user){
-            get_quotes();
-        } 
+        if (user === undefined || bookID === undefined){return;}
+        getQuotesForBook(bookID)
+            .then(data => {
+                const data1: quote[] = (data.map(d => {
+                    return {
+                        text: d.text,
+                        id: d._id,
+                        book: d.book
+                    }
+                }))
+                setStoredText(data1.reverse())
+            })
+            .catch(err => { console.error(err)})
+        
+        getBookTitle(bookID) 
+            .then(data => {
+                setBookTitle(data.title)
+            })
+            .catch(err => { console.error(err) })
     }, [user, bookID])
 
     const handleTextSave = (new_text: string) => {
-        if (new_text === "" || user === undefined){return;}
-        // setStoredText([{ id: uuidv4(), text: new_text }, ...storedText]);
-
-        fetch(API_BASE + "/quote/quote", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ "text": new_text, "book": bookID, "user_id": user._id})
-            //TODO: handle bookID undefined case
-        })
-            .then(res => res.json())
+        if (new_text === "" || user === undefined || bookID === undefined){return;}
+        addNewQuote(new_text, bookID, user)
             .then(data => {
-                let data1 = data as newQuoteReturnType;
-                console.log(data1);
-                const new_quote: quote = {
+                const new_quote = {
                     text: new_text,
-                    book: data1.book,
-                    id: data1._id
-                } 
+                    book: data.book,
+                    id: data._id
+                }
                 setStoredText([new_quote, ...storedText])
             })
-            .catch(err => console.error("Error :", err))
-
+            .catch(err => console.error(err))
     }
 
-    function deleteText(i: string) {
-        fetch(API_BASE + "/quote/quote", {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({"id": i})
-        })
-            .then(res => res.json())
+    function deleteText(id:string) {
+        deleteQuote(id)
             .then(data => {
-                let data1 = data as deleteQuoteReturnType;
-                console.log(data1);
-                const filted_text = storedText.filter((d) => d.id !== i);
+                // console.log(data);
+                const filted_text = storedText.filter((d) => d.id !== data.result._id);
                 setStoredText(filted_text);
             })
-            .catch(err => console.error("Error: ", err))
+            .catch(err => console.error(err))
     }
 
 

@@ -10,6 +10,7 @@ router.get("/login/success", (req, res) => {
     console.log("/login/sucess")
     if (req.user) {
         console.log(req.user)
+        res.status(200);
         res.json({
             success: true,
             message: "user has successfully authenticated",

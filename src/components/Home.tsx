@@ -1,15 +1,13 @@
 // import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { book, quote, quotesReturnType, newBookReturnType, deleteBookReturnType, userReturnType} from "../utils/APIReturnTypes"
+import { book, quote, userReturnType} from "../utils/APIReturnTypes"
 // import { BiPlus, BiMinus } from "react-icons/bi"
 import { Modal } from "./Modal";
 import { HomeHeader } from "./HomeHeader";
 import { BooksWrapper } from "./BooksWrapper";
 import { QuotesWrapper } from "./QuotesWrapper";
-import { config } from "../config"
-import { getBooksForUser } from "../utils/apiCalls";
+import { getBooksForUser, getQuotesForBook, addNewBook, deleteBook, getAuthedUser } from "../utils/apiCalls";
 
-const API_BASE = config.API_BASE
 const basic_button_classes = `
     btn-std 
     border-std 
@@ -32,52 +30,33 @@ function Home(){
         }
     }
     
-    //get quotes whenever the focused book changes
+    //focused book changes -> get quotes from backend
     useEffect(() => {
-        const getQuotes = () => {
-            if (focusedBook === undefined){return;}
-            // console.log(`GETTING QUOTES FOR ${focusedBook.title}`)
-            fetch(API_BASE + `/quote/quote/all_for_book/${focusedBook.id}`)
-                .then(res => res.json())
-                .then(data => {
-                    // console.log(data);
-                    const data1 = data as quotesReturnType[];
-                    let mapping = data1.map(d => {
-                        return {
-                            text: d.text,
-                            id: d._id,
-                            book: d.book
-                        }
-                    })
-                    setQuotes(mapping.reverse())
+        if (focusedBook === undefined){return;}
+        getQuotesForBook(focusedBook.id)
+            .then(data1 => {
+                let mapping = data1.map(d => {
+                    return {
+                        text: d.text,
+                        id: d._id,
+                        book: d.book
+                    }
                 })
-                .catch(err => console.error("Error: ", err))
-        }
-        getQuotes()
+                setQuotes(mapping.reverse())
+            })
+            .catch(err => console.error(err))
     }, [focusedBook])
 
     const [addBookModal, setAddBookModal] = useState(false);
     const [newBookName, setNewBookName] = useState("")
+    //new book wants to be added -> call backend, update modals
     const handleAddNewBook = () => {
         if (user === undefined){return;}
-        //send RQ to server 
-        fetch(API_BASE + "/book/book", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ 
-                "title": newBookName, 
-                "user_id": user._id
-            })
-        })
-            .then(res => res.json())
+        addNewBook(newBookName, user)
             .then(data => {
-                console.log(data);
-                const data1 = data as newBookReturnType;
                 const newBook:book = {
                     title: newBookName,
-                    id: data1._id
+                    id: data._id
                 }
                 setBooks([newBook, ...books])
                 setAddBookModal(false)
@@ -88,82 +67,49 @@ function Home(){
     }
 
     const [deleteBookModal, setDeleteBookModal] = useState(false);
-    const deleteBook = () => {
+    //user clicks delete button -> bring up modal to confirm
+    const handleDeleteBook = () => {
         setDeleteBookModal(true);
     }
-    
+    //user confirms -> API calls, etc.
     const confirmDelete = () => {
         if (!focusedBook){return}
     
-        fetch(API_BASE + "/book/book", {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ "id": focusedBook.id })
-        })
-            .then(res => res.json())
+        deleteBook(focusedBook)
             .then(data => {
-                let data1 = data as deleteBookReturnType;
-                console.log(data1);
-                setBooks(books.filter(d => d.id !== data1.book._id))
+                setBooks(books.filter(d => d.id !== data.book._id))
                 setFocusedBook(undefined)
                 setDeleteBookModal(false)
             })
-            .catch(err => console.error("Error: ", err))
-
+            .catch(err => console.error(err))
     }
     
     const [user, setUser] = useState<userReturnType>();
     const authed = user !== undefined;
+    //auth status changes -> reset user based on auth token
     useEffect(() => {
-        // console.log("getting auth stuff")
-        fetch(API_BASE + "/auth/login/success", {
-            method: "GET",
-            credentials: "include",
-            headers: {
-            }
-        })
-        // const params = new Proxy(new URLSearchParams(window.location.search), {
-        //     get: (searchParams, prop:string) => searchParams.get(prop),
-        // });
-        // let value = params.token;
-        // fetch(API_BASE + "/get_details", {
-        //     method: "GET",
-        //     credentials: "include",
-        //     headers: {
-        //         // Authorization: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7fSwiaWQiOiI2NDIzOTg0Y2Q5OWUxYTRhN2NiNThlYTYiLCJpYXQiOjE2ODA5OTA4NDl9.N2fjcmSDXpyFk5aUcxrXOYwTGWOST6Q4oIcZxLS9Ieg"
-        //         authorization: "JWT"
-        //     }
-        // })
+        getAuthedUser()
             .then(res => {
-                if (res.status === 200) return res.json();
-                throw new Error("failed to authenticate user");
+                setUser(res)
             })
-            .then(data => {
-                console.log(data);
-                // console.log(data.user.google_name);
-                setUser(data.user)
-            })
-            .catch(err => {
-                console.error("Failed to authenticate user.", err)
-            })
+            .catch(err => console.error(err))
     }, [authed])
+
+    //get books for user
     useEffect(() => {
-        if (user){
-            getBooksForUser(user)
-                .then(res => {
-                    if (res){
-                        const mapped_books = res.map(d => {
-                            return {
-                                title: d.title,
-                                id: d._id
-                            }
-                        })
-                        setBooks(mapped_books.reverse());
+        if (user === undefined){return;}
+
+        getBooksForUser(user)
+            .then(res => {
+                const mapped_books = res.map(d => {
+                    return {
+                        title: d.title,
+                        id: d._id
                     }
                 })
-        }
+                setBooks(mapped_books.reverse());
+            })
+            .catch(err => console.error("Error: ", err))
     }, [user])
 
     return (
@@ -172,7 +118,6 @@ function Home(){
                 setAddBookModal={setAddBookModal} 
                 authed={authed}
                 basic_button_classes={basic_button_classes}
-                API_BASE={API_BASE}
             ></HomeHeader>
             <main className="w-full h-full grid grid-cols-2 sm:grid-cols-3 gap-3 p-3 pt-0 overflow-hidden">
                 <BooksWrapper 
@@ -183,7 +128,7 @@ function Home(){
                 <QuotesWrapper
                     focusedBook={focusedBook}
                     quotes={quotes}
-                    deleteBook={deleteBook}
+                    handleDeleteBook={handleDeleteBook}
                 ></QuotesWrapper>
             </main>
             {

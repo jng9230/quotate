@@ -5,11 +5,11 @@ import { BiPlus, BiMinus } from "react-icons/bi"
 function QuotesWrapper({
     focusedBook,
     quotes,
-    deleteBook
+    handleDeleteBook
 }: {
     focusedBook: book | undefined,
     quotes: quote[] | undefined, 
-    deleteBook: () => void
+    handleDeleteBook: () => void
 }){
     return (
         <div className="
@@ -51,7 +51,7 @@ function QuotesWrapper({
                             </button>
                         </Link>
                     }
-                    <button onClick={() => deleteBook()}
+                    <button onClick={() => handleDeleteBook()}
                         className="
                                     btn-std
                                     border-std
