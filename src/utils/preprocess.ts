@@ -190,7 +190,7 @@ function buildBlurKernel(r: number) {
         }
     }
 }
-
+// eslint-disable-next-line
 function blurARGB(pixels: Uint8ClampedArray, canvas: HTMLCanvasElement, radius: number) {
     const width = canvas.width;
     const height = canvas.height;
@@ -285,7 +285,7 @@ function blurARGB(pixels: Uint8ClampedArray, canvas: HTMLCanvasElement, radius: 
     }
     setPixels(pixels, argb);
 }
-
+// eslint-disable-next-line
 function dilate(pixels: Uint8ClampedArray, canvas: HTMLCanvasElement) {
     let currIdx = 0;
     const maxIdx = pixels.length ? pixels.length / 4 : 0;

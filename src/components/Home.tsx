@@ -1,8 +1,11 @@
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { book, booksReturnType, quote, quotesReturnType, newBookReturnType, deleteBookReturnType, userReturnType} from "./APIReturnTypes"
-import { BiPlus, BiMinus } from "react-icons/bi"
+// import { BiPlus, BiMinus } from "react-icons/bi"
 import { Modal } from "./Modal";
+import { HomeHeader } from "./HomeHeader";
+import { BooksWrapper } from "./BooksWrapper";
+import { QuotesWrapper } from "./QuotesWrapper";
 const API_BASE = "http://localhost:5000";
 const basic_button_classes = `
     btn-std 
@@ -26,6 +29,7 @@ function Home(){
         }
     }
     
+    //get quotes whenever the focused book changes
     useEffect(() => {
         const getQuotes = () => {
             if (focusedBook === undefined){return;}
@@ -107,8 +111,8 @@ function Home(){
 
     }
     
-    const [authed, setAuthed] = useState(false);
     const [user, setUser] = useState<userReturnType>();
+    const authed = user !== undefined;
     useEffect(() => {
         // console.log("getting auth stuff")
         fetch(API_BASE + "/auth/login/success", {
@@ -137,21 +141,11 @@ function Home(){
                 console.log(data);
                 // console.log(data.user.google_name);
                 setUser(data.user)
-                setAuthed(true);
             })
             .catch(err => {
                 console.error("Failed to authenticate user.", err)
-                setAuthed(false)
             })
     }, [authed])
-    const handleLogin = () => {
-        window.open(API_BASE + "/auth/google", "_self");
-    }
-    const handleLogout = () => {
-        window.open(API_BASE + "/auth/logout", "_self");
-        setAuthed(false);
-    }
-
     useEffect(() => {
         const getBooks = () => {
             if (user === undefined) { return; }
@@ -177,119 +171,24 @@ function Home(){
 
     return (
         <div className="w-screen h-screen flex flex-col bg-off-white">
-            <header className="grid grid-cols-3 gap-3 p-3">
-                <div className="">
-                    <button className="btn-std 
-                            border-main-green 
-                            border-std 
-                            bg-white
-                            text-main-green
-                            flex
-                            items-center
-                            transition 
-                            ease-out
-                            hover:scale-105
-                        "
-                        onClick={() => {setAddBookModal(true) }}
-                        >
-                        <BiPlus className="mr-2"/>
-                        BOOK
-                    </button>
-                </div>
-                <div className="col-start-2 col-span-full flex w-full justify-between">
-                    <div className="bg-black border-black border-std w-4/5"></div>
-                    {
-                        !authed ? <button onClick={handleLogin} className={basic_button_classes}> Login</button>
-                        : <button onClick={handleLogout} className={basic_button_classes}> Logout </button>
-                    }
-                </div>
-            </header>
-            <div className="w-full h-full grid grid-cols-2 sm:grid-cols-3 gap-3 p-3 pt-0 overflow-hidden">
-                <div className="row-span-full border-std p-3 space-y-3 bg-white">
-                    {
-                        books.map((d, i) => {
-                            const key = d.id
-                            return (
-                                <div key={key} 
-                                    className={`
-                                        border-std 
-                                        p-1 
-                                        cursor-pointer 
-                                        hover:ease-in 
-                                        hover:text-white 
-                                        transition 
-                                        ease-out 
-                                        hover:translate-x-1
-                                        text-ellipsis 
-                                        overflow-hidden 
-                                        whitespace-nowrap
-                                        ${
-                                            focusedBook?.id === key ? "bg-main-green text-white" 
-                                            : "hover:bg-secondary-green"
-                                        }
-                                    `}
-                                    onClick={e => handleFocusedBookClick(e, key)}>
-                                    {d.title}
-                                </div>
-                            )
-                        })
-                    }
-                </div>
-                <div className="
-                    col-start-2 
-                    col-span-full 
-                    row-span-full
-                    space-y-3
-                    p-3
-                    border-std
-                    bg-white
-                    overflow-y-scroll
-                    ">
-                    { focusedBook && 
-                        <>
-                            {quotes?.map((d, i) => {
-                                const key = d.id;
-                                return (
-                                    <div key={key}
-                                        className="border-std border-black p-1">
-                                        {d.text}
-                                    </div>
-                                )
-                            })}
-                            {
-                                focusedBook && 
-                                <Link to={`./app/${focusedBook.id}`}>
-                                    <button className={`
-                                        flex 
-                                        items-center 
-                                        btn-std 
-                                        border-2 
-                                        border-main-green 
-                                        mx-auto
-                                        text-main-green
-                                        ${quotes?.length ? "mt-3" : ""}
-                                        `}
-                                    >
-                                        <BiPlus className="mr-2" /> QUOTE
-                                    </button>
-                                </Link>
-                            }
-                            <button onClick={() => deleteBook()}
-                                className="
-                                    btn-std
-                                    border-std
-                                    border-red-600
-                                    text-red-600
-                                    flex
-                                    items-center
-                                    mx-auto
-                                ">
-                                <BiMinus className="mr-2"/> REMOVE BOOK
-                            </button>
-                        </>
-                    }
-                </div>
-            </div>
+            <HomeHeader 
+                setAddBookModal={setAddBookModal} 
+                authed={authed}
+                basic_button_classes={basic_button_classes}
+                API_BASE={API_BASE}
+            ></HomeHeader>
+            <main className="w-full h-full grid grid-cols-2 sm:grid-cols-3 gap-3 p-3 pt-0 overflow-hidden">
+                <BooksWrapper 
+                    books={books}
+                    focusedBook={focusedBook}
+                    handleFocusedBookClick={handleFocusedBookClick}
+                ></BooksWrapper>
+                <QuotesWrapper
+                    focusedBook={focusedBook}
+                    quotes={quotes}
+                    deleteBook={deleteBook}
+                ></QuotesWrapper>
+            </main>
             {
                 addBookModal && 
                 <Modal onClick={() => setAddBookModal(false)}>

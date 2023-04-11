@@ -15,7 +15,10 @@ import { useParams } from 'react-router-dom';
 import { booksReturnType, quote, quotesReturnType, newQuoteReturnType, deleteQuoteReturnType, userReturnType } from "./components/APIReturnTypes"
 import { Link } from "react-router-dom"
 import { BiArrowBack } from "react-icons/bi"
+import {config} from "./config"
 
+const THRESHOLD_MIN = config.preprocess.THRESHOLD_MIN;
+const THRESHOLD_MAX = config.preprocess.THRESHOLD_MAX;
 function App() {
     //TODO: OAuth
     // const [authed, setAuthed] = useState(false);
@@ -96,9 +99,9 @@ function App() {
             })
             .then(result => {
                 console.log(result);
-                const thing = result as Tesseract.RecognizeResult;
+                const result1 = result as Tesseract.RecognizeResult;
     
-                setText(thing.data.text);
+                setText(result1.data.text);
             })
             .finally(() => {setRunOCR(false)});
         }
@@ -122,21 +125,21 @@ function App() {
     //get initial quotes for book
     const [bookTitle, setBookTitle] = useState("")
     useEffect(() => {
-        const thing = async () => {
+        const get_quotes = async () => {
             //get quotes
             fetch(API_BASE + `/quote/quote/all_for_book/${bookID}`)
                 .then(res => res.json())
                 .then(data => {
                     console.log(data);
                     const data1 = data as quotesReturnType[];
-                    const thing1: quote[] = (data1.map(d => {
+                    const data2: quote[] = (data1.map(d => {
                         return {
                             text: d.text,
                             id: d._id,
                             book: d.book
                         }
                     }))
-                    setStoredText(thing1.reverse())
+                    setStoredText(data2.reverse())
                 })
                 .catch(err => { console.error("Error: ", err)})
             
@@ -151,7 +154,7 @@ function App() {
                 .catch(err => { console.error("Error: ", err) })
         }
         if (user){
-            thing();
+            get_quotes();
         } 
     }, [user, bookID])
 
@@ -231,7 +234,7 @@ function App() {
     // const [newBinVal, setBinVal] = useState(binThreshold);
     let timeout:any;
     const updateBinThreshold = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = parseInt(e.target.value) / 20;
+        const val = parseInt(e.target.value) / THRESHOLD_MAX;
         // if (val != binThreshold){
         window.clearTimeout(timeout);
         timeout = setTimeout(() => {
@@ -268,7 +271,7 @@ function App() {
 
             //close modal; persist crop area and set displayed image to cropped image
             // const processed_img = await preprocessImageFromURL(croppedImage)
-            const threshold = val !== 0 && val !== 20 ? val : -1;
+            const threshold = val !== THRESHOLD_MIN && val !== THRESHOLD_MAX ? val : -1;
             const processed_img = await preprocessImageFromURL2(croppedImage, threshold)
             if (processed_img === undefined) {
                 console.error("Undefined processed image.")
@@ -300,7 +303,7 @@ function App() {
             //close modal; persist crop area and set displayed image to cropped image
             setProcessedImagePath(undefined);
             closeCrop();
-            const threshold = binThreshold !== 0 && binThreshold !== 20 ? binThreshold : -1;
+            const threshold = binThreshold !== THRESHOLD_MIN && binThreshold !== THRESHOLD_MAX ? binThreshold : -1;
             const processed_img = await preprocessImageFromURL2(croppedImage, threshold)
             if (processed_img === undefined){
                 console.error("Undefined processed image.")
@@ -313,28 +316,6 @@ function App() {
         }
     }, [imagePath, croppedAreaPixels, rotation, binThreshold])
 
-    //BACKEND CALLS
-    // const bookID = useParams().id;
-    //TODO: undefined -> set to some default folder
-
-    // const [optionsThreshold, setOptionsThreshold] = useState<number>()
-    // const updateBinThresholdOptions = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    //     const val = parseInt(e.target.value);
-    //     // setOptionsThreshold(val);
-    //     if (val ===  -1){
-    //         updateCropper(val)
-    //     } else {
-    //         updateCropper(val/20)
-    //     }
-    // }
-    // const allOptions = () => {
-    // }
-    let thing: any[] = []
-    thing.push(<option value={-1} key={-1}> {"None"} </option>)
-    for (let i = 1; i <= 20; i++){
-        thing.push(<option value={i} key={i}> {i} </option>)
-    }
-    // const [size, setSize] = useState(0)
     return (
         <div className="App w-screen h-screen flex flex-col bg-off-white">
             <header className="grid grid-cols-3 p-3">
@@ -400,8 +381,8 @@ function App() {
                                 <Slider 
                                     label="B/W Threshold" 
                                     onChange={updateBinThreshold}
-                                    min={0}
-                                    max={20}
+                                    min={THRESHOLD_MIN}
+                                    max={THRESHOLD_MAX}
                                     step={1}
                                     // list={"markers"}
                                 >
@@ -410,10 +391,10 @@ function App() {
                                             None
                                         </span>
                                         <span className="mr-3">
-                                            10
+                                            {THRESHOLD_MAX / 2}
                                         </span>
                                         <span>
-                                            20
+                                            {THRESHOLD_MAX}
                                         </span>
                                     </div>
                                 </Slider>
