@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { book, quote } from "./APIReturnTypes"
+import { book, quote } from "../utils/APIReturnTypes"
 import { BiPlus, BiMinus } from "react-icons/bi"
 
 function QuotesWrapper({

@@ -12,20 +12,17 @@ import { Slider } from './components/Slider';
 import { preprocessImageFromURL2 } from './utils/preprocess';
 import { Modal } from './components/Modal';
 import { useParams } from 'react-router-dom';
-import { booksReturnType, quote, quotesReturnType, newQuoteReturnType, deleteQuoteReturnType, userReturnType } from "./components/APIReturnTypes"
+import { booksReturnType, quote, quotesReturnType, newQuoteReturnType, deleteQuoteReturnType, userReturnType } from "./utils/APIReturnTypes"
 import { Link } from "react-router-dom"
 import { BiArrowBack } from "react-icons/bi"
 import {config} from "./config"
 
 const THRESHOLD_MIN = config.preprocess.THRESHOLD_MIN;
 const THRESHOLD_MAX = config.preprocess.THRESHOLD_MAX;
+const API_BASE = config.API_BASE;
 function App() {
     //TODO: OAuth
-    // const [authed, setAuthed] = useState(false);
     const [user, setUser] = useState<userReturnType>();
-    const authed = user !== undefined;
-    console.log(user);
-    console.log(authed);
     useEffect(() => {
         // console.log("getting auth stuff")
         fetch(API_BASE + "/auth/login/success", {
@@ -42,11 +39,9 @@ function App() {
                 console.log(data);
                 console.log(data.user.google_name);
                 setUser(data.user)
-                // setAuthed(true);
             })
             .catch(err => {
                 console.error("Failed to authenticate user.", err)
-                // setAuthed(false)
             })
     }, [])
 
@@ -109,7 +104,6 @@ function App() {
         [imagePath, runOCR]
     )
 
-    const API_BASE = "http://localhost:5000";
     const bookID = useParams().id;
     // const [storedText, setStoredText] = useState<{id: string, text: string}[]>(() => {
     const [storedText, setStoredText] = useState<quote[]>(() => {

@@ -1,4 +1,4 @@
-import { book } from "./APIReturnTypes"
+import { book } from "../utils/APIReturnTypes"
 
 function BooksWrapper({
     books,

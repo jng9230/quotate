@@ -1,12 +1,15 @@
 // import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { book, booksReturnType, quote, quotesReturnType, newBookReturnType, deleteBookReturnType, userReturnType} from "./APIReturnTypes"
+import { book, quote, quotesReturnType, newBookReturnType, deleteBookReturnType, userReturnType} from "../utils/APIReturnTypes"
 // import { BiPlus, BiMinus } from "react-icons/bi"
 import { Modal } from "./Modal";
 import { HomeHeader } from "./HomeHeader";
 import { BooksWrapper } from "./BooksWrapper";
 import { QuotesWrapper } from "./QuotesWrapper";
-const API_BASE = "http://localhost:5000";
+import { config } from "../config"
+import { getBooksForUser } from "../utils/apiCalls";
+
+const API_BASE = config.API_BASE
 const basic_button_classes = `
     btn-std 
     border-std 
@@ -147,25 +150,19 @@ function Home(){
             })
     }, [authed])
     useEffect(() => {
-        const getBooks = () => {
-            if (user === undefined) { return; }
-            fetch(API_BASE + "/book/book/all_for_user/" + user._id, {
-            })
-                .then(res => res.json())
-                .then(data => {
-                    const data1 = data as booksReturnType[];
-                    let mapped_books = data1.map(d => {
-                        return {
-                            title: d.title,
-                            id: d._id
-                        }
-                    })
-                    setBooks(mapped_books.reverse());
-                })
-                .catch(err => console.error("Error: ", err))
-        }
         if (user){
-            getBooks()
+            getBooksForUser(user)
+                .then(res => {
+                    if (res){
+                        const mapped_books = res.map(d => {
+                            return {
+                                title: d.title,
+                                id: d._id
+                            }
+                        })
+                        setBooks(mapped_books.reverse());
+                    }
+                })
         }
     }, [user])
 
