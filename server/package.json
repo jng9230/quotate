@@ -19,6 +19,7 @@
     "jsonwebtoken": "^9.0.0",
     "mongodb": "^5.1.0",
     "mongoose": "^7.0.1",
+    "mongoose-findorcreate": "^4.0.0",
     "nodemon": "^2.0.21",
     "passport": "^0.5.3",
     "passport-google-oauth2": "^0.2.0",

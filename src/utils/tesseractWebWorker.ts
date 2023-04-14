@@ -2,7 +2,7 @@
 import * as Tesseract from 'tesseract.js';
 
 self.onmessage = (e: MessageEvent) => {
-    // self.postMessage("kill yourself")
+    // self.postMessage("wooooooo")
     const imagePath = e.data;
     console.log(imagePath)
     Tesseract.recognize(

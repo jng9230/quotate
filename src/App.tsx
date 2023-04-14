@@ -170,19 +170,16 @@ function App() {
     }
 
     const [binThreshold, setBinThreshold] = useState(0);
-    // const [newBinVal, setBinVal] = useState(binThreshold);
     let timeout:any;
+    // user updates threshold -> hold out until they are certain (500ms)
     const updateBinThreshold = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = parseInt(e.target.value) / THRESHOLD_MAX;
-        // if (val != binThreshold){
         window.clearTimeout(timeout);
         timeout = setTimeout(() => {
             console.log("WOOOOOOOOO")
             updateBinThresholdCallback(val);
         }, 500)
-        // }
     }
-    
     const updateBinThresholdCallback = (val:number) => {
         // console.log(val);
         // console.log(binThreshold);
