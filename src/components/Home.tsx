@@ -7,6 +7,7 @@ import { HomeHeader } from "./HomeHeader";
 import { BooksWrapper } from "./BooksWrapper";
 import { QuotesWrapper } from "./QuotesWrapper";
 import { getBooksForUser, getQuotesForBook, addNewBook, deleteBook, getAuthedUser } from "../utils/apiCalls";
+// import { useParams, useSearchParams } from "react-router-dom";
 
 const basic_button_classes = `
     btn-std 
@@ -30,6 +31,13 @@ function Home(){
         }
     }
     
+    // const [searchParams, setSearchParams] = useSearchParams();
+    // console.log(searchParams.entries());
+    // const token = useParams().token;
+    // const token = useParams().token;
+    // const token = searchParams.get('token');
+    // console.log("TOKEN: " + token)
+
     //focused book changes -> get quotes from backend
     useEffect(() => {
         if (focusedBook === undefined){return;}
@@ -88,9 +96,10 @@ function Home(){
     const authed = user !== undefined;
     //auth status changes -> reset user based on auth token
     useEffect(() => {
+        // if (token === undefined || token === null){console.error("NO TOKEN PROVIDED");return;}
         getAuthedUser()
             .then(res => {
-                setUser(res)
+                setUser(res);
             })
             .catch(err => console.error(err))
     }, [authed])

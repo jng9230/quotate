@@ -11,9 +11,8 @@ import Cropper from 'react-easy-crop';
 import { Slider } from './components/Slider';
 import { preprocessImageFromURL2 } from './utils/preprocess';
 import { Modal } from './components/Modal';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { quote, userReturnType } from "./utils/APIReturnTypes"
-import { Link } from "react-router-dom"
 import { BiArrowBack } from "react-icons/bi"
 import {config} from "./config"
 import { addNewQuote, deleteQuote, getAuthedUser, getBookTitle, getQuotesForBook } from './utils/apiCalls';
@@ -25,7 +24,13 @@ function App() {
     const [user, setUser] = useState<userReturnType>();
     const authed = user !== undefined;
     //auth status changes -> reset user based on auth token
+    // const [searchParams, setSearchParams] = useSearchParams();
+
+    // console.log(searchParams.entries());
+    // const token = useParams().token;
+    // const token = searchParams.get('token');
     useEffect(() => {
+        // if (token === undefined || token == null) { console.error("NO TOKEN PROVIDED"); return; }
         getAuthedUser()
             .then(res => {
                 setUser(res)

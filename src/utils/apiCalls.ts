@@ -1,7 +1,9 @@
+// import { useParams } from "react-router-dom";
 import { config } from "../config"
 import * as API from "./APIReturnTypes"
 
 const API_BASE = config.API_BASE; 
+// const token = useParams().token;
 
 const getBooksForUser = async (user: API.userReturnType) => {
     const res = fetch(API_BASE + "/book/book/all_for_user/" + user._id)
@@ -67,8 +69,10 @@ const getAuthedUser = async () => {
         headers: {
         }
     })
+    // const res = fetch(API_BASE + "/get_details/?token="+token, {
+    // })
         .then(res => {
-            if (res.status === 200) return res.json();
+            if (res.status === 200) return res.json()
             throw new Error("failed to authenticate user");
         })
         .then(data => {

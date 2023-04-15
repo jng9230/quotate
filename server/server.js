@@ -41,28 +41,30 @@ mongoose.connect(URI, {
     })
     .catch(console.error)
     .finally(() => {
-        // async function update_collections() {
-        //     // require('mongoose').model('Book').schema.add({ user: String });
-        //     console.log("what the fuck")
-        //     // Book.updateMany(
-        //     //     {},
-        //     //     {
-        //     //         $set: { user: "6423984cd99e1a4a7cb58ea6" }
-        //     //     }
-        //     // )
-        //     Book.updateOne(
-        //         { title: "test"},
-        //         { title: "a whole new penis" }
-        //     )
-        //     // const book = new Book({
-        //     //     title: "test",
-        //     //     user: "6423984cd99e1a4a7cb58ea6"
-        //     // })
+        async function update_collections() {
+            const old_user = "6423984cd99e1a4a7cb58ea6";
+            const new_user = "6439ab8c6f5f610b8b9e2c94";
+            //migrate books from old to new user
+            // const old_books = await Book.find({ user: old_user })
+            // old_books.forEach(d => {
+            //     const book = new Book({
+            //         title: d.title,
+            //         user: "6439ab8c6f5f610b8b9e2c94"
+            //     })
 
-        //     // book.save();
-        // }
+            //     book.save();
+            // })
 
-        // update_collections();
+            //migrate quotes
+            // const old_books = await Book.find({ title: "Speak, Okinawa", user: new_user });
+            // console.log(old_books);
+
+            //get book titles
+            //old quotes -> match to books via bookIDs
+            //set new quotes by using the old matched IDs and setting it
+            //  for books for the old user && same title
+        }
+        update_collections();
     }
     );
 
@@ -89,7 +91,7 @@ app.listen(PORT, () => {
 //     console.log(req.user);
 // });
 
-app.get('/get_details', passport.authenticate('jwt_strategy', { session: false }),
+app.get('/get_details', passport.authenticate('jwt', { session: false }),
     function (req, res) {
         res.send(req.user.profile);
     }
@@ -140,6 +142,30 @@ const jwt_check = (req, res, next) => {
     // TODO: idk fix this thing so we can call jwt_check like auth_check
 }
 
-// app.route("/get_details", passport.authenticate("jwt_strategy", { session: false }), (req, res) => {
-//     console.log(req.user);
-// });
+// app.route("/get_details", 
+//     // passport.authenticate("jwt", { session: false }), 
+//     // function (req, res) {
+//     //     console.log(req);
+//     //     res.send(req.user);
+//     // }
+//     passport.authenticate('jwt', function (err, user) {
+//         if (err) { return next(err); }
+//         // if (!user) { return res.redirect('/'); }
+//         console.log(user)
+//         console.log(info)
+//         // req / res held in closure
+//         req.logIn(user, function (err) {
+//             res.status(200).json({
+//                 authenticated: true,
+//                 message: "user successfully authenticated",
+//                 user: user
+//             });
+//         });
+
+//     })
+// );
+// app.post('/get_details', passport.authenticate('jwt', { session: false }),
+//     function (req, res) {
+//         res.send(req.user.profile);
+//     }
+// );

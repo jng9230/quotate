@@ -1,13 +1,14 @@
 const router = require("express").Router();
 const passport = require("passport");
-const CLIENT_HOME_PAGE_URL = "http://localhost:3000";
+// const CLIENT_HOME_PAGE_URL = "http://localhost:3000";
 const jwt = require("jsonwebtoken")
 require("dotenv").config({ path: "../config.env" })
 require('../passport-google-setup');
+const CLIENT_HOME_PAGE_URL = process.env.CLIENT_HOME_PAGE_URL;
 
 // when login is successful, retrieve user info
 router.get("/login/success", (req, res) => {
-    console.log("/login/sucess")
+    console.log("/login/success")
     if (req.user) {
         console.log(req.user)
         res.status(200);
@@ -56,12 +57,12 @@ router.get('/google/redirect', passport.authenticate("google", {
         // session: false
     }),
     function (req, res) {
-        const token = jwt.sign({ 
-            user: { "email": req.user.email }, 
-            id: req.user._id 
-        }, process.env.JWT_KEY);
-        res.redirect(`${CLIENT_HOME_PAGE_URL}/?token=${token}`);
-        // res.redirect(CLIENT_HOME_PAGE_URL)
+        // const token = jwt.sign({ 
+        //     user: { "email": req.user.email }, 
+        //     id: req.user._id 
+        // }, process.env.JWT_KEY);
+        // res.redirect(`${CLIENT_HOME_PAGE_URL}?token=${token}`);
+        res.redirect(CLIENT_HOME_PAGE_URL)
     }
 );
 

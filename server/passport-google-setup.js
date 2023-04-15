@@ -22,28 +22,39 @@ passport.deserializeUser((id, done) => {
         });
 });
 
-passport.use(new GoogleStrategy({
-    clientID: GOOGLE_CLIENT_ID,
-    clientSecret: GOOGLE_CLIENT_SECRET,
-    callbackURL: `http://localhost:${PORT}/auth/google/redirect`,
-    passReqToCallback: true
-},
-    async function (request, accessToken, refreshToken, profile, done) {
-        //try to find current user
-        const current_user = await User.findOne({
-            google_id: profile.id
-        });
+// passport.deserializeUser(function (user, done) {
+//     done(null, user);
+// });
 
-        //create new user if not found
-        if (!current_user){
-            const new_user = new User({
-                google_name: profile.displayName,
-                google_id: profile.id
-            }).save()
-            if (new_user){
-                done(null, new_user)
+let passportConfig = {};
+passportConfig.clientID = GOOGLE_CLIENT_ID,
+passportConfig.clientSecret = GOOGLE_CLIENT_SECRET,
+passportConfig.callbackURL = `http://localhost:${PORT}/auth/google/redirect`,
+passportConfig.passReqToCallback = true
+passport.use(new GoogleStrategy(passportConfig,
+    async function (request, accessToken, refreshToken, profile, done) {
+        User.findOrCreate(
+            { email: profile._json.email },
+            { name: profile.displayName, email: profile._json.email },
+            function (err, user) {
+                return done(err, user);
             }
-        }
-        done(null, current_user);
+        );
+        // //try to find current user
+        // const current_user = await User.findOne({
+        //     google_id: profile.id
+        // });
+
+        // //create new user if not found
+        // if (!current_user){
+        //     const new_user = new User({
+        //         google_name: profile.displayName,
+        //         google_id: profile.id
+        //     }).save()
+        //     if (new_user){
+        //         done(null, new_user)
+        //     }
+        // }
+        // done(null, current_user);
     }
 ));
