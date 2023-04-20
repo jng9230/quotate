@@ -13,6 +13,7 @@
     "cookie-session": "^2.0.0",
     "crypto": "^1.0.1",
     "css-loader": "^6.7.3",
+    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "fs": "^0.0.1-security",
     "heic-convert": "^1.2.4",
@@ -38,7 +39,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "jest --detectOpenHandles",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -63,7 +64,9 @@
     "@types/tesseract.js": "^2.0.0",
     "@types/uuid": "^9.0.0",
     "jest": "^27.5.1",
+    "mongoose": "^7.0.4",
     "postcss": "^8.4.21",
+    "supertest": "^6.3.3",
     "tailwindcss": "^3.2.4",
     "ts-loader": "^9.4.2",
     "typescript": "^4.9.5",

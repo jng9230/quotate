@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const Book = require("../models/book");
 const Quote = require("../models/quote");
-const debug = true;
+const debug = false;
 
 //get a spec. book
 router.get('/book/id/:id', async (req, res) => {

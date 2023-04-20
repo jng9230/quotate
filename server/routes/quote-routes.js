@@ -3,10 +3,10 @@ const Quote = require("../models/quote");
 const debug = false; 
 
 //get all quotes for a specific book
-router.get('/quote/all_for_book/:id', async (req, res) => {
+router.get('/quote/all_for_book/:book_id', async (req, res) => {
     if (debug) { console.log("GETTING QUOTES FOR SPEC. BOOK"); }
 
-    const quote = await Quote.find({ book: req.params.id })
+    const quote = await Quote.find({ book: req.params.book_id })
 
     res.json(quote);
 });
