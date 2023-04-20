@@ -7,13 +7,13 @@ router.post("/", async (req, res) => {
         name: req.body.name,
         email: req.body.email
     })
-    user.save()//.then(console.log("saved new user"));
+    await user.save()//.then(console.log("saved new user"));
 
     res.json(user);
 })
 
-router.get("/", (req, res) => {
-    const users = User.find();
+router.get("/", async (req, res) => {
+    const users = await User.find();
     res.json(users);
 })
 
