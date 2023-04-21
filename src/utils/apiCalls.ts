@@ -6,7 +6,7 @@ const API_BASE = config.API_BASE;
 // const token = useParams().token;
 
 const getBooksForUser = async (user: API.userReturnType) => {
-    const res = fetch(API_BASE + "/book/book/all_for_user/" + user._id)
+    const res = fetch(API_BASE + "/book/all_for_user/" + user._id)
         .then(res => res.json())
         .then(data => {
             const data1 = data as API.booksReturnType[];
@@ -17,7 +17,7 @@ const getBooksForUser = async (user: API.userReturnType) => {
 }
 
 const getQuotesForBook = async (bookID:string) => {
-    const res = fetch(API_BASE + `/quote/quote/all_for_book/${bookID}`)
+    const res = fetch(API_BASE + `/quote/all_for_book/${bookID}`)
         .then(res => res.json())
         .then(data => {
             const data1 = data as API.quotesReturnType[];
@@ -28,7 +28,7 @@ const getQuotesForBook = async (bookID:string) => {
 }
 
 const addNewBook = async (bookName:string, user: API.userReturnType) => {
-    const res = fetch(API_BASE + "/book/book", {
+    const res = fetch(API_BASE + "/book", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -48,7 +48,7 @@ const addNewBook = async (bookName:string, user: API.userReturnType) => {
 }
 
 const deleteBook = async (focusedBook:API.book) => {
-    const res = fetch(API_BASE + "/book/book", {
+    const res = fetch(API_BASE + "/book", {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json",
@@ -82,7 +82,7 @@ const getAuthedUser = async () => {
 }
 
 const getBookTitle = async (bookID:string) => {
-    const res = fetch(API_BASE + `/book/book/id/${bookID}`)
+    const res = fetch(API_BASE + `/book/id/${bookID}`)
         .then(res => res.json())
         .then(data => {
             return data as API.booksReturnType;
@@ -91,7 +91,7 @@ const getBookTitle = async (bookID:string) => {
 }
 
 const addNewQuote = async (new_text:string, bookID:string, user:API.userReturnType) => {
-    const res = fetch(API_BASE + "/quote/quote", {
+    const res = fetch(API_BASE + "/quote", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -107,7 +107,7 @@ const addNewQuote = async (new_text:string, bookID:string, user:API.userReturnTy
 }
 
 const deleteQuote = (id:string) => {
-    const res = fetch(API_BASE + "/quote/quote", {
+    const res = fetch(API_BASE + "/quote", {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json",

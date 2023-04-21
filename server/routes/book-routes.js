@@ -5,7 +5,7 @@ require("dotenv").config({ path: "./config.env" });
 const debug = process.env.DEBUG === 1; 
 
 //get a spec. book
-router.get('/book/id/:id', async (req, res) => {
+router.get('/id/:id', async (req, res) => {
     if (debug) { console.log("GETTING SPEC. BOOK"); }
     const book = await Book.findById(req.params.id)
     const quotes = await Quote.find({book: req.params.id})
@@ -14,7 +14,7 @@ router.get('/book/id/:id', async (req, res) => {
 });
 
 //get all books
-router.get('/book/all', async (req, res) => {
+router.get('/all', async (req, res) => {
     if (debug) { console.log("GETTING ALL BOOKS");}
     const book = await Book.find()
 
@@ -22,7 +22,7 @@ router.get('/book/all', async (req, res) => {
 });
 
 //get all books for a spec. user
-router.get('/book/all_for_user/:id', async (req, res) => {
+router.get('/all_for_user/:id', async (req, res) => {
     if (debug) { console.log("GETTING ALL BOOKS FOR USER"); console.log(req.params.id) }
     const user = req.params.id;
     const book = await Book.find({user: user})
@@ -30,7 +30,7 @@ router.get('/book/all_for_user/:id', async (req, res) => {
 });
 
 //add a book
-router.post('/book', (req, res) => {
+router.post('/', (req, res) => {
     if (debug) { console.log("ADD A BOOK"); console.log(req.body) }
 
     const book = new Book({
@@ -44,7 +44,7 @@ router.post('/book', (req, res) => {
 });
 
 //delete a book
-router.delete('/book', async (req, res) => {
+router.delete('/', async (req, res) => {
     if (debug) { console.log("DELETING A BOOK"); console.log(req.body) }
 
     const del_book = await Book.findByIdAndDelete(req.body.id);

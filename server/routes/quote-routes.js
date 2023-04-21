@@ -4,7 +4,7 @@ require("dotenv").config({ path: "./config.env" });
 const debug = process.env.DEBUG === 1; 
 
 //get all quotes for a specific book
-router.get('/quote/all_for_book/:book_id', async (req, res) => {
+router.get('/all_for_book/:book_id', async (req, res) => {
     if (debug) { console.log("GETTING QUOTES FOR SPEC. BOOK"); console.log(req.params.book_id)}
 
     const quote = await Quote.find({ book: req.params.book_id })
@@ -13,7 +13,7 @@ router.get('/quote/all_for_book/:book_id', async (req, res) => {
 });
 
 //get all quotes
-router.get('/quote/all', async (req, res) => {
+router.get('/all', async (req, res) => {
     if (debug) { console.log("GETTING ALL QUOTES"); }
 
     const quote = await Quote.find()
@@ -21,7 +21,7 @@ router.get('/quote/all', async (req, res) => {
     res.json(quote);
 });
 
-router.get('/quote/all_for_user/:id', async (req, res) => {
+router.get('/all_for_user/:id', async (req, res) => {
     if (debug) { console.log("GETTING ALL QUOTES FOR USER"); console.log(req.params.id) }
 
     const quote = await Quote.find({user: req.params.id})
@@ -30,7 +30,7 @@ router.get('/quote/all_for_user/:id', async (req, res) => {
 });
 
 //add a quote
-router.post('/quote', (req, res) => {
+router.post('/', (req, res) => {
     if (debug) { console.log("ADDING A QUOTE"); console.log(req.body) }
 
     // const user = req.body.id
@@ -46,7 +46,7 @@ router.post('/quote', (req, res) => {
 });
 
 //delete a quote by its ID
-router.delete('/quote', async (req, res) => {
+router.delete('/', async (req, res) => {
     if (debug) { console.log("DELETING A QUOTE"); console.log(req.body) }
 
     const result = await Quote.findByIdAndDelete(req.body.id);

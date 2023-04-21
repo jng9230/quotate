@@ -101,7 +101,7 @@ describe("books", () => {
         const book = new Book({ title: "test0", user: new_user._id })
         await book.save()
         chai.request(app)
-            .get(`/book/book/id/${book._id}`)
+            .get(`/book/id/${book._id}`)
             .end((err, res) => {
                 res.body.should.have.property("book");
                 res.body.should.have.property("quotes")
@@ -111,11 +111,11 @@ describe("books", () => {
             })
     })
 
-    it("GET /book/all_for_user", async () => {
+    it("GET /all_for_user", async () => {
         const book = new Book({title: "test1", user: new_user._id})
         await book.save()
         chai.request(app)
-            .get(`/book/book/all_for_user/${new_user._id}`)
+            .get(`/book/all_for_user/${new_user._id}`)
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.length.should.be.above(0);
@@ -126,7 +126,7 @@ describe("books", () => {
     it("POST /book", (done) => {
         const title = "new book 22"
         chai.request(app)
-            .post(`/book/book`)
+            .post(`/book`)
             .send({
                 title: title,
                 user_id: new_user._id
@@ -142,7 +142,7 @@ describe("books", () => {
         const book = new Book({title: "to be delete", user: new_user._id})
         await book.save()
         chai.request(app)
-            .delete("/book/book")
+            .delete("/book")
             .send({id: book._id})
             .end((err, res) => {
                 res.body.should.have.property("book")
@@ -172,7 +172,7 @@ describe("quotes", () => {
     it("POST /quote", (done) => {
         const text = "to be or not to be that is the q";
         chai.request(app)
-            .post(`/quote/quote/`)
+            .post(`/quote/`)
             .send({
                 text: text,
                 book: new_book._id,
@@ -186,7 +186,7 @@ describe("quotes", () => {
             })
     })
 
-    it("GET /quote/all_for_book", async () => {
+    it("GET /all_for_book", async () => {
         const text = "pink frog purple toad";
         const new_quote = new Quote({
             text: text, 
@@ -197,7 +197,7 @@ describe("quotes", () => {
         await new_quote.save();
 
         chai.request(app)
-            .get(`/quote/quote/all_for_book/${new_book._id}`)
+            .get(`/quote/all_for_book/${new_book._id}`)
             .end((err, res) => {
                 res.body.length.should.be.above(0);
                 // res.body[0].text.should.be.eql(text); //race conditions -> can't test properly? 
@@ -205,7 +205,7 @@ describe("quotes", () => {
             })        
     })
 
-    it("GET /quote/all_for_user", async () => {
+    it("GET /all_for_user", async () => {
         const text = "pink frog purple toad 3";
         const new_quote = new Quote({
             text: text,
@@ -216,7 +216,7 @@ describe("quotes", () => {
         await new_quote.save();
 
         chai.request(app)
-            .get(`/quote/quote/all_for_user/${new_user._id}`)
+            .get(`/quote/all_for_user/${new_user._id}`)
             .end((err, res) => {
                 res.body.length.should.be.above(0);
             })
@@ -232,7 +232,7 @@ describe("quotes", () => {
         await new_quote.save()
 
         chai.request(app)
-            .delete("/quote/quote")
+            .delete("/quote")
             .send({id: new_quote._id})
             .end((err, res) => {
                 res.body.should.have.property("result")
@@ -245,7 +245,7 @@ describe("quotes", () => {
 })
 
     // it("get quotes for book", async () => {
-    //     const res = await request(app).get(`/quote/all_for_book/${new_books[0]._id}`);
+    //     const res = await request(app).get(`/all_for_book/${new_books[0]._id}`);
     //     console.log(res.body);
     //     expect(Object.keys(res.body).length).toEqual(1);
     //     expect(res.body[0].text).toEqual(text);
@@ -253,7 +253,7 @@ describe("quotes", () => {
 
     // it("get quotes for user", async () => {
     //     //add a quote for book 2
-    //     const res = await request(app).get(`/book/book/all_for_user/${new_user._id}`);
+    //     const res = await request(app).get(`/book/all_for_user/${new_user._id}`);
     //     expect(res.statusCode).toBe(200);
     //     expect(Object.keys(res.body).length).toEqual(1);
     //     expect(res.body[0].title).toEqual(title)
