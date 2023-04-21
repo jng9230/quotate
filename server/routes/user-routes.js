@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const User = require("../models/user");
 require("dotenv").config({ path: "./config.env" });
-const debug = process.env.DEBUG === 1; 
+const debug = process.env.DEBUG === "1"; 
 
 router.post("/", async (req, res) => {
     const user = new User({

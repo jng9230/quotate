@@ -2,7 +2,7 @@ const router = require("express").Router();
 const Book = require("../models/book");
 const Quote = require("../models/quote");
 require("dotenv").config({ path: "./config.env" });
-const debug = process.env.DEBUG === 1; 
+const debug = process.env.DEBUG === "1"; 
 
 //get a spec. book
 router.get('/id/:id', async (req, res) => {

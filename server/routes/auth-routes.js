@@ -5,12 +5,13 @@ const jwt = require("jsonwebtoken")
 require("dotenv").config({ path: "../config.env" })
 require('../passport-google-setup');
 const CLIENT_HOME_PAGE_URL = process.env.CLIENT_HOME_PAGE_URL;
+const debug = process.env.DEBUG === "1"; 
 
 // when login is successful, retrieve user info
 router.get("/login/success", (req, res) => {
-    console.log("/login/success")
+    if (debug) {console.log("/login/success")}
     if (req.user) {
-        console.log(req.user)
+        if (debug) {console.log(req.user)}
         res.status(200);
         res.json({
             success: true,

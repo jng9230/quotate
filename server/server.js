@@ -2,10 +2,10 @@ const PORT = process.env.PORT || 5000;
 const app = require("./app");
 const mongoose = require('mongoose');
 require("dotenv").config({ path: "./config.env" });
-const URI = process.env.ATLAS_URI_TEST;
+const URI = process.env.ATLAS_URI;
 const User = require("./models/user")
 app.listen(PORT, () => {
-    console.log(`Example app listening on port ${PORT}`);
+    console.log(`App listening on port ${PORT}`);
 });
 
 mongoose.connect(URI, {
