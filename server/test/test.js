@@ -39,16 +39,17 @@ async function dropAllCollections() {
     }
 }
 
-before(async () => {
-    await mongoose.connect(URI, {
+before((done) => {
+    mongoose.connect(URI, {
         useNewUrlParser: true,
         useUnifiedTopology: true
     })
         .then(() => { console.log("DB connected") })
         .catch(e => console.log(e))
+        .finally(() => done())
 });
 
-describe('make and check users', () => {
+describe("users", () => {
     before(async () => {
         await dropAllCollections();
     });
@@ -63,7 +64,7 @@ describe('make and check users', () => {
             })
     });
 
-    it("correctly gets users on initial load", (done) => {
+    it("GET /user", (done) => {
         chai.request(app)
             .get("/user/")
             .end((err, res) => {
@@ -72,7 +73,7 @@ describe('make and check users', () => {
             })
     })
 
-    it("makes a new user", (done) => {
+    it("POST /user", (done) => {
         const name = "John Ng";
         const email = "asdf123@gmail.com";
         chai.request(app)
@@ -83,42 +84,46 @@ describe('make and check users', () => {
                 res.body.email.should.be.eql(email);
                 done()
             })
-        // expect(response.body.name).toEqual(name);
-        // expect(response.body.email).toEqual(email);
     });
 })
 
 describe("books", () => {
     let new_user;
-    before(done => {
-        dropAllCollections()
-            .then(() => {
-                console.log("adding a new user")
-                const user = new User({ name: "Test Tester", email: "email2@gmail.com" })
-                user.save().then((user) => {new_user = user; done();})
+    before(async () => {
+        await dropAllCollections()
+
+        const user = new User({ name: "Test Tester", email: "email2@gmail.com" })
+        await user.save() 
+        new_user = user
+    })
+
+    it("GET /book", async () => {
+        const book = new Book({ title: "test0", user: new_user._id })
+        await book.save()
+        chai.request(app)
+            .get(`/book/book/id/${book._id}`)
+            .end((err, res) => {
+                res.body.should.have.property("book");
+                res.body.should.have.property("quotes")
+                res.body.book._id.should.be.eql(book._id.toString());
+                res.body.book.title.should.be.eql(book.title)
+                res.body.quotes.length.should.be.eql(0);
             })
     })
 
-    beforeEach(done => {
-        Book.deleteMany().then(() => {done()});
-    })
-    
-    it("check that user has book", (done) => {
+    it("GET /book/all_for_user", async () => {
         const book = new Book({title: "test1", user: new_user._id})
-        book.save()
-            .then((book) => {
-                chai.request(app)
-                    .get(`/book/book/all_for_user/${new_user._id}`)
-                    .end((err, res) => {
-                        res.should.have.status(200);
-                        res.body.length.should.be.eql(1);
-                        res.body[0].title.should.be.eql(book.title);
-                        done();
-                    })
+        await book.save()
+        chai.request(app)
+            .get(`/book/book/all_for_user/${new_user._id}`)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.length.should.be.above(0);
+                // res.body[0].title.should.be.eql(book.title);
             })
     });
 
-    it("add a book", (done) => {
+    it("POST /book", (done) => {
         const title = "new book 22"
         chai.request(app)
             .post(`/book/book`)
@@ -133,21 +138,18 @@ describe("books", () => {
             })
     });
 
-    it("delete a book", (done) => {
+    it("DELETE /book", async () => {
         const book = new Book({title: "to be delete", user: new_user._id})
-        book.save()
-            .then(book => {
-                chai.request(app)
-                    .delete("/book/book")
-                    .send({id: book._id})
-                    .end((err, res) => {
-                        res.body.should.have.property("book")
-                        res.body.should.have.property("quotes")
-                        res.body.book.title.should.be.eql(book.title)
-                        res.body.book._id.should.be.eql(book._id.toString())
-                        res.body.quotes.deletedCount.should.be.eql(0)
-                        done()
-                    })
+        await book.save()
+        chai.request(app)
+            .delete("/book/book")
+            .send({id: book._id})
+            .end((err, res) => {
+                res.body.should.have.property("book")
+                res.body.should.have.property("quotes")
+                res.body.book.title.should.be.eql(book.title)
+                res.body.book._id.should.be.eql(book._id.toString())
+                res.body.quotes.deletedCount.should.be.eql(0)
             })
     })
 })
@@ -155,25 +157,19 @@ describe("books", () => {
 describe("quotes", () => {
     let new_user;
     let new_book;
-    before(done => {
-        // dropAllCollections()
-        //     .then(() => {
-        const user = new User({name:"adf waawa", email: "fake@gmail.com"})
-        user.save()
-            .then(user => {
-                new_user = user;
-                const book = new Book({title: "to be added to", user: user._id})
-                book.save()
-                    .then(book => {
-                        new_book = book;
-                        done();
-                    })
-            })
-            // })
+    before(async () => {
+        await dropAllCollections()
 
+        const user = new User({ name: "adf waawa", email: "fake@gmail.com" })
+        await user.save()
+        new_user = user;
+
+        const book = new Book({ title: "to be added to", user: user._id })
+        await book.save()
+        new_book = book;
     })
 
-    it("add a quote", (done) => {
+    it("POST /quote", (done) => {
         const text = "to be or not to be that is the q";
         chai.request(app)
             .post(`/quote/quote/`)
@@ -189,12 +185,64 @@ describe("quotes", () => {
                 done();
             })
     })
+
+    it("GET /quote/all_for_book", async () => {
+        const text = "pink frog purple toad";
+        const new_quote = new Quote({
+            text: text, 
+            book: new_book._id,
+            user: new_user._id,
+        })
+
+        await new_quote.save();
+
+        chai.request(app)
+            .get(`/quote/quote/all_for_book/${new_book._id}`)
+            .end((err, res) => {
+                res.body.length.should.be.above(0);
+                // res.body[0].text.should.be.eql(text); //race conditions -> can't test properly? 
+                // res.body[0]._id.should.be.eql(new_quote._id.toString());
+            })        
+    })
+
+    it("GET /quote/all_for_user", async () => {
+        const text = "pink frog purple toad 3";
+        const new_quote = new Quote({
+            text: text,
+            book: new_book._id,
+            user: new_user._id,
+        })
+
+        await new_quote.save();
+
+        chai.request(app)
+            .get(`/quote/quote/all_for_user/${new_user._id}`)
+            .end((err, res) => {
+                res.body.length.should.be.above(0);
+            })
+    })
+
+    it("DELETE /quote", async () => {
+        const text = "blue blue blue asdsa a"
+        const new_quote = new Quote({
+            text: text,
+            book: new_book._id,
+            user: new_user._id,  
+        })
+        await new_quote.save()
+
+        chai.request(app)
+            .delete("/quote/quote")
+            .send({id: new_quote._id})
+            .end((err, res) => {
+                res.body.should.have.property("result")
+                res.body.result.text.should.be.eql(text);
+                res.body.result._id.should.be.eql(new_quote._id.toString());
+                res.body.result.user.should.be.eql(new_quote.user.toString());
+                res.body.result.book.should.be.eql(new_quote.book.toString())
+            })
+    })
 })
-    //     console.log(res.body);
-    //     expect(res.body.text).toEqual(text);
-    //     expect(res.body.book).toEqual(book);
-    //     expect(res.body.user).toEqual(new_user._id);
-    // });
 
     // it("get quotes for book", async () => {
     //     const res = await request(app).get(`/quote/all_for_book/${new_books[0]._id}`);

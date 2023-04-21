@@ -1,10 +1,11 @@
 const router = require("express").Router();
 const Quote = require("../models/quote");
-const debug = false; 
+require("dotenv").config({ path: "./config.env" });
+const debug = process.env.DEBUG === 1; 
 
 //get all quotes for a specific book
 router.get('/quote/all_for_book/:book_id', async (req, res) => {
-    if (debug) { console.log("GETTING QUOTES FOR SPEC. BOOK"); }
+    if (debug) { console.log("GETTING QUOTES FOR SPEC. BOOK"); console.log(req.params.book_id)}
 
     const quote = await Quote.find({ book: req.params.book_id })
 
