@@ -2,10 +2,10 @@
 import { useState, useEffect } from "react";
 import { book, quote, userReturnType} from "../utils/APIReturnTypes"
 // import { BiPlus, BiMinus } from "react-icons/bi"
-import { Modal } from "./Modal";
-import { HomeHeader } from "./HomeHeader";
-import { BooksWrapper } from "./BooksWrapper";
-import { QuotesWrapper } from "./QuotesWrapper";
+import { Modal } from "../components/Modal";
+import { HomeHeader } from "../components/HomeHeader";
+import { BooksWrapper } from "../components/BooksWrapper";
+import { QuotesWrapper } from "../components/QuotesWrapper";
 import { getBooksForUser, getQuotesForBook, addNewBook, deleteBook, getAuthedUser } from "../utils/apiCalls";
 // import { useParams, useSearchParams } from "react-router-dom";
 

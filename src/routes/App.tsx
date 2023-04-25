@@ -1,21 +1,21 @@
 import * as Tesseract from 'tesseract.js';
-import './App.css';
-import { Carousel } from './components/Carousel';
-import { Textbox } from './components/Textbox';
-import { Upload } from './components/Upload';
-import { StorageBox } from './components/StorageBox';
+import '../index.css';
+import { Carousel } from '../components/Carousel';
+import { Textbox } from '../components/Textbox';
+import { Upload } from '../components/Upload';
+import { StorageBox } from '../components/StorageBox';
 import { useEffect, useState, useCallback, } from 'react';
-import { getCroppedImg } from './utils/canvasUtils';
+import { getCroppedImg } from '../utils/canvasUtils';
 import { Point, Area } from "react-easy-crop/types";
 import Cropper from 'react-easy-crop';
-import { Slider } from './components/Slider';
-import { preprocessImageFromURL2 } from './utils/preprocess';
-import { Modal } from './components/Modal';
+import { Slider } from '../components/Slider';
+import { preprocessImageFromURL2 } from '../utils/preprocess';
+import { Modal } from '../components/Modal';
 import { useParams, Link } from 'react-router-dom';
-import { quote, userReturnType } from "./utils/APIReturnTypes"
+import { quote, userReturnType } from "../utils/APIReturnTypes"
 import { BiArrowBack } from "react-icons/bi"
-import {config} from "./config"
-import { addNewQuote, deleteQuote, getAuthedUser, getBookTitle, getQuotesForBook } from './utils/apiCalls';
+import {config} from "../config"
+import { addNewQuote, deleteQuote, getAuthedUser, getBookTitle, getQuotesForBook } from '../utils/apiCalls';
 
 const THRESHOLD_MIN = config.preprocess.THRESHOLD_MIN;
 const THRESHOLD_MAX = config.preprocess.THRESHOLD_MAX;

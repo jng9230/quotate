@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 // import App from './App';
 // import { BrowserRouter } from "react-router-dom";
-import { LandingPage } from './LandingPage';
+import { LandingPage } from './routes/LandingPage';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
