@@ -5,12 +5,12 @@ function BooksWrapper({
     focusedBook,
     handleFocusedBookClick
 }:{
-    books:book[],
+    books: book[],
     focusedBook: book | undefined, 
     handleFocusedBookClick: (e: React.MouseEvent<HTMLDivElement>, key:string) => void
 }){
     return (
-        <div className="row-span-full border-std p-3 space-y-3 bg-white">
+        <div className="row-span-full border-std p-3 space-y-3 bg-white" data-testid="booksWrapper">
             {
                 books.map((d, i) => {
                     const key = d.id

@@ -21,7 +21,9 @@ function QuotesWrapper({
                     border-std
                     bg-white
                     overflow-y-scroll
-                    ">
+                    "
+            data-testid="quotesWrapper"
+        >
             {focusedBook &&
                 <>
                     {quotes?.map((d, i) => {
