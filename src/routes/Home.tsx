@@ -160,7 +160,7 @@ function Home(){
             </main>
             {
                 addBookModal && 
-                <Modal onClick={() => setAddBookModal(false)}>
+                <Modal onClick={() => setAddBookModal(false)} testID={"closeAddBookModal"}>
                     <div className="w-full h-full flex flex-col items-center space-y-5">
                         <label htmlFor="bookName"> ADD A NEW BOOK </label>
                         <input type="text" id="bookName" name="bookName" placeholder="Enter book name"

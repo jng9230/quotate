@@ -5,7 +5,8 @@ export const book1_title = "book1 title";
 export const book1_id = "b987654321";
 export const quote1_id = "q987654321";
 export const quote1_text = "quote 1 text hello world";
-
+// export const book2_title = "book2 title";
+// export const book2_id = "b0987654567";
 
 export const user: API.userReturnType = {
     google_id: "123456789",
@@ -14,13 +15,18 @@ export const user: API.userReturnType = {
     __v: "0"
 }
 
-export const book1: API.booksReturnType = {
+export const book1: API.book = {
+    title: book1_title,
+    id: book1_id,
+}
+
+export const book1_return: API.booksReturnType = {
     title: book1_title,
     _id: book1_id,
     __v: 0
 }
 
-export const quote1: API.quotesReturnType = {
+export const quote1_return: API.quotesReturnType = {
     _id: quote1_id,
     text: quote1_text,
     book: book1_id,
@@ -33,8 +39,8 @@ export const book1_added: API.newBookReturnType = {
 }
 
 export const book1_deleted: API.deleteBookReturnType = {
-    book: book1, 
-    quotes: [quote1]
+    book: book1_return, 
+    quotes: [quote1_return]
 }
 
 export const quote1_added: API.newQuoteReturnType = {
@@ -44,5 +50,5 @@ export const quote1_added: API.newQuoteReturnType = {
 }
 
 export const quote1_deleted: API.deleteQuoteReturnType = {
-    result: quote1
+    result: quote1_return
 }

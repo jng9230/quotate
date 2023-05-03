@@ -59,7 +59,6 @@ export const addNewBook = async (bookName:string, user: API.userReturnType) => {
     })
         .then(res => res.json())
         .then(data => {
-            console.log(data);
             const data1 = data as API.newBookReturnType;
             return data1
         })

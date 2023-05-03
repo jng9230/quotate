@@ -4,9 +4,11 @@ import { CloseButton } from "./CloseButton"
 function Modal({
     onClick,
     children,
+    testID
 }:{
     onClick: () => void,
     children: ReactElement,
+    testID?: string
 }){
     const handleClick = () => {
         onClick()
@@ -33,7 +35,10 @@ function Modal({
                 overflow-hidden 
                 m-auto 
                 bg-white relative">
-                <CloseButton onClick={handleClick} styles="absolute right-1 top-1"></CloseButton>
+                <CloseButton onClick={handleClick} 
+                    styles="absolute right-1 top-1"
+                    testID={testID}
+                ></CloseButton>
                 { children }
             </div>
         </div>

@@ -11,11 +11,11 @@ const handlers = [
     }),
 
     rest.get(`${API_BASE}/book/all_for_user/${data.user_id}`, async (req, res, ctx) => {
-        return res(ctx.json([data.book1]))
+        return res(ctx.json([]))
     }),
 
     rest.get(`${API_BASE}/quote/all_for_book/${data.book1_id}`, async (req, res, ctx) => {
-        return res(ctx.json([data.quote1]))
+        return res(ctx.json([data.quote1_return]))
     }),
 
     rest.post(`${API_BASE}/book`, async (req, res, ctx) => {
@@ -27,7 +27,7 @@ const handlers = [
     }),
 
     rest.get(`${API_BASE}/book/id/${data.book1_id}`, async (req, res, ctx) => {
-        return res(ctx.json(data.book1))
+        return res(ctx.json(data.book1_return))
     }),
 
     rest.post(`${API_BASE}/quote`, async (req, res, ctx) => {

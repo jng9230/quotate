@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, waitForElementToBeRemoved } from '@testing-library/react';
 import { Home } from '../routes/Home';
 import { BooksWrapper } from '../components/BooksWrapper';
 import { QuotesWrapper } from '../components/QuotesWrapper';
@@ -9,6 +9,8 @@ import { within } from '@testing-library/dom'
 import userEvent from '@testing-library/user-event';
 import { server } from './mockServer.js'
 import * as API from "../utils/APIReturnTypes";
+import * as data from "./mockData";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 beforeAll(() => server.listen())
 afterEach(() => {
@@ -70,16 +72,18 @@ describe("book wrapper", () => {
         expect(screen.getByTestId("booksWrapper")).toBeEmptyDOMElement();
     })
     test("something on non-empty books arr", async () => {
-        const books = [{
-            title: "title1",
-            id: "id1"
-        }, {
-            title: "title2",
-            id: "id2"
-        }];
+        // const books = [{
+        //     title: "title1",
+        //     id: "id1"
+        // }, {
+        //     title: "title2",
+        //     id: "id2"
+        // }];
+        const books = [data.book1];
         render(<BooksWrapper books={books} handleFocusedBookClick={() => { }} focusedBook={undefined}></BooksWrapper>)
-        expect(screen.getByText("title1")).toBeInTheDocument();
-        expect(screen.getByText("title2")).toBeInTheDocument();
+        // expect(screen.getByText("title1")).toBeInTheDocument();
+        // expect(screen.getByText("title2")).toBeInTheDocument();
+        expect(screen.getByText(data.book1_title)).toBeInTheDocument();
         //don't test key b/c that's under the hood -- test via integration of book & quotes
     })
 })
@@ -88,25 +92,24 @@ describe("book wrapper", () => {
 describe("home", () => {
     beforeEach(() => {
         // fetchMock.restore();
-        render(<Home />);
+        // render(<Home />);
     })
 
     test("buttons on load", async () => {
-        // fetchMock.mock("http://example.com", 200);
-        // const res = await fetch("http://example.com");
-        // expect(res.ok).toEqual(true);
-        // expect(res.status).toEqual(200)
+        render(<Home />);
         expect(screen.getByText("LOGIN")).toBeInTheDocument();
         expect(screen.getByText("BOOK")).toBeInTheDocument(); //add books button
     })
 
     test("empty quote and book wrappers", async () => {
+        render(<Home />);
         expect(screen.getByTestId("booksWrapper")).toBeEmptyDOMElement();
         expect(screen.getByTestId("quotesWrapper")).toBeEmptyDOMElement();
     })
 
     describe("adding a book", () => {
         test("add button -> book modal is shown", async () => {
+            render(<Home />);
             const user = userEvent.setup()
             const addButton = screen.getByRole("button", {name: "BOOK"});
             expect(addButton).toBeInTheDocument();
@@ -116,21 +119,34 @@ describe("home", () => {
         })
 
         test("click on x -> close modal", async () => {
+            render(<Home />);
             const user = userEvent.setup()
             const addButton = screen.getByRole("button", { name: "BOOK" });
             expect(addButton).toBeInTheDocument();
             await user.click(addButton)
             const bookModal = screen.getByText("ADD A NEW BOOK")
             expect(bookModal).toBeInTheDocument();
+
+            //get the close button and click on it
+            const closeAddBookModalButton = screen.getByTestId("closeAddBookModal");
+            expect(closeAddBookModalButton).toBeInTheDocument();
+            await user.click(closeAddBookModalButton);
+            const bookModal1 = screen.queryByText("ADD A NEW BOOK");
+            expect(bookModal1).toBeNull();
+
+            // await new Promise((resolve, reject) => setTimeout(() => {
+            //     expect(true).toBe(true)
+            //     resolve("")
+            // }, 1500))
         })
 
-        test("add button -> book modal is shown", async () => {
+        test("add a book", async () => {
+            render(<Home />, { wrapper: Router });
             const user = userEvent.setup()
             const addButton = screen.getByRole("button", { name: "BOOK" });
             await user.click(addButton);
-            const bookModal = screen.getByText("ADD A NEW BOOK");
             const input = screen.getByPlaceholderText("Enter book name");
-            const title = "new book wow";
+            const title = data.book1_title;
             
             //type in title
             await user.type(input, title);
@@ -139,7 +155,19 @@ describe("home", () => {
             //submit new book
             const addBookButton = screen.getByText("ADD");
             expect(addBookButton).toBeInTheDocument();
-            // user.click(addBookButton);
+            await user.click(addBookButton);
+            
+            //modal is closed
+            const bookModal1 = screen.queryByText("ADD A NEW BOOK");
+            expect(bookModal1).toBeNull();
+
+            //new book is somewhere
+            const newBook = screen.getByText(title);
+            expect(newBook).toBeInTheDocument();
+
+            //new book is in focus ==> "add quote" button is showing
+            const addQuoteButton = screen.getByText("QUOTE");
+            expect(addQuoteButton).toBeInTheDocument();
         })
     })
 
