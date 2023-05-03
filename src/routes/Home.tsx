@@ -104,29 +104,40 @@ function Home(){
         getAuthedUser()
             .then(res => {
                 setUser(res);
+                getBooksForUser(res)
+                    .then(res => {
+                        const mapped_books = res.map(d => {
+                            return {
+                                title: d.title,
+                                id: d._id
+                            }
+                        })
+                        setBooks(mapped_books.reverse());
+                    })
+                    .catch(err => console.error("Error: ", err))
             })
             .catch(err => console.error(err))
     }, [authed])
 
     //get books for user
-    useEffect(() => {
-        if (user === undefined){
-            console.error("NO USER PROVIDED/NOT LOGGED IN"); 
-            return;
-        }
+    // useEffect(() => {
+    //     if (user === undefined){
+    //         console.error("NO USER PROVIDED/NOT LOGGED IN"); 
+    //         return;
+    //     }
 
-        getBooksForUser(user)
-            .then(res => {
-                const mapped_books = res.map(d => {
-                    return {
-                        title: d.title,
-                        id: d._id
-                    }
-                })
-                setBooks(mapped_books.reverse());
-            })
-            .catch(err => console.error("Error: ", err))
-    }, [user])
+    //     getBooksForUser(user)
+    //         .then(res => {
+    //             const mapped_books = res.map(d => {
+    //                 return {
+    //                     title: d.title,
+    //                     id: d._id
+    //                 }
+    //             })
+    //             setBooks(mapped_books.reverse());
+    //         })
+    //         .catch(err => console.error("Error: ", err))
+    // }, [user])
 
     return (
         <div className="w-screen h-screen flex flex-col bg-off-white">

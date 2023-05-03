@@ -8,6 +8,7 @@ const fetchMock = require('fetch-mock-jest');
 import { within } from '@testing-library/dom'
 import userEvent from '@testing-library/user-event';
 import { server } from './mockServer.js'
+import * as API from "../utils/APIReturnTypes";
 
 beforeAll(() => server.listen())
 afterEach(() => {
@@ -19,8 +20,8 @@ afterAll(() => server.close())
 
 describe("quote wrapper", () => {
     test("nothing but buttons on empty quotes arr", async () => {
-        const quotes = []
-        render(<QuotesWrapper quotes={quotes} focusedBook={null}></QuotesWrapper>)
+        const quotes: API.quote[] = []
+        render(<QuotesWrapper quotes={quotes} focusedBook={undefined} handleDeleteBook={()=>{}}></QuotesWrapper>)
 
         expect(screen.getByTestId("quotesWrapper")).toBeEmptyDOMElement();
     })
@@ -34,7 +35,7 @@ describe("quote wrapper", () => {
             id: "id2",
             book: "book2"
         }];
-        render(<QuotesWrapper quotes={quotes} focusedBook={null}></QuotesWrapper>)
+        render(<QuotesWrapper quotes={quotes} focusedBook={undefined} handleDeleteBook={()=>{}}></QuotesWrapper>)
         expect(screen.getByTestId("quotesWrapper")).toBeEmptyDOMElement();
     })
 
@@ -63,8 +64,8 @@ describe("quote wrapper", () => {
 
 describe("book wrapper", () => {
     test("nothing on empty books arr", async () => {
-        const books = []
-        render(<BooksWrapper books={books}></BooksWrapper>)
+        const books:API.book[] = []
+        render(<BooksWrapper books={books} handleFocusedBookClick={()=>{}} focusedBook={undefined}></BooksWrapper>)
 
         expect(screen.getByTestId("booksWrapper")).toBeEmptyDOMElement();
     })
@@ -76,7 +77,7 @@ describe("book wrapper", () => {
             title: "title2",
             id: "id2"
         }];
-        render(<BooksWrapper books={books}></BooksWrapper>)
+        render(<BooksWrapper books={books} handleFocusedBookClick={() => { }} focusedBook={undefined}></BooksWrapper>)
         expect(screen.getByText("title1")).toBeInTheDocument();
         expect(screen.getByText("title2")).toBeInTheDocument();
         //don't test key b/c that's under the hood -- test via integration of book & quotes
@@ -86,7 +87,7 @@ describe("book wrapper", () => {
 
 describe("home", () => {
     beforeEach(() => {
-        fetchMock.restore();
+        // fetchMock.restore();
         render(<Home />);
     })
 
@@ -114,7 +115,15 @@ describe("home", () => {
             expect(bookModal).toBeInTheDocument();
         })
 
-        //typing in book name, adding, etc. 
+        test("click on x -> close modal", async () => {
+            const user = userEvent.setup()
+            const addButton = screen.getByRole("button", { name: "BOOK" });
+            expect(addButton).toBeInTheDocument();
+            await user.click(addButton)
+            const bookModal = screen.getByText("ADD A NEW BOOK")
+            expect(bookModal).toBeInTheDocument();
+        })
+
         test("add button -> book modal is shown", async () => {
             const user = userEvent.setup()
             const addButton = screen.getByRole("button", { name: "BOOK" });

@@ -5,7 +5,26 @@ import * as API from "./APIReturnTypes"
 const API_BASE = config.API_BASE; 
 // const token = useParams().token;
 
-const getBooksForUser = async (user: API.userReturnType) => {
+export const getAuthedUser = async () => {
+    const res = fetch(API_BASE + "/auth/login/success", {
+        method: "GET",
+        credentials: "include",
+        headers: {
+        }
+    })
+        // const res = fetch(API_BASE + "/get_details/?token="+token, {
+        // })
+        .then(res => {
+            if (res.status === 200) return res.json()
+            throw new Error("failed to authenticate user");
+        })
+        .then(data => {
+            return data.user as API.userReturnType
+        })
+    return res
+}
+
+export const getBooksForUser = async (user: API.userReturnType) => {
     const res = fetch(API_BASE + "/book/all_for_user/" + user._id)
         .then(res => res.json())
         .then(data => {
@@ -16,7 +35,7 @@ const getBooksForUser = async (user: API.userReturnType) => {
     return res
 }
 
-const getQuotesForBook = async (bookID:string) => {
+export const getQuotesForBook = async (bookID:string) => {
     const res = fetch(API_BASE + `/quote/all_for_book/${bookID}`)
         .then(res => res.json())
         .then(data => {
@@ -27,7 +46,7 @@ const getQuotesForBook = async (bookID:string) => {
     return res
 }
 
-const addNewBook = async (bookName:string, user: API.userReturnType) => {
+export const addNewBook = async (bookName:string, user: API.userReturnType) => {
     const res = fetch(API_BASE + "/book", {
         method: "POST",
         headers: {
@@ -47,7 +66,7 @@ const addNewBook = async (bookName:string, user: API.userReturnType) => {
     return res
 }
 
-const deleteBook = async (focusedBook:API.book) => {
+export const deleteBook = async (focusedBook:API.book) => {
     const res = fetch(API_BASE + "/book", {
         method: "DELETE",
         headers: {
@@ -62,26 +81,7 @@ const deleteBook = async (focusedBook:API.book) => {
     return res
 }
 
-const getAuthedUser = async () => {
-    const res = fetch(API_BASE + "/auth/login/success", {
-        method: "GET",
-        credentials: "include",
-        headers: {
-        }
-    })
-    // const res = fetch(API_BASE + "/get_details/?token="+token, {
-    // })
-        .then(res => {
-            if (res.status === 200) return res.json()
-            throw new Error("failed to authenticate user");
-        })
-        .then(data => {
-            return data.user as API.userReturnType
-        })
-    return res
-}
-
-const getBookTitle = async (bookID:string) => {
+export const getBookTitle = async (bookID:string) => {
     const res = fetch(API_BASE + `/book/id/${bookID}`)
         .then(res => res.json())
         .then(data => {
@@ -90,7 +90,7 @@ const getBookTitle = async (bookID:string) => {
     return res
 }
 
-const addNewQuote = async (new_text:string, bookID:string, user:API.userReturnType) => {
+export const addNewQuote = async (new_text:string, bookID:string, user:API.userReturnType) => {
     const res = fetch(API_BASE + "/quote", {
             method: "POST",
             headers: {
@@ -106,7 +106,7 @@ const addNewQuote = async (new_text:string, bookID:string, user:API.userReturnTy
     return res
 }
 
-const deleteQuote = (id:string) => {
+export const deleteQuote = (id:string) => {
     const res = fetch(API_BASE + "/quote", {
         method: "DELETE",
         headers: {
@@ -119,15 +119,4 @@ const deleteQuote = (id:string) => {
             return data as API.deleteQuoteReturnType;
         })
     return res
-}
-
-export { 
-    getBooksForUser, 
-    getQuotesForBook,
-    addNewBook,
-    deleteBook,
-    getAuthedUser,
-    getBookTitle,
-    addNewQuote,
-    deleteQuote
 }
