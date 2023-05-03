@@ -59,7 +59,11 @@ function Home(){
     const [newBookName, setNewBookName] = useState("")
     //new book wants to be added -> call backend, update modals
     const handleAddNewBook = () => {
-        if (user === undefined){return;}
+        if (user === undefined){
+            console.error("NO USER PROVIDED/NOT LOGGED IN"); 
+            return;
+        }
+
         addNewBook(newBookName, user)
             .then(data => {
                 const newBook:book = {
@@ -106,7 +110,10 @@ function Home(){
 
     //get books for user
     useEffect(() => {
-        if (user === undefined){return;}
+        if (user === undefined){
+            console.error("NO USER PROVIDED/NOT LOGGED IN"); 
+            return;
+        }
 
         getBooksForUser(user)
             .then(res => {

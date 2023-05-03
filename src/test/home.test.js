@@ -7,10 +7,15 @@ import '@testing-library/jest-dom';
 const fetchMock = require('fetch-mock-jest');
 import { within } from '@testing-library/dom'
 import userEvent from '@testing-library/user-event';
+import { server } from './mockServer.js'
 
+beforeAll(() => server.listen())
 afterEach(() => {
+    server.resetHandlers(); //reset handlers to ensure test isolation
     cleanup(); //reset JSDom
 })
+afterAll(() => server.close())
+
 
 describe("quote wrapper", () => {
     test("nothing but buttons on empty quotes arr", async () => {
@@ -95,9 +100,6 @@ describe("home", () => {
     })
 
     test("empty quote and book wrappers", async () => {
-        const main = screen.getByRole("main");
-        // const wrappers = screen.getAllByRole("section")
-        // expect(wrappers).toBeEmptyDOMElement();
         expect(screen.getByTestId("booksWrapper")).toBeEmptyDOMElement();
         expect(screen.getByTestId("quotesWrapper")).toBeEmptyDOMElement();
     })
@@ -113,6 +115,23 @@ describe("home", () => {
         })
 
         //typing in book name, adding, etc. 
+        test("add button -> book modal is shown", async () => {
+            const user = userEvent.setup()
+            const addButton = screen.getByRole("button", { name: "BOOK" });
+            await user.click(addButton);
+            const bookModal = screen.getByText("ADD A NEW BOOK");
+            const input = screen.getByPlaceholderText("Enter book name");
+            const title = "new book wow";
+            
+            //type in title
+            await user.type(input, title);
+            expect(input).toHaveValue(title);
+            
+            //submit new book
+            const addBookButton = screen.getByText("ADD");
+            expect(addBookButton).toBeInTheDocument();
+            // user.click(addBookButton);
+        })
     })
 
 })
