@@ -107,68 +107,118 @@ describe("home", () => {
         expect(screen.getByTestId("quotesWrapper")).toBeEmptyDOMElement();
     })
 
-    describe("adding a book", () => {
-        test("add button -> book modal is shown", async () => {
-            render(<Home />);
-            const user = userEvent.setup()
-            const addButton = screen.getByRole("button", {name: "BOOK"});
-            expect(addButton).toBeInTheDocument();
-            await user.click(addButton)
-            const bookModal = screen.getByText("ADD A NEW BOOK")
-            expect(bookModal).toBeInTheDocument();
-        })
-
-        test("click on x -> close modal", async () => {
-            render(<Home />);
-            const user = userEvent.setup()
-            const addButton = screen.getByRole("button", { name: "BOOK" });
-            expect(addButton).toBeInTheDocument();
-            await user.click(addButton)
-            const bookModal = screen.getByText("ADD A NEW BOOK")
-            expect(bookModal).toBeInTheDocument();
-
-            //get the close button and click on it
-            const closeAddBookModalButton = screen.getByTestId("closeAddBookModal");
-            expect(closeAddBookModalButton).toBeInTheDocument();
-            await user.click(closeAddBookModalButton);
-            const bookModal1 = screen.queryByText("ADD A NEW BOOK");
-            expect(bookModal1).toBeNull();
-
-            // await new Promise((resolve, reject) => setTimeout(() => {
-            //     expect(true).toBe(true)
-            //     resolve("")
-            // }, 1500))
-        })
-
-        test("add a book", async () => {
-            render(<Home />, { wrapper: Router });
-            const user = userEvent.setup()
-            const addButton = screen.getByRole("button", { name: "BOOK" });
-            await user.click(addButton);
-            const input = screen.getByPlaceholderText("Enter book name");
-            const title = data.book1_title;
-            
-            //type in title
-            await user.type(input, title);
-            expect(input).toHaveValue(title);
-            
-            //submit new book
-            const addBookButton = screen.getByText("ADD");
-            expect(addBookButton).toBeInTheDocument();
-            await user.click(addBookButton);
-            
-            //modal is closed
-            const bookModal1 = screen.queryByText("ADD A NEW BOOK");
-            expect(bookModal1).toBeNull();
-
-            //new book is somewhere
-            const newBook = screen.getByText(title);
-            expect(newBook).toBeInTheDocument();
-
-            //new book is in focus ==> "add quote" button is showing
-            const addQuoteButton = screen.getByText("QUOTE");
-            expect(addQuoteButton).toBeInTheDocument();
-        })
+    test("add button -> book modal is shown", async () => {
+        render(<Home />);
+        const user = userEvent.setup()
+        const addButton = screen.getByRole("button", {name: "BOOK"});
+        expect(addButton).toBeInTheDocument();
+        await user.click(addButton)
+        const bookModal = screen.getByText("ADD A NEW BOOK")
+        expect(bookModal).toBeInTheDocument();
     })
 
+    test("click on x -> close modal", async () => {
+        render(<Home />);
+        const user = userEvent.setup()
+        const addButton = screen.getByRole("button", { name: "BOOK" });
+        expect(addButton).toBeInTheDocument();
+        await user.click(addButton)
+        const bookModal = screen.getByText("ADD A NEW BOOK")
+        expect(bookModal).toBeInTheDocument();
+
+        //get the close button and click on it
+        const closeAddBookModalButton = screen.getByTestId("closeAddBookModal");
+        expect(closeAddBookModalButton).toBeInTheDocument();
+        await user.click(closeAddBookModalButton);
+        const bookModal1 = screen.queryByText("ADD A NEW BOOK");
+        expect(bookModal1).toBeNull();
+
+        // await new Promise((resolve, reject) => setTimeout(() => {
+        //     expect(true).toBe(true)
+        //     resolve("")
+        // }, 1500))
+    })
+
+    /** tests the process for adding a book with a callback for continued testing
+     * to maintain test state (so that the JSDom doesn't get cleared via cleanup() 
+     * on the afterEach triggers)
+     */
+    const addBook = async (callback: () => void) => {
+        render(<Home />, { wrapper: Router });
+        const user = userEvent.setup()
+        const addButton = screen.getByRole("button", { name: "BOOK" });
+        await user.click(addButton);
+        const input = screen.getByPlaceholderText("Enter book name");
+        const title = data.book1_title;
+
+        //type in title
+        await user.type(input, title);
+        expect(input).toHaveValue(title);
+
+        //submit new book
+        const addBookButton = screen.getByText("ADD");
+        expect(addBookButton).toBeInTheDocument();
+        await user.click(addBookButton);
+
+        //modal is closed
+        const bookModal1 = screen.queryByText("ADD A NEW BOOK");
+        expect(bookModal1).toBeNull();
+
+        //new book is somewhere
+        const newBook = screen.getByText(title);
+        expect(newBook).toBeInTheDocument();
+
+        //new book is in focus ==> "add quote" button is showing
+        const addQuoteButton = screen.getByText("QUOTE");
+        expect(addQuoteButton).toBeInTheDocument();
+
+        callback();
+    }
+
+    test("add a book", async () => {
+        addBook(() => {})
+    })
+
+    test("deleting a book", async () => {
+        //need to add a book before we delete a book
+        addBook(async () => {
+            const user = userEvent.setup()  
+            //select the new book
+            const title = data.book1_title;
+            // const newBook1 = screen.getByText(title);
+            // expect(newBook).toBeInTheDocument();
+            // await user.click(newBook1);
+    
+            //click the delete button; bring up the modal
+            const deleteBookButton1 = screen.getByText("REMOVE BOOK");
+            await user.click(deleteBookButton1);
+            
+            //delete book modal should be there -> yes/no buttons
+            const confirmDeleteButton = screen.queryByText("YES");
+            expect(confirmDeleteButton).toBeInTheDocument()
+            if (!confirmDeleteButton){return;}
+            const denyDeleteButton = screen.queryByText("NO");
+            expect(denyDeleteButton).toBeInTheDocument()
+    
+            //click -> close modal
+            await user.click(confirmDeleteButton);
+            const confirmDeleteButton1 = screen.queryByText("YES");
+            expect(confirmDeleteButton1).toBeNull()
+            if (!confirmDeleteButton) { return; }
+            const denyDeleteButton1 = screen.queryByText("NO");
+            expect(denyDeleteButton1).toBeNull();
+    
+            //book shouldn't be there anymore
+            const oldBook = screen.queryByText(title)
+            expect(oldBook).toBeNull();
+    
+            //no book is selected -> (no add quote/delete buttons)
+            const addQuoteButton1 = screen.queryByText("QUOTE");
+            expect(addQuoteButton1).toBeNull();
+            const deleteBookButton2 = screen.queryByText("DELETE");
+            expect(deleteBookButton2).toBeNull();
+        });
+        
+
+    })
 })
