@@ -93,9 +93,7 @@ function App() {
             })
             .finally(() => {setRunOCR(false)});
         }
-        },
-        [imagePath, runOCR]
-    )
+    },[imagePath, runOCR])
 
     const bookID = useParams().id;
     const [storedText, setStoredText] = useState<quote[]>([]);

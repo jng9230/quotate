@@ -16,7 +16,7 @@ function StorageBox({
                         <div key={d.id} className="border-std border-black flex justify-between items-center">
                             <div className="w-11/12 p-3 py-1"> {d.text} </div>
                             {/* <TiDeleteOutline onClick={() => deleteText(d.id)} className="cursor-pointer"></TiDeleteOutline> */}
-                            <CloseButton styles="mr-2" onClick={() => deleteText(d.id)}></CloseButton>
+                            <CloseButton styles="mr-2" onClick={() => deleteText(d.id)} data-testid={`delete-${d.id}`}></CloseButton>
                         </div>
                     )
                 })}

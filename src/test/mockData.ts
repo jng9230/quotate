@@ -4,7 +4,7 @@ export const user_id = "u01234567";
 export const book1_title = "book1 title";
 export const book1_id = "b987654321";
 export const quote1_id = "q987654321";
-export const quote1_text = "quote 1 text hello world";
+export const quote1_text = "hello world";
 // export const book2_title = "book2 title";
 // export const book2_id = "b0987654567";
 

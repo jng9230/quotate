@@ -2,15 +2,16 @@ import { cleanup, render, screen, waitForElementToBeRemoved } from '@testing-lib
 import { Home } from '../routes/Home';
 import { BooksWrapper } from '../components/BooksWrapper';
 import { QuotesWrapper } from '../components/QuotesWrapper';
+import App from "../routes/App"
 import '@testing-library/jest-dom';
 // global.fetch = require('jest-fetch-mock') //mock fetch RQs
 const fetchMock = require('fetch-mock-jest');
-import { within } from '@testing-library/dom'
+import { within, waitFor } from '@testing-library/dom'
 import userEvent from '@testing-library/user-event';
 import { server } from './mockServer.js'
 import * as API from "../utils/APIReturnTypes";
 import * as data from "./mockData";
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, MemoryRouter } from 'react-router-dom'
 
 beforeAll(() => server.listen())
 afterEach(() => {
@@ -171,54 +172,127 @@ describe("home", () => {
         //new book is in focus ==> "add quote" button is showing
         const addQuoteButton = screen.getByText("QUOTE");
         expect(addQuoteButton).toBeInTheDocument();
+        // expect(screen.getByRole('link', { name: "QUOTE" })).toHaveAttribute('href', 'https://www.test.com/')
 
+        // const thing = screen.getByRole('link', { name: "QUOTE" });
+        // console.log(thing);
+
+        // console.log("hello");
+        // expect(false).toBe(true);
+
+        console.log("inside addBook()")
         callback();
     }
 
     test("add a book", async () => {
-        addBook(() => {})
+        // console.log("testing adding a book")
+        // addBook(() => {})
+        // console.log("done testing adding a book")
+        render(<Home />, { wrapper: Router });
+        const user = userEvent.setup()
+        const addButton = screen.getByRole("button", { name: "BOOK" });
+        await user.click(addButton);
+        const input = screen.getByPlaceholderText("Enter book name");
+        const title = data.book1_title;
+
+        //type in title
+        await user.type(input, title);
+        expect(input).toHaveValue(title);
+
+        //submit new book
+        const addBookButton = screen.getByText("ADD");
+        expect(addBookButton).toBeInTheDocument();
+        await user.click(addBookButton);
+
+        //modal is closed
+        const bookModal1 = screen.queryByText("ADD A NEW BOOK");
+        expect(bookModal1).toBeNull();
+
+        //new book is somewhere
+        const newBook = screen.getByText(title);
+        expect(newBook).toBeInTheDocument();
+
+        //new book is in focus ==> "add quote" button is showing
+        const addQuoteButton = screen.getByRole("link", { name: "QUOTE" });
+        expect(addQuoteButton).toBeInTheDocument();
+        expect(addQuoteButton).toHaveAttribute("href", `/app/${data.book1_id}`)
+
     })
 
-    test("deleting a book", async () => {
+    test("delete a book", async () => {
         //need to add a book before we delete a book
-        addBook(async () => {
-            const user = userEvent.setup()  
-            //select the new book
-            const title = data.book1_title;
-            // const newBook1 = screen.getByText(title);
-            // expect(newBook).toBeInTheDocument();
-            // await user.click(newBook1);
-    
-            //click the delete button; bring up the modal
-            const deleteBookButton1 = screen.getByText("REMOVE BOOK");
-            await user.click(deleteBookButton1);
-            
-            //delete book modal should be there -> yes/no buttons
-            const confirmDeleteButton = screen.queryByText("YES");
-            expect(confirmDeleteButton).toBeInTheDocument()
-            if (!confirmDeleteButton){return;}
-            const denyDeleteButton = screen.queryByText("NO");
-            expect(denyDeleteButton).toBeInTheDocument()
-    
-            //click -> close modal
-            await user.click(confirmDeleteButton);
-            const confirmDeleteButton1 = screen.queryByText("YES");
-            expect(confirmDeleteButton1).toBeNull()
-            if (!confirmDeleteButton) { return; }
-            const denyDeleteButton1 = screen.queryByText("NO");
-            expect(denyDeleteButton1).toBeNull();
-    
-            //book shouldn't be there anymore
-            const oldBook = screen.queryByText(title)
-            expect(oldBook).toBeNull();
-    
-            //no book is selected -> (no add quote/delete buttons)
-            const addQuoteButton1 = screen.queryByText("QUOTE");
-            expect(addQuoteButton1).toBeNull();
-            const deleteBookButton2 = screen.queryByText("DELETE");
-            expect(deleteBookButton2).toBeNull();
-        });
-        
+        // addBook(async () => {
+        render(<Home />, { wrapper: Router });
+        const user = userEvent.setup()
+        const addButton = screen.getByRole("button", { name: "BOOK" });
+        await user.click(addButton);
+        const input = screen.getByPlaceholderText("Enter book name");
+        const title = data.book1_title;
 
+        //type in title
+        await user.type(input, title);
+        expect(input).toHaveValue(title);
+
+        //submit new book
+        const addBookButton = screen.getByText("ADD");
+        expect(addBookButton).toBeInTheDocument();
+        await user.click(addBookButton);
+
+        //modal is closed
+        const bookModal1 = screen.queryByText("ADD A NEW BOOK");
+        expect(bookModal1).toBeNull();
+
+        //new book is somewhere
+        const newBook = screen.getByText(title);
+        expect(newBook).toBeInTheDocument();
+
+        //new book is in focus ==> "add quote" button is showing
+        const addQuoteButton = screen.getByText("QUOTE");
+        expect(addQuoteButton).toBeInTheDocument();
+
+        // const user = userEvent.setup()  
+        //select the new book
+        // const title = data.book1_title;
+        // const newBook1 = screen.getByText(title);
+        // expect(newBook).toBeInTheDocument();
+        // await user.click(newBook1);
+
+        //click the delete button; bring up the modal
+        const deleteBookButton1 = screen.getByText("REMOVE BOOK");
+        await user.click(deleteBookButton1);
+        
+        //delete book modal should be there -> yes/no buttons
+        const confirmDeleteButton = screen.queryByText("YES");
+        expect(confirmDeleteButton).toBeInTheDocument()
+        if (!confirmDeleteButton){return;}
+        const denyDeleteButton = screen.queryByText("NO");
+        expect(denyDeleteButton).toBeInTheDocument()
+
+        //confirm deletion -> close the modal
+        await user.click(confirmDeleteButton);
+        const confirmDeleteButton1 = screen.queryByText("YES");
+        expect(confirmDeleteButton1).toBeNull()
+        if (!confirmDeleteButton) { return; }
+        const denyDeleteButton1 = screen.queryByText("NO");
+        expect(denyDeleteButton1).toBeNull();
+
+        //book shouldn't be there anymore
+        const oldBook = screen.queryByText(title)
+        expect(oldBook).toBeNull();
+
+        //no book is selected -> (no add quote/delete buttons)
+        const addQuoteButton1 = screen.queryByText("QUOTE");
+        expect(addQuoteButton1).toBeNull();
+        const deleteBookButton2 = screen.queryByText("DELETE");
+        expect(deleteBookButton2).toBeNull();
+
+        // });
+    
     })
+
+    // test("+quote button -> app page", async () => {
+    //     // render(<Home/>)
+    //     // expect(screen.getByRole('link', { name: "Quote" })).toHaveAttribute('href', 'https://www.test.com/')
+    // })
+
 })
