@@ -44,7 +44,7 @@ function App() {
     const [selectedImg, setSelectedImg] = useState("");
     const [files, setFiles] = useState<string[]>([])
     const handleFileUpload = (event: any) => {
-        console.log(event.target.files)
+        // console.log(event.target.files)
         const files_arr:File[] = Array.from(event.target.files)
         const file_URLs = files_arr.map((file) => {
             return URL.createObjectURL(file)
@@ -77,7 +77,7 @@ function App() {
                 imagePath, 'eng',
                 {
                     logger: m => {
-                        console.log(m);
+                        // console.log(m);
                         setLoading(m.progress)
                     }
                 }
@@ -86,7 +86,7 @@ function App() {
                 console.error(err);
             })
             .then(result => {
-                console.log(result);
+                // console.log(result);
                 const result1 = result as Tesseract.RecognizeResult;
     
                 setText(result1.data.text);
@@ -149,7 +149,13 @@ function App() {
     //CROPPING/ROTATION MODAL
     const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
     const [zoom, setZoom] = useState(1);
-    const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area>();
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area>({
+        //random initial state s.t. cAPixels isn't null
+        width: 100,
+        height: 100,
+        x: 0,
+        y: 0
+    });
     const onCropComplete = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
         setCroppedAreaPixels(croppedAreaPixels)
     }, [])
@@ -234,7 +240,7 @@ function App() {
                 croppedAreaPixels,
                 rotation
             )
-            console.log('donee', { croppedImage })
+            // console.log('donee', { croppedImage })
             if (croppedImage == null) {
                 throw new Error("croppedImage is undefined");
             }
@@ -299,7 +305,7 @@ function App() {
                     cropModal={cropModal}
                     runOCR={runOCR}
                 >
-                    <Modal onClick={closeCrop}>
+                    <Modal onClick={closeCrop} testID={"preprocessingModal"}>
                         <>
                             <div className="crop_container relative w-full h-96">
                                 <Cropper

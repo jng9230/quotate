@@ -37,7 +37,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --coverage",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -69,6 +69,7 @@
     "jest": "^27.5.1",
     "jest-fail-on-console": "^3.1.1",
     "jest-fetch-mock": "^3.0.3",
+    "jsdom-worker": "^0.3.0",
     "mongoose": "^7.0.4",
     "msw": "^1.2.1",
     "postcss": "^8.4.21",

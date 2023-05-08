@@ -9,18 +9,19 @@ function Carousel({
 }){
     return (
         <div className="w-full h-full border-std p-3 bg-white">
-            <div className="w-full h-full flex overflow-x-scroll space-x-4 perma-scroll">
+            <div className="w-full h-full flex overflow-x-scroll space-x-4 perma-scroll" data-testid="carousel">
                 {files.map((file, i) => {
                     return (
-                        <img src={file} key={i} alt="" 
-                        className={`
-                            max-h-full 
-                            w-auto 
-                            cursor-pointer
-                            hover:border-std 
-                            ${file === selectedImg ? "border-std bg-main-green" : "bg-secondary-green"}`
-                        } 
-                        onClick={() => changeImagePath(file)}/>
+                        <img src={file} key={i} alt={`carouselImage-${i}`} 
+                            className={`
+                                max-h-full 
+                                w-auto 
+                                cursor-pointer
+                                hover:border-std 
+                                ${file === selectedImg ? "border-std bg-main-green" : "bg-secondary-green"}`
+                            } 
+                            onClick={() => changeImagePath(file)}
+                        />
                     )
                 })}
             </div>

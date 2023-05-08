@@ -36,11 +36,14 @@ export async function getCroppedImg(
     rotation = 0,
     flip = { horizontal: false, vertical: false }
 ) {
+    console.log("getting cropped image")
     const image = await createImage(imageSrc)
+    console.log("penis")
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')
 
     if (!ctx) {
+        console.log("No context given")
         return null
     }
 
@@ -94,6 +97,7 @@ export async function getCroppedImg(
     // return canvas.toDataURL('image/jpeg');
 
     // As a blob
+    console.log("end of cropped image")
     return new Promise<string>((resolve, reject) => {
         canvas.toBlob((file) => {
             if (file == null){

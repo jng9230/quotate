@@ -35,7 +35,7 @@ function Upload({
             row-start-2 row-span-full
             border-std bg-white">
             { loading !== 0 && runOCR && LoadingBar(loading) }
-            <img src={imagePath} alt="" className="h-4/5 w-auto rounded-md"/>
+            {imagePath && <img src={imagePath} alt="uploadedImage" className="h-4/5 w-auto rounded-md"/>}
             { cropModal && children }
             <div>
                 <label htmlFor="uploadFile" className="btn-std mx-3 inline-block bg-main-green text-white"> 
