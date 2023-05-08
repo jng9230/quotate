@@ -16,7 +16,7 @@ function Textbox({
             border-std bg-white">
             <div className="h-full w-full flex flex-col justify-between text-center p-3">
                 <label htmlFor="current_text" className=""> Edit converted text:</label>
-                <textarea name="" id="current_text" value={text} 
+                <textarea name="" id="current_text" value={text} data-testid="textArea"
                     className="
                         box-border 
                         w-full 

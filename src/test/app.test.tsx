@@ -9,6 +9,7 @@ import * as API from "../utils/APIReturnTypes";
 import * as data from "./mockData";
 import { BrowserRouter as Router, Routes, Route, MemoryRouter } from 'react-router-dom'
 import 'jsdom-worker'
+import { executionAsyncResource } from 'async_hooks';
 
 beforeAll(() => server.listen())
 afterEach(() => {
@@ -150,16 +151,59 @@ describe("app", () => {
             expect(btn).toBeInTheDocument();
         })
 
-        await user.click(screen.getByText("Confirm"));
+        // await user.click(screen.getByText("Confirm"));
 
+        // const textArea:HTMLTextAreaElement = screen.getByTestId("textArea");
+        // console.log(textArea.value)
         await waitFor(() => {})
     })
 
     test("adding a quote", async () => {
+        render(
+            <MemoryRouter initialEntries={[`/app/${data.book1_id}`]}>
+                <Routes>
+                    <Route path='app/:id' element={<App />}></Route>
+                </Routes>
+            </MemoryRouter>
+        )
+        const user = userEvent.setup()
+        
         //clicking button; seeing change in storage box
+        const textArea: HTMLTextAreaElement = screen.getByTestId("textArea");
+        await user.type(textArea, data.quote1_text);
+        expect(textArea).toHaveValue(data.quote1_text);
+
+        const addQuoteButton = screen.getByText("Save");
+        await user.click(addQuoteButton);
+        const newQuote = screen.getByTestId(`storedQuote-${data.quote1_id}`)
+        expect(newQuote).toBeInTheDocument();
+        expect(within(newQuote).getByText(data.quote1_text)).toBeInTheDocument();
     })
 
     test("deleting a quote", async () => {
         //clicking button; seeing change in storage box
+
+        //add a quote first 
+        render(
+            <MemoryRouter initialEntries={[`/app/${data.book1_id}`]}>
+                <Routes>
+                    <Route path='app/:id' element={<App />}></Route>
+                </Routes>
+            </MemoryRouter>
+        )
+        const user = userEvent.setup()
+
+        const textArea: HTMLTextAreaElement = screen.getByTestId("textArea");
+        await user.type(textArea, data.quote1_text);
+        const addQuoteButton = screen.getByText("Save");
+        await user.click(addQuoteButton);
+        const newQuote = screen.getByTestId(`storedQuote-${data.quote1_id}`)
+
+        //click delete button
+        const delQuoteButton = screen.getByTestId(`deleteQuote-${data.quote1_id}`);
+        expect(delQuoteButton).toBeInTheDocument();
+        await user.click(delQuoteButton);
+        const newQuote1 = screen.queryByTestId(`storedQuote-${data.quote1_id}`)
+        expect(newQuote1).toBeNull();
     })
 })

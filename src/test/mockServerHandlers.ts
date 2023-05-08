@@ -15,7 +15,7 @@ const handlers = [
     }),
 
     rest.get(`${API_BASE}/quote/all_for_book/${data.book1_id}`, async (req, res, ctx) => {
-        return res(ctx.json([data.quote1_return]))
+        return res(ctx.json([]))
     }),
 
     rest.post(`${API_BASE}/book`, async (req, res, ctx) => {
