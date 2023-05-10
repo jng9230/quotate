@@ -185,7 +185,7 @@ function App() {
         const val = parseInt(e.target.value) / THRESHOLD_MAX;
         window.clearTimeout(timeout);
         timeout = setTimeout(() => {
-            console.log("WOOOOOOOOO")
+            // console.log("WOOOOOOOOO")
             updateBinThresholdCallback(val);
         }, 500)
     }
@@ -214,6 +214,7 @@ function App() {
                 throw new Error("croppedImage is undefined");
             }
 
+            console.log("there")
             //close modal; persist crop area and set displayed image to cropped image
             // const processed_img = await preprocessImageFromURL(croppedImage)
             const threshold = val !== THRESHOLD_MIN && val !== THRESHOLD_MAX ? val : -1;
@@ -324,6 +325,7 @@ function App() {
                             <div id="optionsContainer" className="space-y-4 pt-4">
                                 <Slider label="Rotation" onChange={updateRotation}></Slider>
                                 <Slider 
+                                    testID="threshold"
                                     label="B/W Threshold" 
                                     onChange={updateBinThreshold}
                                     min={THRESHOLD_MIN}

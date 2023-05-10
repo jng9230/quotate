@@ -10,7 +10,8 @@ function Slider({
     step="any",
     list,
     children,
-    onBlur
+    onBlur,
+    testID
 }:{
     label?:string,
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void,
@@ -19,7 +20,8 @@ function Slider({
     step?:number | string,
     list?: string,
     children?: ReactElement,
-    onBlur?: () => void
+    onBlur?: () => void,
+    testID?: string
 }){
     const [value, setValue] = useState(0)
     const updateValue = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,7 +33,8 @@ function Slider({
     return (
         <div className="slidecontainer flex items-center justify-between relative">
             <label htmlFor={label} className="inline"> {label} </label>
-            <input 
+            <input
+                data-testid={`slider-${testID}`}
                 type="range" 
                 min={min.toString()} 
                 max={max.toString()} 

@@ -1,17 +1,23 @@
-import { cleanup, render, screen, waitForElementToBeRemoved } from '@testing-library/react';
+import { cleanup, render, screen, fireEvent } from '@testing-library/react';
 import App from "../routes/App"
 import '@testing-library/jest-dom';
-const fetchMock = require('fetch-mock-jest');
 import { within, waitFor } from '@testing-library/dom'
 import userEvent from '@testing-library/user-event';
-import { server } from './mockServer.js'
-import * as API from "../utils/APIReturnTypes";
+import { server } from './mockServer'
 import * as data from "./mockData";
 import { BrowserRouter as Router, Routes, Route, MemoryRouter } from 'react-router-dom'
 import 'jsdom-worker'
-import { executionAsyncResource } from 'async_hooks';
+import { act } from 'react-dom/test-utils';
+import * as canvasUtils from "../utils/canvasUtils"
+import * as preprocess from "../utils/preprocess"
+// getCroppedImg = jest.fn();
 
-beforeAll(() => server.listen())
+// jest.mock('../utils/canvasUtils', () => ({
+//     getCroppedImg: jest.fn(),
+// }));
+
+beforeAll(() => { server.listen(); jest.resetModules();})
+beforeEach(() => cleanup())
 afterEach(() => {
     server.resetHandlers(); //reset handlers to ensure test isolation
     cleanup(); //reset JSDom
@@ -118,7 +124,8 @@ describe("app", () => {
         expect(carouselImg1.src).toEqual(focusedImg.src);
     })
 
-    test("running OCR", async () => {
+    const bringUpEditModal = async () => {
+        //copied from "run ocr" test -- upload file and bring up the modal
         render(
             <MemoryRouter initialEntries={[`/app/${data.book1_id}`]}>
                 <Routes>
@@ -151,11 +158,91 @@ describe("app", () => {
             expect(btn).toBeInTheDocument();
         })
 
-        // await user.click(screen.getByText("Confirm"));
+        return {screen, user}
+    }
+    test("running OCR", async () => {
+        const res = await bringUpEditModal();
+        if (!res){console.error("res undefined"); return;}
+        const screen = res.screen;
+        const user = res.user;
+        // if (!screen) {
+        //     console.error("screen undefined");
+        //     return;
+        // }
+
+        //mock getCroppedImg and preprocessImgFromURL to both return a URL
+        //-- mock b/c it's copy pasted code -- no real need to test 
+        const file0 = new File(['image0'], 'image0.png', { type: 'image/png' });
+        const file1 = new File(['image1'], 'image1.png', { type: 'image/png' });
+        const newURL0 = URL.createObjectURL(file0)
+        const newURL1 = URL.createObjectURL(file1)
+        const getCroppedImgSpy = jest.spyOn(canvasUtils, "getCroppedImg")
+        getCroppedImgSpy.mockImplementation(() => {
+            console.log("inside croppedImg spy")
+            return new Promise((resolve) => {
+                resolve(newURL0)
+            })
+        })
+        const thing = await canvasUtils.getCroppedImg("")
+        console.log(thing);
+        const preprocessImageFromURL2Spy = jest.spyOn(canvasUtils, "getCroppedImg")
+        preprocessImageFromURL2Spy.mockImplementation(() => {
+            console.log("inside prepropSpy")
+            return new Promise((resolve) => {
+                resolve(newURL1)
+            })
+        })
+
+        //make sure that the image path gets set to the new URL 
+        await user.click(screen.getByText("Confirm"));
+        
+        //make sure that crop is closed
+
+        //make sure that OCR runs -- act() b/c it runs on next load
 
         // const textArea:HTMLTextAreaElement = screen.getByTestId("textArea");
         // console.log(textArea.value)
         await waitFor(() => {})
+    })
+
+    test("adjusting bin threshold", async () => {
+        // const screen = await bringUpEditModal();
+        // if (!screen){
+        //     console.error("screen undefined");
+        //     return;
+        // }
+        const res = await bringUpEditModal();
+        if (!res) { console.error("res undefined"); return; }
+        const screen = res.screen;
+        const user = res.user;
+
+        //setup done; get slider butifton
+        const thresholdSlider:HTMLInputElement = screen.getByTestId("slider-threshold");
+        expect(thresholdSlider).toBeInTheDocument();
+
+        await act(async () => {
+            //move once and sit -- make sure update funtion is called
+            fireEvent.change(thresholdSlider, { target: { value: 10 } });
+            expect(thresholdSlider.value).toBe("10")
+            const cropFxn = jest.spyOn(canvasUtils, "getCroppedImg")
+            expect(cropFxn).toHaveBeenCalledTimes(0);
+            await new Promise((r) => setTimeout(r, 550)); //timeout in app is 500
+            expect(cropFxn).toHaveBeenCalledTimes(1);
+            
+            //move a bunch before settling -- make sure update is only called once
+            const vals = [0, 10, 20, 15, 5, 10, 15];
+            vals.forEach((v) => {
+                fireEvent.change(thresholdSlider, { target: { value: v } });
+            })
+            expect(cropFxn).toHaveBeenCalledTimes(1);//called once from first test
+            await new Promise((r) => setTimeout(r, 550));
+            expect(cropFxn).toHaveBeenCalledTimes(2);//called again
+        })
+
+    })
+
+    test("adjusting rotation", () => {
+
     })
 
     test("adding a quote", async () => {
@@ -175,15 +262,17 @@ describe("app", () => {
 
         const addQuoteButton = screen.getByText("Save");
         await user.click(addQuoteButton);
-        const newQuote = screen.getByTestId(`storedQuote-${data.quote1_id}`)
-        expect(newQuote).toBeInTheDocument();
-        expect(within(newQuote).getByText(data.quote1_text)).toBeInTheDocument();
+        await waitFor(() => {
+            const newQuote = screen.getByTestId(`storedQuote-${data.quote1_id}`)
+            expect(newQuote).toBeInTheDocument();
+            expect(within(newQuote).getByText(data.quote1_text)).toBeInTheDocument();
+        })
     })
 
     test("deleting a quote", async () => {
         //clicking button; seeing change in storage box
 
-        //add a quote first 
+        //add a quote first (copied from "adding a quote" test)
         render(
             <MemoryRouter initialEntries={[`/app/${data.book1_id}`]}>
                 <Routes>
@@ -197,13 +286,14 @@ describe("app", () => {
         await user.type(textArea, data.quote1_text);
         const addQuoteButton = screen.getByText("Save");
         await user.click(addQuoteButton);
-        const newQuote = screen.getByTestId(`storedQuote-${data.quote1_id}`)
 
         //click delete button
-        const delQuoteButton = screen.getByTestId(`deleteQuote-${data.quote1_id}`);
-        expect(delQuoteButton).toBeInTheDocument();
-        await user.click(delQuoteButton);
-        const newQuote1 = screen.queryByTestId(`storedQuote-${data.quote1_id}`)
-        expect(newQuote1).toBeNull();
+        await waitFor(async () => {
+            const delQuoteButton = screen.getByTestId(`deleteQuote-${data.quote1_id}`);
+            expect(delQuoteButton).toBeInTheDocument();
+            await user.click(delQuoteButton);
+            const newQuote1 = screen.queryByTestId(`storedQuote-${data.quote1_id}`)
+            expect(newQuote1).toBeNull();
+        })
     })
 })

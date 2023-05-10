@@ -8,7 +8,7 @@ import '@testing-library/jest-dom';
 const fetchMock = require('fetch-mock-jest');
 import { within, waitFor } from '@testing-library/dom'
 import userEvent from '@testing-library/user-event';
-import { server } from './mockServer.js'
+import { server } from './mockServer'
 import * as API from "../utils/APIReturnTypes";
 import * as data from "./mockData";
 import { BrowserRouter as Router, Routes, Route, MemoryRouter } from 'react-router-dom'
@@ -205,8 +205,10 @@ describe("home", () => {
         await user.click(addBookButton);
 
         //modal is closed
-        const bookModal1 = screen.queryByText("ADD A NEW BOOK");
-        expect(bookModal1).toBeNull();
+        await waitFor(() => {
+            const bookModal1 = screen.queryByText("ADD A NEW BOOK");
+            expect(bookModal1).toBeNull();
+        })
 
         //new book is somewhere
         const newBook = screen.getByText(title);
@@ -239,8 +241,10 @@ describe("home", () => {
         await user.click(addBookButton);
 
         //modal is closed
-        const bookModal1 = screen.queryByText("ADD A NEW BOOK");
-        expect(bookModal1).toBeNull();
+        await waitFor(() => {
+            const bookModal1 = screen.queryByText("ADD A NEW BOOK");
+            expect(bookModal1).toBeNull();
+        })
 
         //new book is somewhere
         const newBook = screen.getByText(title);
@@ -270,11 +274,12 @@ describe("home", () => {
 
         //confirm deletion -> close the modal
         await user.click(confirmDeleteButton);
-        const confirmDeleteButton1 = screen.queryByText("YES");
-        expect(confirmDeleteButton1).toBeNull()
-        if (!confirmDeleteButton) { return; }
-        const denyDeleteButton1 = screen.queryByText("NO");
-        expect(denyDeleteButton1).toBeNull();
+        await waitFor(() => {
+            const confirmDeleteButton1 = screen.queryByText("YES");
+            expect(confirmDeleteButton1).toBeNull()
+            const denyDeleteButton1 = screen.queryByText("NO");
+            expect(denyDeleteButton1).toBeNull();
+        })
 
         //book shouldn't be there anymore
         const oldBook = screen.queryByText(title)
