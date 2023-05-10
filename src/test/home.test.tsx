@@ -205,7 +205,7 @@ describe("home", () => {
         await user.click(addBookButton);
 
         //modal is closed
-        await waitFor(() => {
+        await waitFor(() => { 
             const bookModal1 = screen.queryByText("ADD A NEW BOOK");
             expect(bookModal1).toBeNull();
         })

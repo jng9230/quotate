@@ -10,19 +10,29 @@ import 'jsdom-worker'
 import { act } from 'react-dom/test-utils';
 import * as canvasUtils from "../utils/canvasUtils"
 import * as preprocess from "../utils/preprocess"
+// import * as Tesseract from 'tesseract.js';
+// const tesseract = jest.createMockFromModule("../node_modules/tesseract.js");
+
 // getCroppedImg = jest.fn();
 
 // jest.mock('../utils/canvasUtils', () => ({
 //     getCroppedImg: jest.fn(),
 // }));
 
-beforeAll(() => { server.listen(); jest.resetModules();})
-beforeEach(() => cleanup())
+beforeAll(() => { 
+    server.listen(); 
+})
+beforeEach(() => { 
+    cleanup(); 
+    jest.resetModules();
+})
 afterEach(() => {
     server.resetHandlers(); //reset handlers to ensure test isolation
     cleanup(); //reset JSDom
 })
-afterAll(() => server.close())
+afterAll(() => {
+    server.close()
+})
 
 describe("app", () => {
 
@@ -177,32 +187,87 @@ describe("app", () => {
         const newURL0 = URL.createObjectURL(file0)
         const newURL1 = URL.createObjectURL(file1)
         const getCroppedImgSpy = jest.spyOn(canvasUtils, "getCroppedImg")
-        getCroppedImgSpy.mockImplementation(() => {
-            console.log("inside croppedImg spy")
-            return new Promise((resolve) => {
-                resolve(newURL0)
-            })
-        })
-        const thing = await canvasUtils.getCroppedImg("")
-        console.log(thing);
-        const preprocessImageFromURL2Spy = jest.spyOn(canvasUtils, "getCroppedImg")
-        preprocessImageFromURL2Spy.mockImplementation(() => {
-            console.log("inside prepropSpy")
-            return new Promise((resolve) => {
-                resolve(newURL1)
-            })
-        })
+        // getCroppedImgSpy.mockImplementation(() => {
+        //     console.log("inside croppedImg spy")
+        //     return new Promise((resolve) => {
+        //         resolve(newURL0)
+        //     })
+        // })
+        getCroppedImgSpy.mockResolvedValue(newURL0)
+        const preprocessImageFromURL2Spy = jest.spyOn(preprocess, "preprocessImageFromURL2")
+        // preprocessImageFromURL2Spy.mockImplementation(() => {
+        //     console.log("inside preprocSpy")
+        //     return new Promise((resolve) => {
+        //         resolve(newURL1)
+        //     })
+        // })
+        preprocessImageFromURL2Spy.mockResolvedValue(newURL1)
+        // const mockRecognizeVal:Tesseract.RecognizeResult = {
+        //     data: {
+        //         text: "WOO BACK BABY",
+        //         blocks: [],
+        //         confidence: 100,
+        //         lines: [],
+        //         oem: "",
+        //         osd: "",
+        //         paragraphs: [],
+        //         psm: "",
+        //         symbols: [],
+        //         version: "",
+        //         words: [],
+        //         hocr: "",
+        //         tsv: "",
+        //         box: "",
+        //         unlv: "",
+        //         sd: "",
+        //         imageColor: "",
+        //         imageGrey: "",
+        //         imageBinary: "",
+        //         rotateRadians: 0,
+        //         pdf: [],
+        //     },
+        //     jobId: ""
+        // }
+        // const tess = jest.spyOn(Tesseract, "recognize");
+        // tess.mockResolvedValue(mockRecognizeVal);
+        //mock the createWorker module that errors out the test (ERR_WORKER_PATH)
+        // jest.doMock("../../node_modules/tesseract.js/src/createWorker", () => {})
+        // const createWorker = require("../../node_modules/tesseract.js/src/createWorker");
+        // const createWorker = jest.spyOn
+        // const {createWorker} = jest.createMockFromModule("../node_modules/tesseract.js/createWorker")
+        // createWorker = jest.fn(() => {})
+        // const tessSpy = jest.spyOn(Tesseract, "recognize")
+        // tessSpy.mockImplementation(() => {
+        //     return new Promise((resolve) => {
+        //         resolve(mockRecognizeVal)
+        //     })
+        // })
 
         //make sure that the image path gets set to the new URL 
-        await user.click(screen.getByText("Confirm"));
+        // await user.click(screen.getByText("Confirm"));
         
-        //make sure that crop is closed
-
-        //make sure that OCR runs -- act() b/c it runs on next load
-
-        // const textArea:HTMLTextAreaElement = screen.getByTestId("textArea");
-        // console.log(textArea.value)
-        await waitFor(() => {})
+        //modal closed, preprocessing fxns are called, image paths updated
+        // expect(screen.queryByTestId("preprocessingModal")).toBeNull();
+        // expect(getCroppedImgSpy).toHaveBeenCalledTimes(1);
+        // expect(preprocessImageFromURL2Spy).toHaveBeenCalledTimes(1);
+        // console.log("waiting for OCR to run ")
+        
+        // //make sure that OCR runs 
+        // await waitFor(async () => {
+        //     const focusedImg: HTMLImageElement = screen.getByAltText("uploadedImage");
+        //     expect(focusedImg).toBeInTheDocument();
+        //     expect(focusedImg.src).toEqual(newURL1);
+        //     console.log("past checking img urls")
+        // })
+        // // const textArea:HTMLTextAreaElement = screen.getByTestId("textArea");
+        // // console.log(textArea.value)
+        // await waitFor(() => {
+        //     // const tessRecSpy = jest.spyOn(Tesseract, "recognize")
+        //     // expect(Tesseract.recognize).toHaveBeenCalled();
+        //     // console.log("checking for loading bar")
+        //     // const loadingBar = screen.getByTestId("loadingBar")
+        //     // expect(loadingBar).toBeInTheDocument();//might need sth diff
+        // })
     })
 
     test("adjusting bin threshold", async () => {

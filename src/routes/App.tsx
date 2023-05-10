@@ -1,4 +1,4 @@
-import * as Tesseract from 'tesseract.js';
+import Tesseract from 'tesseract.js';
 import '../index.css';
 import { Carousel } from '../components/Carousel';
 import { Textbox } from '../components/Textbox';
@@ -73,6 +73,7 @@ function App() {
     const [runOCR, setRunOCR] = useState(false)
     useEffect(() => {
         if (runOCR && imagePath){
+            console.log("starting to run tesseract")
             Tesseract.recognize(
                 imagePath, 'eng',
                 {
@@ -82,9 +83,9 @@ function App() {
                     }
                 }
             )
-            .catch(err => {
-                console.error(err);
-            })
+            // .catch(err => {
+            //     console.error(err);
+            // })
             .then(result => {
                 // console.log(result);
                 const result1 = result as Tesseract.RecognizeResult;
@@ -209,12 +210,11 @@ function App() {
                 undefined,
                 rotation
             )
-            console.log('donee', { croppedImage })
+            console.log('done cropping image', { croppedImage })
             if (croppedImage == null) {
                 throw new Error("croppedImage is undefined");
             }
 
-            console.log("there")
             //close modal; persist crop area and set displayed image to cropped image
             // const processed_img = await preprocessImageFromURL(croppedImage)
             const threshold = val !== THRESHOLD_MIN && val !== THRESHOLD_MAX ? val : -1;
@@ -232,6 +232,7 @@ function App() {
 
     const cropAndConvert = useCallback(async () => {
         try {
+            console.log("inside crop and convert")
             if (croppedAreaPixels == null) {
                 throw new Error("croppedAreaPixels is undefined");
             }
@@ -241,6 +242,7 @@ function App() {
                 croppedAreaPixels,
                 rotation
             )
+            console.log(`got a new cropped image: ${croppedImage}`)
             // console.log('donee', { croppedImage })
             if (croppedImage == null) {
                 throw new Error("croppedImage is undefined");
@@ -255,6 +257,7 @@ function App() {
                 console.error("Undefined processed image.")
                 return
             }
+            console.log(`setting image path to ${processed_img}`)
             setImagePath(processed_img);
             setRunOCR(true);
         } catch (e) {
