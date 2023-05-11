@@ -16,6 +16,7 @@ import { quote, userReturnType } from "../utils/APIReturnTypes"
 import { BiArrowBack } from "react-icons/bi"
 import {config} from "../config"
 import { addNewQuote, deleteQuote, getAuthedUser, getBookTitle, getQuotesForBook } from '../utils/apiCalls';
+import { OCR } from "../utils/OCR";
 
 const THRESHOLD_MIN = config.preprocess.THRESHOLD_MIN;
 const THRESHOLD_MAX = config.preprocess.THRESHOLD_MAX;
@@ -61,38 +62,17 @@ function App() {
 
     const [text, setText] = useState("");
     const [loading, setLoading] = useState(0)
-    const handleClick = () => {
-        if (imagePath === ""){
-            console.log("NO IMAGE")
-            return; //TODO: set button to inactive instead
-        }
-
-        setRunOCR(true);
-    }
-
     const [runOCR, setRunOCR] = useState(false)
     useEffect(() => {
         if (runOCR && imagePath){
             console.log("starting to run tesseract")
-            Tesseract.recognize(
-                imagePath, 'eng',
-                {
-                    logger: m => {
-                        // console.log(m);
-                        setLoading(m.progress)
-                    }
-                }
-            )
-            // .catch(err => {
-            //     console.error(err);
-            // })
-            .then(result => {
-                // console.log(result);
-                const result1 = result as Tesseract.RecognizeResult;
-    
-                setText(result1.data.text);
-            })
-            .finally(() => {setRunOCR(false)});
+            OCR(imagePath)
+                .then(res => {
+                    console.log(`OCR recognized: ${res}`)
+                    setText(res)
+                })
+                .catch(e => console.error(e))
+                .finally(() => setRunOCR(false))
         }
     },[imagePath, runOCR])
 
@@ -183,7 +163,7 @@ function App() {
     let timeout:any;
     // user updates threshold -> hold out until they are certain (500ms)
     const updateBinThreshold = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = parseInt(e.target.value) / THRESHOLD_MAX;
+        const val = parseInt(e.target.value);
         window.clearTimeout(timeout);
         timeout = setTimeout(() => {
             // console.log("WOOOOOOOOO")
@@ -217,7 +197,7 @@ function App() {
 
             //close modal; persist crop area and set displayed image to cropped image
             // const processed_img = await preprocessImageFromURL(croppedImage)
-            const threshold = val !== THRESHOLD_MIN && val !== THRESHOLD_MAX ? val : -1;
+            const threshold = val !== THRESHOLD_MIN ? val / THRESHOLD_MAX : -1;
             const processed_img = await preprocessImageFromURL2(croppedImage, threshold)
             if (processed_img === undefined) {
                 console.error("Undefined processed image.")
@@ -232,7 +212,6 @@ function App() {
 
     const cropAndConvert = useCallback(async () => {
         try {
-            console.log("inside crop and convert")
             if (croppedAreaPixels == null) {
                 throw new Error("croppedAreaPixels is undefined");
             }
@@ -303,7 +282,6 @@ function App() {
                     handleFileUpload={handleFileUpload}
                     imagePath={imagePath}
                     text={text}
-                    handleClick={handleClick}
                     loading={loading}
                     showCropModal={showCropModal}
                     cropModal={cropModal}
@@ -326,7 +304,7 @@ function App() {
                                 />
                             </div>
                             <div id="optionsContainer" className="space-y-4 pt-4">
-                                <Slider label="Rotation" onChange={updateRotation}></Slider>
+                                <Slider label="Rotation" onChange={updateRotation} testID="rotation"></Slider>
                                 <Slider 
                                     testID="threshold"
                                     label="B/W Threshold" 

@@ -14,7 +14,6 @@ function Upload({
     handleFileUpload,
     text,
     loading,
-    handleClick,
     children,
     showCropModal,
     cropModal,
@@ -24,7 +23,6 @@ function Upload({
     handleFileUpload: (event: any) => void,
     text: string,
     loading: number,
-    handleClick: () => void,
     children: ReactElement,
     showCropModal: () => void,
     cropModal: boolean,
@@ -44,7 +42,6 @@ function Upload({
                 <input type="file" id="uploadFile" name="uploadFile" onChange={handleFileUpload} 
                     className="hidden" multiple accept="image/png, image/jpeg, image/jpg"
                 />
-                {/* <button onClick={handleClick} className="btn-std bg-purple-500 text-white"> Convert </button> */}
                 <button onClick={showCropModal} className="btn-std mx-3 bg-main-green text-white"> Edit</button>
             </div>
         </div>

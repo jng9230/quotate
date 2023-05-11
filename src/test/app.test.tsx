@@ -10,6 +10,8 @@ import 'jsdom-worker'
 import { act } from 'react-dom/test-utils';
 import * as canvasUtils from "../utils/canvasUtils"
 import * as preprocess from "../utils/preprocess"
+import * as OCR from "../utils/OCR"
+import { config } from "../config"
 // import * as Tesseract from 'tesseract.js';
 // const tesseract = jest.createMockFromModule("../node_modules/tesseract.js");
 
@@ -175,10 +177,6 @@ describe("app", () => {
         if (!res){console.error("res undefined"); return;}
         const screen = res.screen;
         const user = res.user;
-        // if (!screen) {
-        //     console.error("screen undefined");
-        //     return;
-        // }
 
         //mock getCroppedImg and preprocessImgFromURL to both return a URL
         //-- mock b/c it's copy pasted code -- no real need to test 
@@ -187,95 +185,37 @@ describe("app", () => {
         const newURL0 = URL.createObjectURL(file0)
         const newURL1 = URL.createObjectURL(file1)
         const getCroppedImgSpy = jest.spyOn(canvasUtils, "getCroppedImg")
-        // getCroppedImgSpy.mockImplementation(() => {
-        //     console.log("inside croppedImg spy")
-        //     return new Promise((resolve) => {
-        //         resolve(newURL0)
-        //     })
-        // })
         getCroppedImgSpy.mockResolvedValue(newURL0)
-        const preprocessImageFromURL2Spy = jest.spyOn(preprocess, "preprocessImageFromURL2")
-        // preprocessImageFromURL2Spy.mockImplementation(() => {
-        //     console.log("inside preprocSpy")
-        //     return new Promise((resolve) => {
-        //         resolve(newURL1)
-        //     })
-        // })
-        preprocessImageFromURL2Spy.mockResolvedValue(newURL1)
-        // const mockRecognizeVal:Tesseract.RecognizeResult = {
-        //     data: {
-        //         text: "WOO BACK BABY",
-        //         blocks: [],
-        //         confidence: 100,
-        //         lines: [],
-        //         oem: "",
-        //         osd: "",
-        //         paragraphs: [],
-        //         psm: "",
-        //         symbols: [],
-        //         version: "",
-        //         words: [],
-        //         hocr: "",
-        //         tsv: "",
-        //         box: "",
-        //         unlv: "",
-        //         sd: "",
-        //         imageColor: "",
-        //         imageGrey: "",
-        //         imageBinary: "",
-        //         rotateRadians: 0,
-        //         pdf: [],
-        //     },
-        //     jobId: ""
-        // }
-        // const tess = jest.spyOn(Tesseract, "recognize");
-        // tess.mockResolvedValue(mockRecognizeVal);
-        //mock the createWorker module that errors out the test (ERR_WORKER_PATH)
-        // jest.doMock("../../node_modules/tesseract.js/src/createWorker", () => {})
-        // const createWorker = require("../../node_modules/tesseract.js/src/createWorker");
-        // const createWorker = jest.spyOn
-        // const {createWorker} = jest.createMockFromModule("../node_modules/tesseract.js/createWorker")
-        // createWorker = jest.fn(() => {})
-        // const tessSpy = jest.spyOn(Tesseract, "recognize")
-        // tessSpy.mockImplementation(() => {
-        //     return new Promise((resolve) => {
-        //         resolve(mockRecognizeVal)
-        //     })
-        // })
+
+        const prepSpy = jest.spyOn(preprocess, "preprocessImageFromURL2")
+        prepSpy.mockResolvedValue(newURL1)
+
+        //have to mock tesseract over b/c JSDom doesn't support web workers
+        const ocrFn = jest.spyOn(OCR, "OCR");
+        const mockOCRVal = "wowowowwoowowowe";
+        ocrFn.mockResolvedValue(mockOCRVal);
 
         //make sure that the image path gets set to the new URL 
-        // await user.click(screen.getByText("Confirm"));
+        await user.click(screen.getByText("Confirm"));
         
         //modal closed, preprocessing fxns are called, image paths updated
-        // expect(screen.queryByTestId("preprocessingModal")).toBeNull();
-        // expect(getCroppedImgSpy).toHaveBeenCalledTimes(1);
-        // expect(preprocessImageFromURL2Spy).toHaveBeenCalledTimes(1);
-        // console.log("waiting for OCR to run ")
+        expect(screen.queryByTestId("preprocessingModal")).toBeNull();
+        expect(getCroppedImgSpy).toHaveBeenCalledTimes(1);
+        expect(prepSpy).toHaveBeenCalledTimes(1);
         
-        // //make sure that OCR runs 
-        // await waitFor(async () => {
-        //     const focusedImg: HTMLImageElement = screen.getByAltText("uploadedImage");
-        //     expect(focusedImg).toBeInTheDocument();
-        //     expect(focusedImg.src).toEqual(newURL1);
-        //     console.log("past checking img urls")
-        // })
-        // // const textArea:HTMLTextAreaElement = screen.getByTestId("textArea");
-        // // console.log(textArea.value)
-        // await waitFor(() => {
-        //     // const tessRecSpy = jest.spyOn(Tesseract, "recognize")
-        //     // expect(Tesseract.recognize).toHaveBeenCalled();
-        //     // console.log("checking for loading bar")
-        //     // const loadingBar = screen.getByTestId("loadingBar")
-        //     // expect(loadingBar).toBeInTheDocument();//might need sth diff
-        // })
+        //make sure that OCR runs 
+        await waitFor(async () => {
+            const focusedImg: HTMLImageElement = screen.getByAltText("uploadedImage");
+            expect(focusedImg).toBeInTheDocument();
+            expect(focusedImg.src).toEqual(newURL1);
+        })
+        await waitFor(() => {
+            const textArea:HTMLTextAreaElement = screen.getByTestId("textArea");
+            expect(textArea.value).toEqual(mockOCRVal);
+        })
     })
 
     test("adjusting bin threshold", async () => {
-        // const screen = await bringUpEditModal();
-        // if (!screen){
-        //     console.error("screen undefined");
-        //     return;
-        // }
         const res = await bringUpEditModal();
         if (!res) { console.error("res undefined"); return; }
         const screen = res.screen;
@@ -285,29 +225,62 @@ describe("app", () => {
         const thresholdSlider:HTMLInputElement = screen.getByTestId("slider-threshold");
         expect(thresholdSlider).toBeInTheDocument();
 
+        const file0 = new File(['image0'], 'image0.png', { type: 'image/png' });
+        const file1 = new File(['image1'], 'image1.png', { type: 'image/png' });
+        const newURL0 = URL.createObjectURL(file0)
+        const newURL1 = URL.createObjectURL(file1)
+        const cropFxn = jest.spyOn(canvasUtils, "getCroppedImg")
+        cropFxn.mockResolvedValue(newURL0)
+        const prepSpy = jest.spyOn(preprocess, "preprocessImageFromURL2")
+        prepSpy.mockResolvedValue(newURL1)
+
         await act(async () => {
             //move once and sit -- make sure update funtion is called
             fireEvent.change(thresholdSlider, { target: { value: 10 } });
             expect(thresholdSlider.value).toBe("10")
-            const cropFxn = jest.spyOn(canvasUtils, "getCroppedImg")
+            // const cropFxn = jest.spyOn(canvasUtils, "getCroppedImg")
             expect(cropFxn).toHaveBeenCalledTimes(0);
             await new Promise((r) => setTimeout(r, 550)); //timeout in app is 500
             expect(cropFxn).toHaveBeenCalledTimes(1);
             
             //move a bunch before settling -- make sure update is only called once
-            const vals = [0, 10, 20, 15, 5, 10, 15];
+            const max = config.preprocess.THRESHOLD_MAX;
+            const min = config.preprocess.THRESHOLD_MIN;
+            const vals = [0, 10, 20, 15, 5, 10, 15, max - 1, min + 1];
             vals.forEach((v) => {
                 fireEvent.change(thresholdSlider, { target: { value: v } });
             })
             expect(cropFxn).toHaveBeenCalledTimes(1);//called once from first test
             await new Promise((r) => setTimeout(r, 550));
             expect(cropFxn).toHaveBeenCalledTimes(2);//called again
+            
+            //vals get edited if they're too large/small
+            fireEvent.change(thresholdSlider, { target: { value: max } });
+            await new Promise((r) => setTimeout(r, 550));
+            expect(prepSpy).toHaveBeenCalledWith(newURL0, 1);
+            fireEvent.change(thresholdSlider, { target: { value: min } });
+            await new Promise((r) => setTimeout(r, 550));
+            expect(prepSpy).toHaveBeenCalledWith(newURL0, -1);
         })
-
     })
 
-    test("adjusting rotation", () => {
+    test("adjusting rotation", async () => {
+        //normal path to upload and start to convert an image
+        const res = await bringUpEditModal();
+        if (!res) { console.error("res undefined"); return; }
+        const screen = res.screen;
+        const user = res.user;
 
+        //setup done; get slider butifton
+        const rotationSlider: HTMLInputElement = screen.getByTestId("slider-rotation");
+        expect(rotationSlider).toBeInTheDocument();
+
+        //slider works
+        const vals = [0, -10, 20, 15, -50, 10, 15, 180, -175, -180];
+        vals.forEach(v => {
+            fireEvent.change(rotationSlider, { target: { value: v } });
+            expect(rotationSlider.value).toBe(v.toString())
+        })
     })
 
     test("adding a quote", async () => {

@@ -2,7 +2,6 @@ import { cleanup, render, screen, waitForElementToBeRemoved } from '@testing-lib
 import { Home } from '../routes/Home';
 import { BooksWrapper } from '../components/BooksWrapper';
 import { QuotesWrapper } from '../components/QuotesWrapper';
-import App from "../routes/App"
 import '@testing-library/jest-dom';
 // global.fetch = require('jest-fetch-mock') //mock fetch RQs
 const fetchMock = require('fetch-mock-jest');
