@@ -14,7 +14,7 @@ import { Modal } from '../components/Modal';
 import { useParams, Link } from 'react-router-dom';
 import { quote, userReturnType } from "../utils/APIReturnTypes"
 import { BiArrowBack } from "react-icons/bi"
-import {config} from "../config"
+import {config} from "../utils/config"
 import { addNewQuote, deleteQuote, getAuthedUser, getBookTitle, getQuotesForBook } from '../utils/apiCalls';
 import { OCR } from "../utils/OCR";
 
@@ -65,10 +65,8 @@ function App() {
     const [runOCR, setRunOCR] = useState(false)
     useEffect(() => {
         if (runOCR && imagePath){
-            console.log("starting to run tesseract")
-            OCR(imagePath)
+            OCR(imagePath, setLoading)
                 .then(res => {
-                    console.log(`OCR recognized: ${res}`)
                     setText(res)
                 })
                 .catch(e => console.error(e))
