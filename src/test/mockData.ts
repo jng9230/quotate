@@ -26,6 +26,12 @@ export const book1_return: API.booksReturnType = {
     __v: 0
 }
 
+export const quote1: API.quote = {
+    text: quote1_text,
+    book: book1_id,
+    id: quote1_id
+}
+
 export const quote1_return: API.quotesReturnType = {
     _id: quote1_id,
     text: quote1_text,

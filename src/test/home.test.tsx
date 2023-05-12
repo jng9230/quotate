@@ -3,7 +3,6 @@ import { Home } from '../routes/Home';
 import { BooksWrapper } from '../components/BooksWrapper';
 import { QuotesWrapper } from '../components/QuotesWrapper';
 import '@testing-library/jest-dom';
-// global.fetch = require('jest-fetch-mock') //mock fetch RQs
 const fetchMock = require('fetch-mock-jest');
 import { within, waitFor } from '@testing-library/dom'
 import userEvent from '@testing-library/user-event';
@@ -133,17 +132,13 @@ describe("home", () => {
         const bookModal1 = screen.queryByText("ADD A NEW BOOK");
         expect(bookModal1).toBeNull();
 
-        // await new Promise((resolve, reject) => setTimeout(() => {
-        //     expect(true).toBe(true)
-        //     resolve("")
-        // }, 1500))
     })
 
     /** tests the process for adding a book with a callback for continued testing
      * to maintain test state (so that the JSDom doesn't get cleared via cleanup() 
      * on the afterEach triggers)
      */
-    const addBook = async (callback: () => void) => {
+    const addBook = async () => {
         render(<Home />, { wrapper: Router });
         const user = userEvent.setup()
         const addButton = screen.getByRole("button", { name: "BOOK" });
@@ -159,106 +154,35 @@ describe("home", () => {
         const addBookButton = screen.getByText("ADD");
         expect(addBookButton).toBeInTheDocument();
         await user.click(addBookButton);
+
+        return {screen, user}
+    }
+
+    test("add a book", async () => {
+        const res = await addBook();
+        const screen = res.screen;
+        const user = res.user;
 
         //modal is closed
         const bookModal1 = screen.queryByText("ADD A NEW BOOK");
         expect(bookModal1).toBeNull();
 
-        //new book is somewhere
-        const newBook = screen.getByText(title);
-        expect(newBook).toBeInTheDocument();
-
-        //new book is in focus ==> "add quote" button is showing
-        const addQuoteButton = screen.getByText("QUOTE");
-        expect(addQuoteButton).toBeInTheDocument();
-        // expect(screen.getByRole('link', { name: "QUOTE" })).toHaveAttribute('href', 'https://www.test.com/')
-
-        // const thing = screen.getByRole('link', { name: "QUOTE" });
-        // console.log(thing);
-
-        // console.log("hello");
-        // expect(false).toBe(true);
-
-        console.log("inside addBook()")
-        callback();
-    }
-
-    test("add a book", async () => {
-        // console.log("testing adding a book")
-        // addBook(() => {})
-        // console.log("done testing adding a book")
-        render(<Home />, { wrapper: Router });
-        const user = userEvent.setup()
-        const addButton = screen.getByRole("button", { name: "BOOK" });
-        await user.click(addButton);
-        const input = screen.getByPlaceholderText("Enter book name");
+        //new book is somewhere and in focus (colored darker)
         const title = data.book1_title;
-
-        //type in title
-        await user.type(input, title);
-        expect(input).toHaveValue(title);
-
-        //submit new book
-        const addBookButton = screen.getByText("ADD");
-        expect(addBookButton).toBeInTheDocument();
-        await user.click(addBookButton);
-
-        //modal is closed
-        await waitFor(() => { 
-            const bookModal1 = screen.queryByText("ADD A NEW BOOK");
-            expect(bookModal1).toBeNull();
-        })
-
-        //new book is somewhere
         const newBook = screen.getByText(title);
         expect(newBook).toBeInTheDocument();
+        expect(newBook).toHaveClass("bg-main-green text-white")
 
         //new book is in focus ==> "add quote" button is showing
         const addQuoteButton = screen.getByRole("link", { name: "QUOTE" });
         expect(addQuoteButton).toBeInTheDocument();
         expect(addQuoteButton).toHaveAttribute("href", `/app/${data.book1_id}`)
-
     })
 
     test("delete a book", async () => {
-        //need to add a book before we delete a book
-        // addBook(async () => {
-        render(<Home />, { wrapper: Router });
-        const user = userEvent.setup()
-        const addButton = screen.getByRole("button", { name: "BOOK" });
-        await user.click(addButton);
-        const input = screen.getByPlaceholderText("Enter book name");
-        const title = data.book1_title;
-
-        //type in title
-        await user.type(input, title);
-        expect(input).toHaveValue(title);
-
-        //submit new book
-        const addBookButton = screen.getByText("ADD");
-        expect(addBookButton).toBeInTheDocument();
-        await user.click(addBookButton);
-
-        //modal is closed
-        await waitFor(() => {
-            const bookModal1 = screen.queryByText("ADD A NEW BOOK");
-            expect(bookModal1).toBeNull();
-        })
-
-        //new book is somewhere
-        const newBook = screen.getByText(title);
-        expect(newBook).toBeInTheDocument();
-
-        //new book is in focus ==> "add quote" button is showing
-        const addQuoteButton = screen.getByText("QUOTE");
-        expect(addQuoteButton).toBeInTheDocument();
-
-        // const user = userEvent.setup()  
-        //select the new book
-        // const title = data.book1_title;
-        // const newBook1 = screen.getByText(title);
-        // expect(newBook).toBeInTheDocument();
-        // await user.click(newBook1);
+        const res = await addBook();
+        const screen = res.screen;
+        const user = res.user;
 
         //click the delete button; bring up the modal
         const deleteBookButton1 = screen.getByText("REMOVE BOOK");
@@ -281,6 +205,7 @@ describe("home", () => {
         })
 
         //book shouldn't be there anymore
+        const title = data.book1_title;
         const oldBook = screen.queryByText(title)
         expect(oldBook).toBeNull();
 
@@ -289,38 +214,49 @@ describe("home", () => {
         expect(addQuoteButton1).toBeNull();
         const deleteBookButton2 = screen.queryByText("DELETE");
         expect(deleteBookButton2).toBeNull();
-
-        // });
-    
     })
 
-    // test("+quote button -> app page", async () => {
-    //     // render(<Home/>)
-    //     // expect(screen.getByRole('link', { name: "Quote" })).toHaveAttribute('href', 'https://www.test.com/')
-    // })
-
-    test("focuses/unfocuses book correctly", () => {
+    test("focuses/unfocuses book correctly", async () => {
         //26-30
         //check color of sidebar/text?, quote button? but that stays const
+        const res = await addBook();
+        const screen = res.screen;
+        const user = res.user;
+
+        //has the correct color when freshly added (in focus)
+        const title = data.book1_title;
+        const newBook = screen.getByText(title);
+        expect(newBook).toBeInTheDocument();
+        expect(newBook).toHaveClass("bg-main-green text-white")
+
+        //unfocus and check that color changes
+        await user.click(newBook);
+        expect(newBook).toHaveClass("bg-white text-black")
     })
 
-    test("renders quotes for selected book, given that the quote was already added", () => {
-        //47
-        //separate server? 
-    })
-    
-    test("adding book doesn't do anthing if user isn't loggined in", () => {
-        //63
-    })
-    
-    test("renders non-zero books if there were books previously", () => {
-        //110
-        //separate server?   
-    })
-
-    test("closing delete book modal: click x OR click `no`", () => {
+    test("closing delete book modal: click x OR click `no`", async () => {
         //198, 226
+        const res = await addBook();
+        const screen = res.screen;
+        const user = res.user;
+        
+        await waitFor(async () => {
+            //click the delete button; bring up the modal
+            const deleteBookButton1 = screen.getByText("REMOVE BOOK");
+            await user.click(deleteBookButton1);
+    
+            //delete book modal should be there -> yes/no buttons
+            const confirmDeleteButton = screen.queryByText("YES");
+            expect(confirmDeleteButton).toBeInTheDocument()
+            if (!confirmDeleteButton) { return; }
+            const denyDeleteButton = screen.queryByText("NO");
+            expect(denyDeleteButton).toBeInTheDocument()
+            if (!denyDeleteButton) { return; }
+            
+            //clicking on "no" closes the modal
+            await user.click(denyDeleteButton);
+            const denyDeleteButton1 = screen.queryByText("NO")
+            expect(denyDeleteButton1).toBeNull();
+        })
     })
-
-
 })

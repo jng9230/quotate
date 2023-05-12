@@ -13,25 +13,26 @@ function BooksWrapper({
         <div className="row-span-full border-std p-3 space-y-3 bg-white" data-testid="booksWrapper">
             {
                 books.map((d, i) => {
-                    const key = d.id
+                    const key = d.id;
+                    const isFocused = key === focusedBook?.id;
                     return (
                         <div key={key}
                             className={`
-                                        border-std 
-                                        p-1 
-                                        cursor-pointer 
-                                        hover:ease-in 
-                                        hover:text-white 
-                                        transition 
-                                        ease-out 
-                                        hover:translate-x-1
-                                        text-ellipsis 
-                                        overflow-hidden 
-                                        whitespace-nowrap
-                                        ${focusedBook?.id === key ? "bg-main-green text-white"
-                                    : "hover:bg-secondary-green"
+                                border-std 
+                                p-1 
+                                cursor-pointer 
+                                hover:ease-in 
+                                hover:text-white 
+                                transition 
+                                ease-out 
+                                hover:translate-x-1
+                                text-ellipsis 
+                                overflow-hidden 
+                                whitespace-nowrap
+                                ${isFocused ? "bg-main-green text-white"
+                                    : "bg-white text-black hover:bg-secondary-green"
                                 }
-                                    `}
+                            `}
                             onClick={e => handleFocusedBookClick(e, key)}>
                             {d.title}
                         </div>

@@ -188,7 +188,7 @@ function App() {
                 undefined,
                 rotation
             )
-            console.log('done cropping image', { croppedImage })
+            // console.log('done cropping image', { croppedImage })
             if (croppedImage == null) {
                 throw new Error("croppedImage is undefined");
             }
@@ -219,7 +219,7 @@ function App() {
                 croppedAreaPixels,
                 rotation
             )
-            console.log(`got a new cropped image: ${croppedImage}`)
+            // console.log(`got a new cropped image: ${croppedImage}`)
             // console.log('donee', { croppedImage })
             if (croppedImage == null) {
                 throw new Error("croppedImage is undefined");
@@ -234,7 +234,7 @@ function App() {
                 console.error("Undefined processed image.")
                 return
             }
-            console.log(`setting image path to ${processed_img}`)
+            // console.log(`setting image path to ${processed_img}`)
             setImagePath(processed_img);
             setRunOCR(true);
         } catch (e) {
