@@ -11,8 +11,8 @@ import { act } from 'react-dom/test-utils';
 import * as canvasUtils from "../utils/canvasUtils"
 import * as preprocess from "../utils/preprocess"
 import * as OCR from "../utils/OCR"
-import { config } from "../config"
-// import * as Tesseract from 'tesseract.js';
+import { config } from "../utils/config"
+import * as Tesseract from 'tesseract.js';
 // const tesseract = jest.createMockFromModule("../node_modules/tesseract.js");
 
 // getCroppedImg = jest.fn();
@@ -179,7 +179,7 @@ describe("app", () => {
         const user = res.user;
 
         //mock getCroppedImg and preprocessImgFromURL to both return a URL
-        //-- mock b/c it's copy pasted code -- no real need to test 
+        //-- mock b/c it's copy pasted code -- assume it works
         const file0 = new File(['image0'], 'image0.png', { type: 'image/png' });
         const file1 = new File(['image1'], 'image1.png', { type: 'image/png' });
         const newURL0 = URL.createObjectURL(file0)
@@ -195,20 +195,19 @@ describe("app", () => {
         const mockOCRVal = "wowowowwoowowowe";
         ocrFn.mockResolvedValue(mockOCRVal);
 
-        //make sure that the image path gets set to the new URL 
         await user.click(screen.getByText("Confirm"));
         
         //modal closed, preprocessing fxns are called, image paths updated
         expect(screen.queryByTestId("preprocessingModal")).toBeNull();
+
         expect(getCroppedImgSpy).toHaveBeenCalledTimes(1);
         expect(prepSpy).toHaveBeenCalledTimes(1);
-        
-        //make sure that OCR runs 
-        await waitFor(async () => {
-            const focusedImg: HTMLImageElement = screen.getByAltText("uploadedImage");
-            expect(focusedImg).toBeInTheDocument();
-            expect(focusedImg.src).toEqual(newURL1);
-        })
+
+        const focusedImg: HTMLImageElement = screen.getByAltText("uploadedImage");
+        expect(focusedImg).toBeInTheDocument();
+        expect(focusedImg.src).toEqual(newURL1);
+
+        //after OCR runs: correctly updates text box
         await waitFor(() => {
             const textArea:HTMLTextAreaElement = screen.getByTestId("textArea");
             expect(textArea.value).toEqual(mockOCRVal);

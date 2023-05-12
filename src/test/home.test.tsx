@@ -36,7 +36,7 @@ describe("quote wrapper", () => {
             text: "text2",
             id: "id2",
             book: "book2"
-        }];
+        }]; 
         render(<QuotesWrapper quotes={quotes} focusedBook={undefined} handleDeleteBook={()=>{}}></QuotesWrapper>)
         expect(screen.getByTestId("quotesWrapper")).toBeEmptyDOMElement();
     })
@@ -298,5 +298,29 @@ describe("home", () => {
     //     // render(<Home/>)
     //     // expect(screen.getByRole('link', { name: "Quote" })).toHaveAttribute('href', 'https://www.test.com/')
     // })
+
+    test("focuses/unfocuses book correctly", () => {
+        //26-30
+        //check color of sidebar/text?, quote button? but that stays const
+    })
+
+    test("renders quotes for selected book, given that the quote was already added", () => {
+        //47
+        //separate server? 
+    })
+    
+    test("adding book doesn't do anthing if user isn't loggined in", () => {
+        //63
+    })
+    
+    test("renders non-zero books if there were books previously", () => {
+        //110
+        //separate server?   
+    })
+
+    test("closing delete book modal: click x OR click `no`", () => {
+        //198, 226
+    })
+
 
 })

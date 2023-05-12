@@ -1,5 +1,5 @@
 import { BiPlus } from "react-icons/bi"
-import { config } from "../config"
+import { config } from "../utils/config"
 const API_BASE = config.API_BASE;
 
 function HomeHeader({

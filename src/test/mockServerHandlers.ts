@@ -1,5 +1,5 @@
 import { rest } from 'msw';
-import { config } from "../config"
+import { config } from "../utils/config"
 import * as data from "./mockData";
 import * as API from "../utils/APIReturnTypes"
 const API_BASE = config.API_BASE;

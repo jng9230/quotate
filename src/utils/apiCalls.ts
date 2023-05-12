@@ -1,5 +1,5 @@
 // import { useParams } from "react-router-dom";
-import { config } from "../config"
+import { config } from "./config"
 import * as API from "./APIReturnTypes"
 
 const API_BASE = config.API_BASE; 
