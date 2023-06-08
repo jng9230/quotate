@@ -1,0 +1,24 @@
+version: '3'
+services:
+  demo:
+    image: "johnng30/quotate-backend:v0.1"
+    ports:
+      - "5000:5000"
+#     environment:
+#       ATLAS_URI: /run/secrets/ATLAS_URI
+#       COOKIE_KEY: /run/secrets/COOKIE_KEY
+#       GOOGLE_CLIENT_ID: /run/secrets/GOOGLE_CLIENT_ID
+#       GOOGLE_CLIENT_SECRET: /run/secrets/GOOGLE_CLIENT_SECRET
+#       JWT_KEY: /run/secrets/JWT_KEY
+
+# secrets:
+#   ATLAS_URI:
+#     external: true
+#   COOKIE_KEY:
+#     external: true
+#   GOOGLE_CLIENT_ID:
+#     external: true
+#   GOOGLE_CLIENT_SECRET:
+#     external: true
+#   JWT_KEY:
+#     external: true
