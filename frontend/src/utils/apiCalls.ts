@@ -65,6 +65,25 @@ export const addNewBook = async (bookName:string, user: API.userReturnType) => {
     return res
 }
 
+export const editBook = async (bookName: string, bookID: string) => {
+    const res = fetch("/book", {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            "title": bookName,
+            "id": bookID
+        })
+    })
+        .then(res => res.json())
+        .then(data => {
+            const data1 = data as API.newBookReturnType;
+            return data1
+        })
+    return res
+}
+
 export const deleteBook = async (focusedBook:API.book) => {
     const res = fetch("/book", {
         method: "DELETE",

@@ -1,13 +1,16 @@
 import { book } from "../utils/APIReturnTypes"
+import { BiPencil } from "react-icons/bi";
 
 function BooksWrapper({
     books,
     focusedBook,
-    handleFocusedBookClick
+    handleFocusedBookClick,
+    showBookModal
 }:{
     books: book[],
     focusedBook: book | undefined, 
-    handleFocusedBookClick: (e: React.MouseEvent<HTMLDivElement>, key:string) => void
+    handleFocusedBookClick: (e: React.MouseEvent<HTMLDivElement>, key:string) => void,
+    showBookModal: () => void,
 }){
     return (
         <div className="row-span-full border-std p-3 space-y-3 bg-white" data-testid="booksWrapper">
@@ -19,7 +22,6 @@ function BooksWrapper({
                         <div key={key}
                             className={`
                                 border-std 
-                                p-1 
                                 cursor-pointer 
                                 hover:ease-in 
                                 hover:text-white 
@@ -32,9 +34,16 @@ function BooksWrapper({
                                 ${isFocused ? "bg-main-green text-white"
                                     : "bg-white text-black hover:bg-secondary-green"
                                 }
-                            `}
-                            onClick={e => handleFocusedBookClick(e, key)}>
-                            {d.title}
+                                flex
+                                flex-row
+                                justify-between
+                                items-center
+                                px-1
+                            `}>
+                            <p onClick={e => handleFocusedBookClick(e, key)} className="py-1 w-full">
+                                {d.title}
+                            </p>
+                            { isFocused && <BiPencil onClick={() => {showBookModal()}}></BiPencil> }
                         </div>
                     )
                 })

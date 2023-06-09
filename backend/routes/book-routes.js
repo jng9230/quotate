@@ -54,4 +54,12 @@ router.delete('/', async (req, res) => {
     res.json({ book: del_book, quotes: del_quote });
 });
 
+//edit a book's title
+router.put("/", async (req, res) => {
+    if (debug) { console.log("EDITING A BOOK"); console.log(req.body) }
+
+    const edit_book = await Book.findByIdAndUpdate({_id: req.body.id}, {title: req.body.title})
+    res.json(edit_book)
+})
+
 module.exports = router

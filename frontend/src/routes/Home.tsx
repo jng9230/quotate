@@ -6,7 +6,7 @@ import { Modal } from "../components/Modal";
 import { HomeHeader } from "../components/HomeHeader";
 import { BooksWrapper } from "../components/BooksWrapper";
 import { QuotesWrapper } from "../components/QuotesWrapper";
-import { getBooksForUser, getQuotesForBook, addNewBook, deleteBook, getAuthedUser } from "../utils/apiCalls";
+import { getBooksForUser, getQuotesForBook, addNewBook, deleteBook, getAuthedUser, editBook } from "../utils/apiCalls";
 // import { useParams, useSearchParams } from "react-router-dom";
 
 const basic_button_classes = `
@@ -119,26 +119,36 @@ function Home(){
             .catch(err => console.error(err))
     }, [authed])
 
-    //get books for user
-    // useEffect(() => {
-    //     if (user === undefined){
-    //         console.error("NO USER PROVIDED/NOT LOGGED IN"); 
-    //         return;
-    //     }
+    const [editBookModal, setEditBookModal] = useState(false);
+    const showBookModal = () => {setNewBookName(focusedBook?.title || ""); setEditBookModal(true)}
+    const handleEditBook = () => {
+        if (focusedBook === undefined) {
+            console.error("NO FOCUSED BOOK");
+            return;
+        }
 
-    //     getBooksForUser(user)
-    //         .then(res => {
-    //             const mapped_books = res.map(d => {
-    //                 return {
-    //                     title: d.title,
-    //                     id: d._id
-    //                 }
-    //             })
-    //             setBooks(mapped_books.reverse());
-    //         })
-    //         .catch(err => console.error("Error: ", err))
-    // }, [user])
-
+        editBook(newBookName, focusedBook.id)
+            .then(data => {
+                const editedBook: book = {
+                    title: newBookName,
+                    id: data._id
+                }
+                const editedBooks = books.map(d => {
+                    if (d.id == editedBook.id){
+                        return {
+                            title: newBookName,
+                            id: d.id
+                        }
+                    }
+                    return d
+                })
+                setBooks(editedBooks)
+                setEditBookModal(false)
+                setFocusedBook(editedBook)
+                setNewBookName("")
+            })
+            .catch(err => console.error("Error: ", err))
+    }
     return (
         <div className="w-screen h-screen flex flex-col bg-off-white">
             <HomeHeader 
@@ -151,6 +161,7 @@ function Home(){
                     books={books}
                     focusedBook={focusedBook}
                     handleFocusedBookClick={handleFocusedBookClick}
+                    showBookModal={showBookModal}
                 ></BooksWrapper>
                 <QuotesWrapper
                     focusedBook={focusedBook}
@@ -228,6 +239,40 @@ function Home(){
                                 NO
                             </button>
                         </div>
+                    </div>
+                </Modal>
+            }
+            {
+                editBookModal && 
+                <Modal onClick={() => setEditBookModal(false)}>
+                    <div className="w-full h-full flex flex-col items-center space-y-5">
+                            <label htmlFor="bookName"> EDIT BOOK TITLE </label>
+                            <input type="text" id="bookName" name="bookName" placeholder="Enter book name"
+                                className="
+                                border-std
+                                border-black
+                                text-center
+                                outline-none
+                                p-1
+                                w-full
+                                sm:w-1/2
+                            "
+                                value={newBookName}
+                                onChange={e => setNewBookName(e.target.value)}
+                            />
+                            <button className="
+                            btn-std 
+                            text-main-green 
+                            border-std 
+                            bg-white 
+                            border-main-green
+                            flex
+                            items-center
+                        "
+                                onClick={handleEditBook}
+                            >
+                                UPDATE
+                            </button>           
                     </div>
                 </Modal>
             }

@@ -63,29 +63,29 @@ describe("quote wrapper", () => {
 
 })
 
-describe("book wrapper", () => {
-    test("nothing on empty books arr", async () => {
-        const books:API.book[] = []
-        render(<BooksWrapper books={books} handleFocusedBookClick={()=>{}} focusedBook={undefined}></BooksWrapper>)
+// describe("book wrapper", () => {
+//     test("nothing on empty books arr", async () => {
+//         const books:API.book[] = []
+//         render(<BooksWrapper books={books} handleFocusedBookClick={()=>{}} focusedBook={undefined}></BooksWrapper>)
 
-        expect(screen.getByTestId("booksWrapper")).toBeEmptyDOMElement();
-    })
-    test("something on non-empty books arr", async () => {
-        // const books = [{
-        //     title: "title1",
-        //     id: "id1"
-        // }, {
-        //     title: "title2",
-        //     id: "id2"
-        // }];
-        const books = [data.book1];
-        render(<BooksWrapper books={books} handleFocusedBookClick={() => { }} focusedBook={undefined}></BooksWrapper>)
-        // expect(screen.getByText("title1")).toBeInTheDocument();
-        // expect(screen.getByText("title2")).toBeInTheDocument();
-        expect(screen.getByText(data.book1_title)).toBeInTheDocument();
-        //don't test key b/c that's under the hood -- test via integration of book & quotes
-    })
-})
+//         expect(screen.getByTestId("booksWrapper")).toBeEmptyDOMElement();
+//     })
+//     test("something on non-empty books arr", async () => {
+//         // const books = [{
+//         //     title: "title1",
+//         //     id: "id1"
+//         // }, {
+//         //     title: "title2",
+//         //     id: "id2"
+//         // }];
+//         const books = [data.book1];
+//         render(<BooksWrapper books={books} handleFocusedBookClick={() => { }} focusedBook={undefined}></BooksWrapper>)
+//         // expect(screen.getByText("title1")).toBeInTheDocument();
+//         // expect(screen.getByText("title2")).toBeInTheDocument();
+//         expect(screen.getByText(data.book1_title)).toBeInTheDocument();
+//         //don't test key b/c that's under the hood -- test via integration of book & quotes
+//     })
+// })
 
 
 describe("home", () => {

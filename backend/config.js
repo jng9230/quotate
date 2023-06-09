@@ -19,5 +19,5 @@ module.exports = config = {
     PORT : PORT,
     PORT_TEST : 5001,
     CLIENT_HOME_PAGE_URL: process.env.CLIENT_HOME_PAGE_URL,
-    DEBUG : 0,
+    DEBUG : "1",
 }
