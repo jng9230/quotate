@@ -40,10 +40,21 @@ function BooksWrapper({
                                 items-center
                                 px-1
                             `}>
-                            <p onClick={e => handleFocusedBookClick(e, key)} className="py-1 w-full">
+                            <p onClick={e => handleFocusedBookClick(e, key)} 
+                                className="
+                                    py-1 
+                                    w-full
+                                    text-ellipsis 
+                                    overflow-hidden 
+                                    whitespace-nowrap
+                                ">
                                 {d.title}
                             </p>
-                            { isFocused && <BiPencil onClick={() => {showBookModal()}}></BiPencil> }
+                            { isFocused && 
+                                <p className="py-2 px-2" onClick={() => { showBookModal() }}>
+                                    <BiPencil></BiPencil> 
+                                </p>
+                            }
                         </div>
                     )
                 })
