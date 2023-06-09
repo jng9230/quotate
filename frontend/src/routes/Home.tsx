@@ -6,7 +6,7 @@ import { Modal } from "../components/Modal";
 import { HomeHeader } from "../components/HomeHeader";
 import { BooksWrapper } from "../components/BooksWrapper";
 import { QuotesWrapper } from "../components/QuotesWrapper";
-import { getBooksForUser, getQuotesForBook, addNewBook, deleteBook, getAuthedUser, editBook } from "../utils/apiCalls";
+import { getBooksForUser, getQuotesForBook, addNewBook, deleteBook, getAuthedUser, editBook, deleteQuote, editQuote } from "../utils/apiCalls";
 // import { useParams, useSearchParams } from "react-router-dom";
 
 const basic_button_classes = `
@@ -19,7 +19,7 @@ const basic_button_classes = `
 
 function Home(){
     const [books, setBooks] = useState<book[]>([])
-    const [quotes, setQuotes] = useState<quote[]>()
+    // const [quotes, setQuotes] = useState<quote[]>()
 
     const [focusedBook, setFocusedBook] = useState<book>();
     const handleFocusedBookClick = (e: React.MouseEvent<HTMLDivElement>, key: string) => {
@@ -39,21 +39,21 @@ function Home(){
     // console.log("TOKEN: " + token)
 
     //focused book changes -> get quotes from backend
-    useEffect(() => {
-        if (focusedBook === undefined){return;}
-        getQuotesForBook(focusedBook.id)
-            .then(data1 => {
-                let mapping = data1.map(d => {
-                    return {
-                        text: d.text,
-                        id: d._id,
-                        book: d.book
-                    }
-                })
-                setQuotes(mapping.reverse())
-            })
-            .catch(err => console.error(err))
-    }, [focusedBook])
+    // useEffect(() => {
+    //     if (focusedBook === undefined){return;}
+    //     getQuotesForBook(focusedBook.id)
+    //         .then(data1 => {
+    //             let mapping = data1.map(d => {
+    //                 return {
+    //                     text: d.text,
+    //                     id: d._id,
+    //                     book: d.book
+    //                 }
+    //             })
+    //             setQuotes(mapping.reverse())
+    //         })
+    //         .catch(err => console.error(err))
+    // }, [focusedBook])
 
     const [addBookModal, setAddBookModal] = useState(false);
     const [newBookName, setNewBookName] = useState("")
@@ -149,6 +149,38 @@ function Home(){
             })
             .catch(err => console.error("Error: ", err))
     }
+
+    // function deleteText(id: string) {
+    //     deleteQuote(id)
+    //         .then(data => {
+    //             const filteredQuotes = quotes?.filter((d) => d.id !== data.result._id);
+    //             setQuotes(filteredQuotes);
+    //         })
+    //         .catch(err => console.error(err))
+    // }
+
+    // const [focusedQuote, setFocusedQuote] = useState<quote>();
+    // const handleTextSave = (newText: string) => {
+    //     //return if nothing has changed
+    //     if (focusedQuote === undefined || newText === focusedQuote?.text) { return; }
+
+    //     editQuote(focusedQuote.id, newText)
+    //         .then(data => {
+    //             const newQuote = {
+    //                 text: newText,
+    //                 book: data.book,
+    //                 id: data._id
+    //             }
+    //             setQuotes(quotes?.map(d => {
+    //                 if (d.id === focusedQuote.id){
+    //                     return newQuote
+    //                 }
+    //                 return d
+    //             })) 
+    //         })
+    //         .catch(err => console.error(err))
+    // }
+
     return (
         <div className="w-screen h-screen flex flex-col bg-off-white">
             <HomeHeader 
@@ -165,8 +197,10 @@ function Home(){
                 ></BooksWrapper>
                 <QuotesWrapper
                     focusedBook={focusedBook}
-                    quotes={quotes}
+                    // quotes={quotes}
                     handleDeleteBook={handleDeleteBook}
+                    // deleteText={deleteText}
+                    // handleTextSave={handleTextSave}
                 ></QuotesWrapper>
             </main>
             {

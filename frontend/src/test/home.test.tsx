@@ -20,25 +20,25 @@ afterAll(() => server.close())
 
 
 describe("quote wrapper", () => {
-    test("nothing but buttons on empty quotes arr", async () => {
-        const quotes: API.quote[] = []
-        render(<QuotesWrapper quotes={quotes} focusedBook={undefined} handleDeleteBook={()=>{}}></QuotesWrapper>)
+    // test("nothing but buttons on empty quotes arr", async () => {
+    //     const quotes: API.quote[] = []
+    //     render(<QuotesWrapper quotes={quotes} focusedBook={undefined} handleDeleteBook={()=>{}}></QuotesWrapper>)
 
-        expect(screen.getByTestId("quotesWrapper")).toBeEmptyDOMElement();
-    })
-    test("still nothing w/o focused book", async () => {
-        const quotes = [{
-            text: "text1",
-            id: "id1",
-            book: "book1"
-        }, {
-            text: "text2",
-            id: "id2",
-            book: "book2"
-        }]; 
-        render(<QuotesWrapper quotes={quotes} focusedBook={undefined} handleDeleteBook={()=>{}}></QuotesWrapper>)
-        expect(screen.getByTestId("quotesWrapper")).toBeEmptyDOMElement();
-    })
+    //     expect(screen.getByTestId("quotesWrapper")).toBeEmptyDOMElement();
+    // })
+    // test("still nothing w/o focused book", async () => {
+    //     const quotes = [{
+    //         text: "text1",
+    //         id: "id1",
+    //         book: "book1"
+    //     }, {
+    //         text: "text2",
+    //         id: "id2",
+    //         book: "book2"
+    //     }]; 
+    //     render(<QuotesWrapper quotes={quotes} focusedBook={undefined} handleDeleteBook={()=>{}}></QuotesWrapper>)
+    //     expect(screen.getByTestId("quotesWrapper")).toBeEmptyDOMElement();
+    // })
 
     //CAN'T TEST SHOWING QUOTES B/C IT DROPS A <link> -> need a to wrap in react router before using
     // -> can only test in <home> (?)

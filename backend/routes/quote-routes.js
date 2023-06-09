@@ -55,4 +55,12 @@ router.delete('/', async (req, res) => {
     res.json({ result });
 });
 
+router.put('/', async (req, res) => {
+    if (debug) { console.log("EDITING A QUOTE"); console.log(req.body) }
+
+    const result = await Quote.findByIdAndUpdate({ _id: req.body.id }, { text: req.body.text })
+
+    res.json({ result });
+});
+
 module.exports = router

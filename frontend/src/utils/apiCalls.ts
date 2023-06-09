@@ -124,7 +124,7 @@ export const addNewQuote = async (new_text:string, bookID:string, user:API.userR
     return res
 }
 
-export const deleteQuote = (id:string) => {
+export const deleteQuote = async (id:string) => {
     const res = fetch("/quote", {
         method: "DELETE",
         headers: {
@@ -135,6 +135,21 @@ export const deleteQuote = (id:string) => {
         .then(res => res.json())
         .then(data => {
             return data as API.deleteQuoteReturnType;
+        })
+    return res
+}
+
+export const editQuote = async (id:string, newText:string) => {
+    const res = fetch("/quote", {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ "id": id, "text": newText })
+    })
+        .then(res => res.json())
+        .then(data => {
+            return data as API.newQuoteReturnType;
         })
     return res
 }
