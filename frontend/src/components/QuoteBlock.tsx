@@ -13,7 +13,8 @@ function QuoteBlock({
     handleTextSave,
     setFocusedQuote,
     editQuoteModal,
-    setEditQuoteModal
+    setEditQuoteModal,
+    setEditText
 }: {
     quote: quote,
     deleteText: (id: string) => void,
@@ -22,18 +23,21 @@ function QuoteBlock({
     setFocusedQuote: React.Dispatch<React.SetStateAction<quote>>,
     editQuoteModal: boolean,
     setEditQuoteModal: React.Dispatch<React.SetStateAction<boolean>>,
+    setEditText: React.Dispatch<React.SetStateAction<string>>,
 }){
     // const [editQuoteModal, setEditQuoteModal] = useState(false);
     const [text, setText] = useState(quote.text);
     const handleEditClick = () => {
+        console.log(`setting to ${quote.text}`)
         setFocusedQuote(quote)
+        setEditText(quote.text)
         setEditQuoteModal(true)
     }
     return (
         <>
             <div key={quote.id} className="border-std border-black flex justify-between items-center">
                 <div className="w-11/12 p-3 py-1" data-testid={`storedQuote-${quote.id}`}> {quote.text} </div>
-                <BiPencil onClick={handleEditClick}></BiPencil>
+                <BiPencil onClick={handleEditClick} className="cursor-pointer"></BiPencil>
                 <CloseButton styles="mr-2" onClick={() => deleteText(quote.id)} testID={`deleteQuote-${quote.id}`}></CloseButton>
             </div>
             {/* {

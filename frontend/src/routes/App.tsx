@@ -15,8 +15,9 @@ import { useParams, Link } from 'react-router-dom';
 import { quote, userReturnType } from "../utils/APIReturnTypes"
 import { BiArrowBack } from "react-icons/bi"
 import {config} from "../utils/config"
-import { addNewQuote, deleteQuote, getAuthedUser, getBookTitle, getQuotesForBook } from '../utils/apiCalls';
+import { addNewQuote, deleteQuote, getAuthedUser, getBookTitle, getQuotesForBook, editQuote } from '../utils/apiCalls';
 import { OCR } from "../utils/OCR";
+import { TextArea } from '../components/TextArea';
 
 const THRESHOLD_MIN = config.preprocess.THRESHOLD_MIN;
 const THRESHOLD_MAX = config.preprocess.THRESHOLD_MAX;
@@ -242,26 +243,49 @@ function App() {
         }
     }, [imagePath, croppedAreaPixels, rotation, binThreshold])
 
+    const [editQuoteModal, setEditQuoteModal] = useState(false);
+    const [focusedQuote, setFocusedQuote] = useState<quote>({ text: "", book: "", id: "" });
+    const [editText, setEditText] = useState(focusedQuote?.text);
+    const handleTextEdit = (newText: string) => {
+        //return if nothing has changed
+        if (focusedQuote === undefined || newText === focusedQuote?.text) { return; }
+
+        editQuote(focusedQuote.id, newText)
+            .then(data => {
+                const newQuote = {
+                    text: newText,
+                    book: data.book,
+                    id: data._id
+                }
+                setStoredText(storedText?.map(d => {
+                    if (d.id === focusedQuote.id) {
+                        return newQuote
+                    }
+                    return d
+                }))
+                setEditQuoteModal(false);
+
+            })
+            .catch(err => console.error(err))
+    }
     return (
         <div className="App w-screen h-screen flex flex-col bg-off-white">
             <header className="grid grid-cols-3 p-3">
                 <div className="col-start-1">
-                    <Link to="/">
-                        <button className="btn-std 
-                            border-main-green 
-                            border-std 
-                            bg-white
-                            text-main-green
-                            flex
-                            items-center
+                    <button className="btn-std 
+                        border-main-green 
+                        border-std 
+                        bg-white
+                        text-main-green
                         ">
+                        <Link to="/" className="flex items-center">
                             <BiArrowBack className="mr-2"></BiArrowBack>
                             Back
-                        </button>
-                    </Link>
+                        </Link> 
+                    </button>
                 </div>
                 <div className="col-start-2 self-center col-span-full">
-                    <h1 className="text-ellipsis overflow-hidden whitespace-nowrap"> {bookTitle} </h1>
+                    <h1 className="text-ellipsis overflow-hidden whitespace-nowrap text-center text-xl"> {bookTitle} </h1>
                 </div>
             </header>
             <main className="App-main grid 
@@ -329,7 +353,22 @@ function App() {
                         </>
                     </Modal>
                 </Upload>
-                <StorageBox storedText={storedText} deleteText={deleteText}></StorageBox>
+                <StorageBox 
+                    storedText={storedText} 
+                    deleteText={deleteText}
+                    setQuotes={setStoredText}
+                    handleTextSave={handleTextSave}
+                    setFocusedQuote={setFocusedQuote}
+                    editQuoteModal={editQuoteModal}
+                    setEditQuoteModal={setEditQuoteModal}
+                    setEditText={setEditText}
+                />
+                {
+                    editQuoteModal &&
+                    <Modal onClick={() => { setEditQuoteModal(false) }}>
+                        <TextArea heading={"EDIT TEXT"} text={editText} setText={setEditText} handleTextSave={handleTextEdit}></TextArea>
+                    </Modal>
+                }
             </main>
         </div>
     );

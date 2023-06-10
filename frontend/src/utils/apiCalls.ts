@@ -103,7 +103,7 @@ export const getBookTitle = async (bookID:string) => {
     const res = fetch(`/book/id/${bookID}`)
         .then(res => res.json())
         .then(data => {
-            return data as API.booksReturnType;
+            return data.book as API.booksReturnType;
         })
     return res
 }

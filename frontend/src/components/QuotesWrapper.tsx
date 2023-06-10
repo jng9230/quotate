@@ -73,7 +73,7 @@ function QuotesWrapper({
             .catch(err => console.error(err))
     }
 
-    const [text, setText] = useState(focusedQuote?.text);
+    const [editText, setEditText] = useState(focusedQuote?.text);
     return (
         <div className="
                     col-start-2 
@@ -101,6 +101,7 @@ function QuotesWrapper({
                                     setFocusedQuote={setFocusedQuote}
                                     editQuoteModal={editQuoteModal}
                                     setEditQuoteModal={setEditQuoteModal}
+                                    setEditText={setEditText}
                                 /> 
                             )
                         })
@@ -108,7 +109,7 @@ function QuotesWrapper({
                     {
                         editQuoteModal &&
                             <Modal onClick={() => { setEditQuoteModal(false) }}>
-                                <TextArea heading={"EDIT TEXT"} text={text} setText={setText} handleTextSave={handleTextSave}></TextArea>
+                            <TextArea heading={"EDIT TEXT"} text={editText} setText={setEditText} handleTextSave={handleTextSave}></TextArea>
                             </Modal>
                     }
                     {
