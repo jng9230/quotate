@@ -28,8 +28,9 @@ function TextArea({
             >
             </textarea>
             <button
-                className="btn-std text-white bg-main-green self-center mb-1"
+                className="btn-std border-main-green text-main-green border-std self-center mb-1 disabled:opacity-50 disabled:pointer-events-none"
                 onClick={() => handleTextSave(text)}
+                disabled={text === "" ? true : false}
             >
                 Save
             </button>
