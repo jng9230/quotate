@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { editQuote, getQuotesForBook, deleteQuote } from "../utils/apiCalls";
 import { Modal } from "./Modal";
 import { TextArea } from "./TextArea";
+import { EditQuoteModal } from "./EditQuoteModal";
 function QuotesWrapper({
     focusedBook,
     // quotes,
@@ -79,11 +80,11 @@ function QuotesWrapper({
                     col-start-2 
                     col-span-full 
                     row-span-full
-                    space-y-3
                     p-3
                     border-std
                     bg-white
                     overflow-y-scroll
+                    last:m-0
                     "
             data-testid="quotesWrapper"
         >
@@ -106,30 +107,22 @@ function QuotesWrapper({
                             )
                         })
                     }
-                    {
-                        editQuoteModal &&
-                            <Modal onClick={() => { setEditQuoteModal(false) }}>
-                            <TextArea heading={"EDIT TEXT"} text={editText} setText={setEditText} handleTextSave={handleTextSave}></TextArea>
-                            </Modal>
-                    }
-                    {
-                        focusedBook &&
-                        <Link to={`./app/${focusedBook.id}`}>
-                            <button className={`
-                                        flex 
-                                        items-center 
-                                        btn-std 
-                                        border-2 
-                                        border-main-green 
-                                        mx-auto
-                                        text-main-green
-                                        ${quotes?.length ? "mt-3" : ""}
-                                        `}
-                            >
-                                <BiPlus className="mr-2" /> QUOTE
-                            </button>
-                        </Link>
-                    }
+                    <Link to={`./app/${focusedBook.id}`}>
+                        <button className={`
+                                    flex 
+                                    items-center 
+                                    btn-std 
+                                    border-2 
+                                    border-main-green 
+                                    mx-auto
+                                    text-main-green
+                                    mb-2
+                                    ${quotes?.length ? "mt-3" : ""}
+                                    `}
+                        >
+                            <BiPlus className="mr-2" /> QUOTE
+                        </button>
+                    </Link>
                     <button onClick={() => handleDeleteBook()}
                         className="
                                     btn-std
@@ -143,6 +136,15 @@ function QuotesWrapper({
                         <BiMinus className="mr-2" /> REMOVE BOOK
                     </button>
                 </>
+            }
+            {
+                editQuoteModal &&
+                <EditQuoteModal
+                    setEditQuoteModal={setEditQuoteModal}
+                    editText={editText}
+                    setEditText={setEditText}
+                    handleTextSave={handleTextSave}
+                />
             }
         </div>
     )

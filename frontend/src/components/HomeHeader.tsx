@@ -39,7 +39,8 @@ function HomeHeader({
                 </button>
             </div>
             <div className="col-start-2 col-span-full flex w-full justify-between">
-                <div className="bg-black border-black border-std w-4/5"></div>
+                {/* <div className="bg-black border-black border-std w-4/5"></div> */}
+                <div></div>
                 {
                     !authed ? <button onClick={handleLogin} className={basic_button_classes}> LOGIN </button>
                         : <button onClick={handleLogout} className={basic_button_classes}> LOGOUT </button>

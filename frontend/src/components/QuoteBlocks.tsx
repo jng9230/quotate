@@ -1,3 +1,5 @@
+//!!! DO NOT USE -- MESSES WITH SCROLL BARS TOO MUCH
+
 import { QuoteBlock } from "./QuoteBlock"
 function QuoteBlocks({
     quotes,

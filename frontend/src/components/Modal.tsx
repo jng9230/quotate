@@ -16,7 +16,7 @@ function Modal({
     }
     return (
         <div className="bg-black/[.60] 
-            fixed 
+            fixed
             top-0 
             left-0 
             right-0 
@@ -31,7 +31,8 @@ function Modal({
                 w-full 
                 max-w-2xl 
                 h-auto 
-                p-6 
+                px-4
+                py-3
                 overflow-hidden 
                 m-auto 
                 bg-white relative">

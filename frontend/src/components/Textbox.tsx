@@ -13,7 +13,7 @@ function Textbox({
 
     return (
         <div className="h-full w-full col-start-2 col-span-full row-start-1 row-span-3
-            border-std bg-white">
+            border-std bg-white p-3">
             <TextArea heading={"Edit converted text:"} text={text} setText={setText} handleTextSave={handleTextSave}></TextArea>
         </div>
     )

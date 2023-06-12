@@ -18,6 +18,7 @@ import {config} from "../utils/config"
 import { addNewQuote, deleteQuote, getAuthedUser, getBookTitle, getQuotesForBook, editQuote } from '../utils/apiCalls';
 import { OCR } from "../utils/OCR";
 import { TextArea } from '../components/TextArea';
+import { EditQuoteModal } from '../components/EditQuoteModal';
 
 const THRESHOLD_MIN = config.preprocess.THRESHOLD_MIN;
 const THRESHOLD_MAX = config.preprocess.THRESHOLD_MAX;
@@ -365,9 +366,12 @@ function App() {
                 />
                 {
                     editQuoteModal &&
-                    <Modal onClick={() => { setEditQuoteModal(false) }}>
-                        <TextArea heading={"EDIT TEXT"} text={editText} setText={setEditText} handleTextSave={handleTextEdit}></TextArea>
-                    </Modal>
+                    <EditQuoteModal
+                        setEditQuoteModal={setEditQuoteModal}
+                        editText={editText}
+                        setEditText={setEditText}
+                        handleTextSave={handleTextEdit}
+                    />
                 }
             </main>
         </div>
