@@ -153,3 +153,18 @@ export const editQuote = async (id:string, newText:string) => {
         })
     return res
 }
+
+export const loginAsGuest = async () => {
+    const res = fetch("/login/guest", {
+        method: "GET",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+        .then(res => res.json())
+        .then(data => {
+            return data as API.userReturnType
+        })
+    return res
+}

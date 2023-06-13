@@ -1,7 +1,8 @@
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import App from './App';
 import {Home} from './Home';
+import { HomeLogin } from './HomeLogin';
 
 function LandingPage(){
     return (

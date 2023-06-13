@@ -18,6 +18,9 @@ const UserSchema = new Schema({
         match: [/\S+@\S+\.\S+/, 'is invalid'],
         index: true,
     },
+    is_guest: {
+        type: Boolean
+    }
     // password: {
     //     type: String,
     //     trim: true,

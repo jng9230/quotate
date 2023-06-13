@@ -5,12 +5,17 @@ const API_BASE = config.API_BASE;
 function HomeHeader({
     setAddBookModal,
     authed,
-    basic_button_classes,
 }: {
     setAddBookModal: (val:boolean) => void, 
     authed: boolean,
-    basic_button_classes: string,
 }){
+    const basic_button_classes = `
+        btn-std 
+        border-std 
+        border-main-green 
+        text-main-green 
+        bg-white 
+    `
     const handleLogin = () => {
         // console.log(process.env.API_BASE)
         window.open(API_BASE + "/auth/google", "_self");

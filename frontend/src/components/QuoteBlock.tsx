@@ -34,19 +34,11 @@ function QuoteBlock({
         setEditQuoteModal(true)
     }
     return (
-        <>
-            <div key={quote.id} className="border-std border-black flex justify-between items-center mb-2">
-                <div className="w-11/12 p-3 py-1" data-testid={`storedQuote-${quote.id}`}> {quote.text} </div>
-                <BiPencil onClick={handleEditClick} className="cursor-pointer scale-90"></BiPencil>
-                <CloseButton styles="mr-2" onClick={() => deleteText(quote.id)} testID={`deleteQuote-${quote.id}`}></CloseButton>
-            </div>
-            {/* {
-                editQuoteModal && 
-                    <Modal onClick={() => {setEditQuoteModal(false)}}>
-                        <TextArea heading={"EDIT TEXT"} text={quote.text} setText={setText} handleTextSave={handleTextSave}></TextArea>
-                    </Modal>
-            } */}
-        </>
+        <div key={quote.id} className="border-std border-black flex justify-between items-center mb-2">
+            <div className="w-11/12 p-3 py-1" data-testid={`storedQuote-${quote.id}`}> {quote.text} </div>
+            <BiPencil onClick={handleEditClick} className="cursor-pointer scale-90"></BiPencil>
+            <CloseButton styles="mr-2" onClick={() => deleteText(quote.id)} testID={`deleteQuote-${quote.id}`}></CloseButton>
+        </div>
     )
 }
 export {QuoteBlock}

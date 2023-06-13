@@ -7,19 +7,12 @@ import { HomeHeader } from "../components/HomeHeader";
 import { BooksWrapper } from "../components/BooksWrapper";
 import { QuotesWrapper } from "../components/QuotesWrapper";
 import { getBooksForUser, getQuotesForBook, addNewBook, deleteBook, getAuthedUser, editBook, deleteQuote, editQuote } from "../utils/apiCalls";
+import { Login } from "../components/Login";
 // import { useParams, useSearchParams } from "react-router-dom";
 
-const basic_button_classes = `
-    btn-std 
-    border-std 
-    border-main-green 
-    text-main-green 
-    bg-white 
-`
 
 function Home(){
     const [books, setBooks] = useState<book[]>([])
-    // const [quotes, setQuotes] = useState<quote[]>()
 
     const [focusedBook, setFocusedBook] = useState<book>();
     const handleFocusedBookClick = (e: React.MouseEvent<HTMLDivElement>, key: string) => {
@@ -31,30 +24,6 @@ function Home(){
         }
     }
     
-    // const [searchParams, setSearchParams] = useSearchParams();
-    // console.log(searchParams.entries());
-    // const token = useParams().token;
-    // const token = useParams().token;
-    // const token = searchParams.get('token');
-    // console.log("TOKEN: " + token)
-
-    //focused book changes -> get quotes from backend
-    // useEffect(() => {
-    //     if (focusedBook === undefined){return;}
-    //     getQuotesForBook(focusedBook.id)
-    //         .then(data1 => {
-    //             let mapping = data1.map(d => {
-    //                 return {
-    //                     text: d.text,
-    //                     id: d._id,
-    //                     book: d.book
-    //                 }
-    //             })
-    //             setQuotes(mapping.reverse())
-    //         })
-    //         .catch(err => console.error(err))
-    // }, [focusedBook])
-
     const [addBookModal, setAddBookModal] = useState(false);
     const [newBookName, setNewBookName] = useState("")
     //new book wants to be added -> call backend, update modals
@@ -101,6 +70,10 @@ function Home(){
     //auth status changes -> reset user based on auth token
     useEffect(() => {
         // if (token === undefined || token === null){console.error("NO TOKEN PROVIDED");return;}
+        // if (!authed) {
+        //     window.open("/login", "_self");
+        // } else {
+        // }
         getAuthedUser()
             .then(res => {
                 setUser(res);
@@ -150,168 +123,140 @@ function Home(){
             .catch(err => console.error("Error: ", err))
     }
 
-    // function deleteText(id: string) {
-    //     deleteQuote(id)
-    //         .then(data => {
-    //             const filteredQuotes = quotes?.filter((d) => d.id !== data.result._id);
-    //             setQuotes(filteredQuotes);
-    //         })
-    //         .catch(err => console.error(err))
-    // }
-
-    // const [focusedQuote, setFocusedQuote] = useState<quote>();
-    // const handleTextSave = (newText: string) => {
-    //     //return if nothing has changed
-    //     if (focusedQuote === undefined || newText === focusedQuote?.text) { return; }
-
-    //     editQuote(focusedQuote.id, newText)
-    //         .then(data => {
-    //             const newQuote = {
-    //                 text: newText,
-    //                 book: data.book,
-    //                 id: data._id
-    //             }
-    //             setQuotes(quotes?.map(d => {
-    //                 if (d.id === focusedQuote.id){
-    //                     return newQuote
-    //                 }
-    //                 return d
-    //             })) 
-    //         })
-    //         .catch(err => console.error(err))
-    // }
-
     return (
-        <div className="w-screen h-screen flex flex-col bg-off-white">
-            <HomeHeader 
-                setAddBookModal={setAddBookModal} 
-                authed={authed}
-                basic_button_classes={basic_button_classes}
-            ></HomeHeader>
-            <main className="w-full h-full grid grid-cols-2 sm:grid-cols-3 gap-3 p-3 pt-0 overflow-hidden">
-                <BooksWrapper 
-                    books={books}
-                    focusedBook={focusedBook}
-                    handleFocusedBookClick={handleFocusedBookClick}
-                    showBookModal={showBookModal}
-                ></BooksWrapper>
-                <QuotesWrapper
-                    focusedBook={focusedBook}
-                    // quotes={quotes}
-                    handleDeleteBook={handleDeleteBook}
-                    // deleteText={deleteText}
-                    // handleTextSave={handleTextSave}
-                ></QuotesWrapper>
-            </main>
+        <>
             {
-                addBookModal && 
-                <Modal onClick={() => setAddBookModal(false)} testID={"closeAddBookModal"}>
-                    <div className="w-full h-full flex flex-col items-center space-y-5">
-                        <label htmlFor="bookName"> ADD A NEW BOOK </label>
-                        <input type="text" id="bookName" name="bookName" placeholder="Enter book name"
-                            className="
-                                border-std
-                                border-black
-                                text-center
-                                outline-none
-                                p-1
-                                w-full
-                                sm:w-1/2
-                            "
-                            value={newBookName}
-                            onChange={e => setNewBookName(e.target.value)}
-                        />
-                        <button className="
-                            btn-std 
-                            text-main-green 
-                            border-std 
-                            bg-white 
-                            border-main-green
-                            flex
-                            items-center
-                        "
-                            onClick={handleAddNewBook}
-                        >
-                            {/* <BiPlus className=""/>  */}
-                            ADD
-                        </button>
-                    </div>
-                </Modal>
-            }
-            {
-                deleteBookModal &&
-                <Modal onClick={() => setDeleteBookModal(false)}>
-                    <div className="w-full h-full flex flex-col items-center space-y-5">
-                        <div>
-                            DELETE "{focusedBook?.title}"?
-                        </div>
-                        <div className="flex space-x-6">
-                            <button className="
-                                btn-std 
-                                text-main-green 
-                                border-std 
-                                bg-white 
-                                border-main-green
-                                flex
-                                items-center
-                            "
-                                onClick={() => confirmDelete()}
-                            >
-                                YES
-                            </button>
-                            <button className="
-                                btn-std 
-                                text-main-green 
-                                border-std 
-                                bg-white 
-                                border-main-green
-                                flex
-                                items-center
-                            "
-                                onClick={() => setDeleteBookModal(false)}
-                            >
-                                NO
-                            </button>
-                        </div>
-                    </div>
-                </Modal>
-            }
-            {
-                editBookModal && 
-                <Modal onClick={() => setEditBookModal(false)}>
-                    <div className="w-full h-full flex flex-col items-center space-y-5">
-                            <label htmlFor="bookName"> EDIT BOOK TITLE </label>
+                !authed ? <Login/> :
+            <div className="w-screen h-screen flex flex-col bg-off-white">
+                <HomeHeader 
+                    setAddBookModal={setAddBookModal} 
+                    authed={authed}
+                ></HomeHeader>
+                <main className="w-full h-full grid grid-cols-2 sm:grid-cols-3 gap-3 p-3 pt-0 overflow-hidden">
+                    <BooksWrapper 
+                        books={books}
+                        focusedBook={focusedBook}
+                        handleFocusedBookClick={handleFocusedBookClick}
+                        showBookModal={showBookModal}
+                    ></BooksWrapper>
+                    <QuotesWrapper
+                        focusedBook={focusedBook}
+                        // quotes={quotes}
+                        handleDeleteBook={handleDeleteBook}
+                        // deleteText={deleteText}
+                        // handleTextSave={handleTextSave}
+                    ></QuotesWrapper>
+                </main>
+                {
+                    addBookModal && 
+                    <Modal onClick={() => setAddBookModal(false)} testID={"closeAddBookModal"}>
+                        <div className="w-full h-full flex flex-col items-center space-y-5">
+                            <label htmlFor="bookName"> ADD A NEW BOOK </label>
                             <input type="text" id="bookName" name="bookName" placeholder="Enter book name"
                                 className="
-                                border-std
-                                border-black
-                                text-center
-                                outline-none
-                                p-1
-                                w-full
-                                sm:w-1/2
-                            "
+                                    border-std
+                                    border-black
+                                    text-center
+                                    outline-none
+                                    p-1
+                                    w-full
+                                    sm:w-1/2
+                                "
                                 value={newBookName}
                                 onChange={e => setNewBookName(e.target.value)}
                             />
                             <button className="
-                            btn-std 
-                            text-main-green 
-                            border-std 
-                            bg-white 
-                            border-main-green
-                            flex
-                            items-center
-                        "
-                                onClick={handleEditBook}
+                                btn-std 
+                                text-main-green 
+                                border-std 
+                                bg-white 
+                                border-main-green
+                                flex
+                                items-center
+                            "
+                                onClick={handleAddNewBook}
                             >
-                                UPDATE
-                            </button>           
-                    </div>
-                </Modal>
+                                {/* <BiPlus className=""/>  */}
+                                ADD
+                            </button>
+                        </div>
+                    </Modal>
+                }
+                {
+                    deleteBookModal &&
+                    <Modal onClick={() => setDeleteBookModal(false)}>
+                        <div className="w-full h-full flex flex-col items-center space-y-5">
+                            <div>
+                                DELETE "{focusedBook?.title}"?
+                            </div>
+                            <div className="flex space-x-6">
+                                <button className="
+                                    btn-std 
+                                    text-main-green 
+                                    border-std 
+                                    bg-white 
+                                    border-main-green
+                                    flex
+                                    items-center
+                                "
+                                    onClick={() => confirmDelete()}
+                                >
+                                    YES
+                                </button>
+                                <button className="
+                                    btn-std 
+                                    text-main-green 
+                                    border-std 
+                                    bg-white 
+                                    border-main-green
+                                    flex
+                                    items-center
+                                "
+                                    onClick={() => setDeleteBookModal(false)}
+                                >
+                                    NO
+                                </button>
+                            </div>
+                        </div>
+                    </Modal>
+                }
+                {
+                    editBookModal && 
+                    <Modal onClick={() => setEditBookModal(false)}>
+                        <div className="w-full h-full flex flex-col items-center space-y-5">
+                                <label htmlFor="bookName"> EDIT BOOK TITLE </label>
+                                <input type="text" id="bookName" name="bookName" placeholder="Enter book name"
+                                    className="
+                                    border-std
+                                    border-black
+                                    text-center
+                                    outline-none
+                                    p-1
+                                    w-full
+                                    sm:w-1/2
+                                "
+                                    value={newBookName}
+                                    onChange={e => setNewBookName(e.target.value)}
+                                />
+                                <button className="
+                                btn-std 
+                                text-main-green 
+                                border-std 
+                                bg-white 
+                                border-main-green
+                                flex
+                                items-center
+                            "
+                                    onClick={handleEditBook}
+                                >
+                                    UPDATE
+                                </button>           
+                        </div>
+                    </Modal>
+                }
+            </div>
             }
-        </div>
-        
+        </>
     )
 }
 
