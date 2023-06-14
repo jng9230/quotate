@@ -5,11 +5,13 @@ const jwt = require("jsonwebtoken")
 // require("dotenv").config({ path: "../config.env" })
 const config = require("../config")
 require('../passport-google-setup');
+require("../passport-anon-setup")
 const CLIENT_HOME_PAGE_URL = config.CLIENT_HOME_PAGE_URL;
 const debug = config.DEBUG === "1"; 
 
 // when login is successful, retrieve user info
-router.get("/login/success", (req, res) => {
+router.get("/login/success",
+    function (req, res) {
     if (debug) {console.log("/login/success")}
     if (req.user) {
         if (debug) {console.log(req.user)}
@@ -41,12 +43,50 @@ router.get("/logout", (req, res) => {
 });
 
 // auth with google
-router.get("/google", passport.authenticate("google", {
-    scope: ['email', 'profile'],
-    // successRedirect: CLIENT_HOME_PAGE_URL,
-    // failureRedirect: "/auth/login/failed"
+// router.get("/google", passport.authenticate("google", {
+//     scope: ['email', 'profile'],
+//     // successRedirect: CLIENT_HOME_PAGE_URL,
+//     // failureRedirect: "/auth/login/failed"
 
-}));
+// }));
+
+router.get("/google", 
+    passport.authenticate("google", {scope: ['email', 'profile']}), 
+    // function (req, res) {
+    //     console.log("/check")
+    //     console.log(req.user)
+    //     console.log('HERE MF @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+    //     res.status(200);
+    //     res.json({
+    //         success: true,
+    //         message: "user has successfully authenticated",
+    //         user: req.user,
+    //         cookies: req.cookies
+    //     });
+    // }
+);
+
+router.get("/guest",
+    passport.authenticate("anonymId"), 
+    // function (req, res) {
+    //     res.redirect("/")
+    // }
+    function (req, res) {
+        if (req.user){
+            res.redirect(CLIENT_HOME_PAGE_URL)
+        }
+        // console.log("/check")
+        // console.log(req.user)
+        // console.log('HERE MF @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+        // res.status(200);
+        // res.json({
+        //     success: true,
+        //     message: "user has successfully authenticated",
+        //     user: req.user,
+        //     cookies: req.cookies
+        // });
+    }
+);
 
 // redirect to home page after successfully login via google
 // router.get("/google/redirect", passport.authenticate("google", {

@@ -19,7 +19,8 @@ const UserSchema = new Schema({
         index: true,
     },
     is_guest: {
-        type: Boolean
+        type: Boolean,
+        default: false
     }
     // password: {
     //     type: String,
