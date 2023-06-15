@@ -9,7 +9,7 @@ import { QuotesWrapper } from "../components/QuotesWrapper";
 import { getBooksForUser, getQuotesForBook, addNewBook, deleteBook, getAuthedUser, editBook, deleteQuote, editQuote } from "../utils/apiCalls";
 import { Login } from "../components/Login";
 // import { useParams, useSearchParams } from "react-router-dom";
-
+import { Loading } from "./Loading";
 
 function Home(){
     const [books, setBooks] = useState<book[]>([])
@@ -89,7 +89,12 @@ function Home(){
                     })
                     .catch(err => console.error("Error: ", err))
             })
-            .catch(err => console.error(err))
+            .catch(err => {
+                console.log("the fuck")
+                console.error(err);
+                setLoading(false);
+            })
+            .finally(() => setLoading(false))
     }, [authed])
 
     const [editBookModal, setEditBookModal] = useState(false);
@@ -123,6 +128,15 @@ function Home(){
             .catch(err => console.error("Error: ", err))
     }
 
+    const [loading, setLoading] = useState(true);
+    if (loading){
+        return (
+            <div className="w-screen h-screen flex items-center justify-center bg-off-white">
+                <Loading/>
+            </div>
+        )
+    } 
+    
     return (
         <>
             {

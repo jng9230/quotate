@@ -1,6 +1,6 @@
 import { config } from "../utils/config";
 // import { AiOutlineArrowRight } from "react-icons/ai";
-import { BiBook, BiImages } from "react-icons/bi";
+import { BiBook, BiImage } from "react-icons/bi";
 import { BsTextLeft } from "react-icons/bs"
 import { FiArrowRight } from "react-icons/fi"
 // const logo = require("../img/logo.png")
@@ -24,10 +24,10 @@ function Login(){
                 flex 
                 items-center
                 justify-evenly 
-                bg-gradient-to-r 
-                from-secondary-green
-                to-white
-            ">
+                bg-mint-green
+                from-main-green
+                to-off-white
+                ">
                 <div className="
                             flex
                             flex-col
@@ -52,10 +52,10 @@ function Login(){
                     </button>
 
                 </div>
-                <div className="flex space-x-5">
+                <div className="flex space-x-5 text-main-green">
                     <BiBook size={size} />
                     <FiArrowRight size={size} />
-                    <BiImages size={size} />
+                    <BiImage size={size} />
                     <FiArrowRight size={size} />
                     <BsTextLeft size={size} />
                 </div>

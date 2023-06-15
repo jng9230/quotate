@@ -23,6 +23,13 @@ router.get("/login/success",
             cookies: req.cookies
         });
     } else {
+        res.status(401);
+        res.json({
+            success: false,
+            message: "user not authenticated",
+            user: req.user,
+            cookies: req.cookies
+        });
         console.log("Error from /login/success: NO USER PROVIDED IN REQ")
     }
 });
