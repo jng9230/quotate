@@ -18,7 +18,7 @@ I like to borrow books from the library, but keeping tabs on the most interestin
 and pages is difficult when I have to return the books every three weeks. Introducing: an
 app that solves this very specific issue.
 
-I used the MERN stack for its wide popularity and ease of use. 
+I used the MERN stack for its wide popularity and ease of use.
 - M: MongoDB, a NoSQL database that uses JSON-like documents to store its data. I used
 Mongoose on top of this to allow for database schemas, leading to more control over 
 data types.
@@ -28,6 +28,15 @@ authentication with both Google and local email/password logins.
 that my CSS tends towards a utility class kind of style, which is exactly what Tailwind
 accomplishes.
 - N: NodeJS. Server environment.
+
+For converting images to text, I used TesseractJS, the JavaScript port of a popular OCR
+engine. There are two major problems with photos of book pages though: 
+1. Photos often aren't perfectly aligned.
+2. I like to put semi-transparent tabs on notable lines. This unfortunately messes with
+OCR, especially if I use a darker colored tab.
+The first is solved with image rotation, and the second is solved with threshold filtering,
+wherein a colorful image is converted into a black and white image based on individual 
+pixel intensity.
 ### Final Thoughts
 - University taught me a thing or two about testing, but it's one thing to write tests for an algorithm
 that you know will work because it's a very isolated, 20 or so line piece of code, and it's another
