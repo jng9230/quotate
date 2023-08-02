@@ -5,7 +5,7 @@ A React app that converts and stores book pages to text.
 - login with Google, or as a guest.
 ![login](./imgs/login.png?raw=true "login")
 - landing page, with books and quotes.
-![profile](./imgs/profile.png?raw=true "profile")
+![landing](./imgs/landing.png?raw=true "landing")
 - page to convert images
 ![convertPage](./imgs/convertPage.png?raw=true "convertPage")
 - pre-binarization: note the purple tag on left.
@@ -49,6 +49,6 @@ the minimum number of containers running from 0 to 1 solves this problem, but th
 hitting the wallet! New areas, new problems.
 
 - There's quite a lot of things that I'd like to have done to turn this into something
-that I'd use on a most consistent basis. The most major one being that
+that I'd use on a more consistent basis. The most major one being that
 I should've made this a mobile app. Granted, I have 0 clue how to code mobile apps, so that's
 for the future. React Native? With Expo?
